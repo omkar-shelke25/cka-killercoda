@@ -16,15 +16,16 @@ Create a shell script named **`list-static-pods.sh`** in the home directory (`/r
   
 <summary>✅ Complete Solution</summary>
 
-## Key Concept:
+#### Key Concept:
 
-Static pods have the node name as a **suffix** in their pod name. So you can identify them by grepping for the node names in the pod list!
+- Static pods have the node name as a **suffix** in their pod name. So you can identify them by grepping for the node names in the pod list!
 
-Example:
-```
-httpd-web-controlplane  → static pod on controlplane node
-ai-apps-node01          → static pod on node01 node
-``` 
+- Example:
+ ```
+ httpd-web-controlplane  → static pod on controlplane node
+ ai-apps-node01          → static pod on node01 node
+ ``` 
+
 ✅ **Static Pod Name Format (Short Notes)**
 
 * Static Pods follow the format:

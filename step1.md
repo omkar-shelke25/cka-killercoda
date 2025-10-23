@@ -1,19 +1,16 @@
-# 📝 Task: Write Script to List Static Pods
+# 📝 CKA: Write Script to List Static Pods
 
 ## Your Mission
 
+You are working as a **DevOps Engineer** in an AI company that runs multiple Kubernetes clusters. Your manager asks you to write a shell script that lists all static pods running on both the **control plane node** and the **worker nodes**.
+
 Create a shell script named **`list-static-pods.sh`** in the home directory (`/root/`) that lists all static pods running in the cluster.
 
-
-
-## Cluster Information:
-
-- **Nodes:** controlplane, node01
-
  
-## Try it
-<details>
-  
+## Try it yourself first!
+
+<details> 
+ 
 <summary>✅ Complete Solution</summary>
 
 #### Key Concept:

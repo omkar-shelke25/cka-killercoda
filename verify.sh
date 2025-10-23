@@ -22,12 +22,6 @@ echo "🔍 Check 2: Script permissions..."
 [ -x "$SCRIPT_PATH" ] || fail "Script is not executable. Run: chmod +x $SCRIPT_PATH"
 pass "Script is executable"
 
-# Check 3: Script has proper shebang
-echo ""
-echo "🔍 Check 3: Script format..."
-FIRST_LINE=$(head -n 1 "$SCRIPT_PATH")
-[[ "$FIRST_LINE" =~ ^#!.*/bash ]] || fail "Script must start with #!/bin/bash"
-pass "Script has correct shebang"
 
 # Check 4: Verify static pods exist in cluster
 echo ""

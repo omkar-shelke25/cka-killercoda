@@ -1,4 +1,9 @@
 #!/bin/bash
+# Deploy exactly two static pods:
+#  - control-plane: /etc/kubernetes/manifests/httpd-web.yaml  (namespace: infra-space)
+#  - node01:        /etc/kubernetes/manifests/ai-apps.yaml    (namespace: ai-space)
+#
+# Run this on the control-plane. It will SSH to node01 to write the worker manifest.
 
 set -euo pipefail
 
@@ -84,3 +89,5 @@ EOF
 
 chmod 644 "${WORKER_MANIFEST_DIR}/ai-apps.yaml"
 echo "✅ Deployed: ${WORKER_MANIFEST_DIR}/ai-apps.yaml (worker static pod)"
+REMOTE_SCRIPT
+

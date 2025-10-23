@@ -84,39 +84,3 @@ EOF
 
 chmod 644 "${WORKER_MANIFEST_DIR}/ai-apps.yaml"
 echo "✅ Deployed: ${WORKER_MANIFEST_DIR}/ai-apps.yaml (worker static pod)"
-REMOTE_SCRIPT
-
-echo ""
-echo "⏳ Waiting for static pods to be created by kubelet..."
-sleep 15
-
-# Wait for pods to be ready
-echo "⏳ Waiting for static pods to become ready..."
-for i in {1..30}; do
-    INFRA_READY=$(kubectl get pods -n infra-space -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' 2>/dev/null | wc -w)
-    AI_READY=$(kubectl get pods -n ai-space -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' 2>/dev/null | wc -w)
-    
-    if [ "$INFRA_READY" -ge 1 ] && [ "$AI_READY" -ge 1 ]; then
-        echo "✅ Static pods are running!"
-        break
-    fi
-    
-    echo "Waiting for pods to start... ($i/30)"
-    sleep 2
-done
-
-echo ""
-echo "🎯 Setup complete! Static pods deployed:"
-echo ""
-echo "📦 Control Plane Static Pods:"
-kubectl get pods -n infra-space -o wide 2>/dev/null || echo "  (checking...)"
-echo ""
-echo "📦 Worker Node Static Pods:"
-kubectl get pods -n ai-space -o wide 2>/dev/null || echo "  (checking...)"
-echo ""
-echo "💡 Your task: Write a script called 'list-static-pods.sh' that:"
-echo "   - Identifies all static pods across all nodes"
-echo "   - Shows pod name, namespace, and node location"
-echo "   - Works on both control plane and worker nodes"
-echo ""
-echo "📚 Hint: Static pods are managed by kubelet manifest files, not the API server directly."

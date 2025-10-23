@@ -1,0 +1,23 @@
+{
+  "title": "CKA: List Static Pods Across All Nodes",
+  "description": "Write a shell script to identify and list all static pods running on control plane and worker nodes.",
+  "details": {
+    "steps": [
+      {
+        "title": "Write Script to List Static Pods",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

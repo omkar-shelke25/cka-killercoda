@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-k taint no controlplane  node-role.kubernetes.io/control-plane:NoSchedule-
+kubectl taint no controlplane  node-role.kubernetes.io/control-plane:NoSchedule-
 
 kubectl create ns database-storage
 

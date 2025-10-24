@@ -19,3 +19,47 @@ region=east
 
 > Do **not** use `nodeName` or `nodeAffinity`.
 
+### Try it yourself first!
+
+<details><summary>✅ Solution (expand to view)</summary>
+  
+```bash
+kubectl run redis-database \
+  -n database-storage \
+  --image=public.ecr.aws/docker/library/redis:alpine \
+  --dry-run=client -o yaml > redis.yaml
+```
+
+Now edit the file and add the `nodeSelector` section so it looks like this 👇
+
+```yaml
+spec:
+  nodeSelector:
+    disktype: ssd
+    region: east
+```
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-database
+  namespace: database-storage
+  labels:
+    app: redis-database
+spec:
+  nodeSelector:
+    disktype: ssd
+    region: east
+  containers:
+    - name: redis-database
+      image: public.ecr.aws/docker/library/redis:alpine
+```
+
+Then apply it:
+
+```bash
+kubectl apply -f redis.yaml
+```
+
+</details>

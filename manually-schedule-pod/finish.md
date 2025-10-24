@@ -28,5 +28,6 @@ Pod: tokoyo
 You’ve now mastered this Kubernetes concept! 🚀
 
 Keep practicing — your **CKA achievement** is on the horizon! 🌅
+
 **Fantastic work, Kubernetes Engineer! 💪🐳**
 

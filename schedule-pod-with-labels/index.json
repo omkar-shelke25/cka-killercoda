@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Pod Scheduling with Multiple Node Labels",
+  "description": "Schedule a Redis Pod on nodes matching specific labels.",
+  "details": {
+    "steps": [
+      {
+        "title": "Deploy the Redis Pod with label-based scheduling",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

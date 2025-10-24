@@ -1,8 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+k taint no controlplane  node-role.kubernetes.io/control-plane:NoSchedule-
+
 kubectl create ns database-storage
 
-kubectl label no controlplane region=east
+kubectl label no controlplane disktype=ssd region=east 
 
-kubectl label no node01 disktype=ssd region=east
+kubectl label no node01 region=east

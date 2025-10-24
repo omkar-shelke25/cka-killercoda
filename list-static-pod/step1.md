@@ -64,7 +64,7 @@ static-ns-1  static-pod2  Running   0    30m
 
 ---
 
-💻 **Example Solution**
+💻 **Solution**
 
 ```bash
 # Solution

@@ -11,7 +11,7 @@ You must therefore **manually assign the Pod to a specific node** and then **exp
 
 ### 🎯 **Your Task**
 
-Create a Pod named **`tokoyo`** in the namespace **`japan`** using the **`nginx`** image that listens on port **80**.
+Create a Pod named **`tokoyo`** in the namespace **`japan`** using the **`public.ecr.aws/nginx/nginx:stable-perl`** image that listens on port **80**.
 
 The Pod **must be manually scheduled** on the node **`controlplane`**, **without relying on the default Kubernetes scheduler**.
 

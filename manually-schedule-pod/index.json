@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Manually Schedule Pod and Expose via NodePort",
+  "description": "Create a Pod named 'tokoyo' in namespace 'japan' that is manually scheduled to node 'controlplane' and expose it with a NodePort service on port 80 using nodePort 30099.",
+  "details": {
+    "steps": [
+      {
+        "title": "Create the tokoyo Pod and NodePort service",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

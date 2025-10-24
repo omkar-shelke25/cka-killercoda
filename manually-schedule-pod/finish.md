@@ -9,7 +9,7 @@ You have configured a manually scheduled Pod and exposed it externally via a Nod
 
 
 ## Diagram
-
+```md
 Client
    │
    ▼
@@ -22,7 +22,7 @@ Service: tokoyo (type: NodePort)
 Pod: tokoyo
    └── nodeName: controlplane
        containerPort: 80
-
+```
 ### 🧠 Quick Explanation
 
 | Component               | Description                                                                                                 |

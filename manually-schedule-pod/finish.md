@@ -8,8 +8,17 @@ You have configured a manually scheduled Pod and exposed it externally via a Nod
 - This forces the kubelet on that node to own and run the Pod without using the default scheduler. 
 
 
-## ASCII diagram
+## Diagram
 
-Client -> Node(controlplane):30099 -> Service tokoyo (NodePort) -> Pod tokoyo (nodeName: controlplane, containerPort: 80)
+sequenceDiagram
+    participant Client
+    participant Node as Node (controlplane):30099
+    participant Service as Service: tokoyo (NodePort)
+    participant Pod as Pod: tokoyo (nodeName: controlplane, containerPort: 80)
+
+    Client->>Node: Access via <b>NodePort 30099</b>
+    Node->>Service: Routes request through NodePort Service
+    Service->>Pod: Forwards traffic to containerPort <b>80</b>
+
 
 Good work — you're practicing real-world debugging and operational tasks that frequently appear in the CKA exam and live clusters.

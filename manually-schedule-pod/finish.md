@@ -10,15 +10,10 @@ You have configured a manually scheduled Pod and exposed it externally via a Nod
 
 ## Diagram
 
-sequenceDiagram
-    participant Client
-    participant Node as Node (controlplane):30099
-    participant Service as Service: tokoyo (NodePort)
-    participant Pod as Pod: tokoyo (nodeName: controlplane, containerPort: 80)
-
-    Client->>Node: Access via <b>NodePort 30099</b>
-    Node->>Service: Routes request through NodePort Service
-    Service->>Pod: Forwards traffic to containerPort <b>80</b>
+flowchart LR
+    A[Client] --> B[Node (controlplane):30099]
+    B --> C[Service: tokoyo (NodePort)]
+    C --> D[Pod: tokoyo<br/>nodeName: controlplane<br/>containerPort: 80]
 
 
 Good work — you're practicing real-world debugging and operational tasks that frequently appear in the CKA exam and live clusters.

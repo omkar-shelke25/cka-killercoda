@@ -1,6 +1,7 @@
 # 🎉 **Mission Accomplished!**
 
 Congratulations! You’ve successfully completed the **Static Pod Discovery** challenge! 🏆
+
 You’ve demonstrated strong command over identifying and automating the detection of **static pods** across Kubernetes nodes — a key skill for your **CKA certification**. 🚀
 
 ---

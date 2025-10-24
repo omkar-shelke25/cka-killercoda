@@ -1,14 +1,14 @@
 # 📝 CKA: Write Script to List Static Pods
 
-## Your Mission
+💼 **Your Mission**
 
 You are working as a **DevOps Engineer** in an AI company that runs multiple Kubernetes clusters. Your manager asks you to write a shell script that lists all static pods running on both the **control plane node** and the **worker nodes**.
 
-Create a shell script named **`list-static-pods.sh`** in the home directory (`/root/`) that lists all static pods running in the cluster.
+📝 Create a shell script named **`list-static-pods.sh`** in the home directory (`/root/`) that lists all static pods running in the cluster.
 
-Noted — here’s a corrected, grammatical version of your text with small fixes and clearer wording.
+---
 
-### ✅ Expected output format (corrected)
+🧾 **Expected Output Format by Manager**
 
 The output of your script should list all static pods in the following format:
 
@@ -17,7 +17,8 @@ static-ns    static-pod   Running   0    12s
 static-ns-1  static-pod2  Running   0    30m
 ```
 
-> Schema of the above format: `namespace, pod name, pod status, restarts, age`.
+💡 **Schema of the above format:** `namespace, pod name, pod status, restarts, age`.
+
 
 ## Try it yourself first!
 

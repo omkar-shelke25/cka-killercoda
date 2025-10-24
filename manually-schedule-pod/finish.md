@@ -24,4 +24,9 @@ Pod: tokoyo
        containerPort: 80
 ```
 
-Good work — you're practicing real-world debugging and operational tasks that frequently appear in the CKA exam and live clusters.
+🎯 **Awesome job!**
+You’ve now mastered this Kubernetes concept! 🚀
+
+Keep practicing — your **CKA achievement** is on the horizon! 🌅
+**Fantastic work, Kubernetes Engineer! 💪🐳**
+

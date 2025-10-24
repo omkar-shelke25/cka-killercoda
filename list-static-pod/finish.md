@@ -35,10 +35,10 @@ You’ve demonstrated strong command over identifying and automating the detecti
 
 🌟 **Key Takeaways**
 
-✅ Static Pods = Node-level control by kubelet
-✅ No Deployment/DaemonSet involvement
-✅ Useful for running control plane components
-✅ Automatically mirrored to API Server for visibility
+- ✅ Static Pods = Node-level control by kubelet
+- ✅ No Deployment/DaemonSet involvement
+- ✅ Useful for running control plane components
+- ✅ Automatically mirrored to API Server for visibility
 
 ---
 

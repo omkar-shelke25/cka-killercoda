@@ -6,19 +6,18 @@ You are working as a **DevOps Engineer** in an AI company that runs multiple Kub
 
 Create a shell script named **`list-static-pods.sh`** in the home directory (`/root/`) that lists all static pods running in the cluster.
 
-### ✅ Expected Output Format
+Noted — here’s a corrected, grammatical version of your text with small fixes and clearer wording.
+
+### ✅ Expected output format (corrected)
 
 The output of your script should list all static pods in the following format:
 
-```bash 
+```bash
 static-ns    static-pod   Running   0    12s
 static-ns-1  static-pod2  Running   0    30m
 ```
 
----
-
-
-
+> Schema of the above format: `namespace, pod name, pod status, restarts, age`.
 
 ## Try it yourself first!
 

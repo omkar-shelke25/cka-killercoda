@@ -9,49 +9,31 @@ You have configured a manually scheduled Pod and exposed it externally via a Nod
 
 
 ## Diagram
-
-Got it — you want a **simple Markdown-style architecture diagram**, not a sequence flow.
-Here’s a **box-and-arrow Markdown diagram** showing your path clearly:
-
-```markdown
-Client
-   │
-   ▼
-Node (controlplane):30099
-   │
-   ▼
-Service: tokoyo (type: NodePort)
-   │
-   ▼
-Pod: tokoyo
-   └── nodeName: controlplane
-       containerPort: 80
-```
-
----
-
-Or a **compact horizontal version**:
-
-```markdown
-Client 
-  → Node (controlplane):30099 
-  → Service tokoyo (NodePort) 
-  → Pod tokoyo (nodeName: controlplane, containerPort: 80)
-```
-
----
-
-If you’d like a **visual box diagram (Mermaid flowchart)** for presentation:
+Here’s a clean **Markdown-based diagram** for your networking flow:
 
 ```mermaid
-flowchart LR
-    A[Client] --> B[Node (controlplane):30099]
-    B --> C[Service: tokoyo (NodePort)]
-    C --> D[Pod: tokoyo<br/>nodeName: controlplane<br/>containerPort: 80]
+sequenceDiagram
+    participant Client
+    participant Node as Node (controlplane):30099
+    participant Service as Service: tokoyo (NodePort)
+    participant Pod as Pod: tokoyo (nodeName: controlplane, containerPort: 80)
+
+    Client->>Node: Access via <b>NodePort 30099</b>
+    Node->>Service: Routes request through NodePort Service
+    Service->>Pod: Forwards traffic to containerPort <b>80</b>
 ```
 
-Would you like me to make it in a **network topology** style (like Kubernetes internal/external traffic view)?
+---
 
+### 🧠 Quick Explanation
 
+| Component               | Description                                                                                                 |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Client**              | Sends the request from outside the cluster using Node’s IP and NodePort `30099`.                            |
+| **Node (controlplane)** | The node that receives external traffic. NodePort `30099` is open here.                                     |
+| **Service (tokoyo)**    | Type `NodePort` service that maps `30099 → 80`.                                                             |
+| **Pod (tokoyo)**        | Runs the `nginx` container, listening on port `80`. It’s **manually scheduled** on the `controlplane` node. |
+
+Would you like me to add a **Kubernetes resource flow diagram** (Pod → Service → NodePort → Client) version too, for visual overview?
 
 Good work — you're practicing real-world debugging and operational tasks that frequently appear in the CKA exam and live clusters.

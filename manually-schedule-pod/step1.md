@@ -22,7 +22,7 @@ Then, expose this Pod using a **Service** of type  **`NodePort`** on port **`80`
 
 <details><summary>✅ Solution (expand to view)</summary>
 
-#### 🧩 **Step 1: Generate the Pod manifest (dry-run)**
+##### 🧩 **Step 1: Generate the Pod manifest (dry-run)**
 
 
 
@@ -32,7 +32,7 @@ kubectl run tokoyo --image=public.ecr.aws/nginx/nginx:stable-perl --port=80 -n j
 
 ---
 
-#### 🧾 **Step 2: Edit the YAML to schedule manually on `controlplane`**
+##### 🧾 **Step 2: Edit the YAML to schedule manually on `controlplane`**
 
 Open the file:
 
@@ -65,7 +65,7 @@ spec:
 
 ---
 
-#### ⚙️ **Step 3: Apply the Pod**
+##### ⚙️ **Step 3: Apply the Pod**
 
 ```bash
 kubectl apply -f tokoyo.yaml
@@ -86,7 +86,7 @@ tokoyo    1/1     Running   controlplane   80
 
 ---
 
-#### 🌐 **Step 4: Expose the Pod using a NodePort Service**
+##### 🌐 **Step 4: Expose the Pod using a NodePort Service**
 
 ```bash
 kubectl expose pod tokoyo -n japan --type=NodePort --port=80 --name=tokoyo --dry-run=client -o yaml > tokoyo-svc.yaml
@@ -112,7 +112,7 @@ spec:
 
 ---
 
-#### 🚀 **Step 5: Apply the Service**
+##### 🚀 **Step 5: Apply the Service**
 
 ```bash
 kubectl apply -f tokoyo-svc.yaml
@@ -133,7 +133,7 @@ tokoyo    NodePort   10.96.23.45    <none>        80:30099/TCP   5s
 
 ---
 
-#### ✅ **Final Verification**
+##### ✅ **Final Verification**
 
 Access the app from your browser or via `curl`:
 

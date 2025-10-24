@@ -23,15 +23,5 @@ Pod: tokoyo
    └── nodeName: controlplane
        containerPort: 80
 ```
-### 🧠 Quick Explanation
-
-| Component               | Description                                                                                                 |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Client**              | Sends the request from outside the cluster using Node’s IP and NodePort `30099`.                            |
-| **Node (controlplane)** | The node that receives external traffic. NodePort `30099` is open here.                                     |
-| **Service (tokoyo)**    | Type `NodePort` service that maps `30099 → 80`.                                                             |
-| **Pod (tokoyo)**        | Runs the `nginx` container, listening on port `80`. It’s **manually scheduled** on the `controlplane` node. |
-
-Would you like me to add a **Kubernetes resource flow diagram** (Pod → Service → NodePort → Client) version too, for visual overview?
 
 Good work — you're practicing real-world debugging and operational tasks that frequently appear in the CKA exam and live clusters.

@@ -38,15 +38,12 @@ spec:
         name: httpd
         ports:
         - containerPort: 80
-        resources:
-          requests:
-            cpu: 10m
-            memory: 16Mi
 EOF
 
 # Apply the deployment to show the problem (unbalanced distribution)
 kubectl apply -f /app/app.yaml
 
+kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-
 
 echo "✅ Setup complete! Check /app/app.yaml"
 echo "📊 Initial deployment applied - Pods may be unevenly distributed"

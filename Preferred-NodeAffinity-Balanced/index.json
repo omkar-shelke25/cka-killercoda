@@ -1,0 +1,23 @@
+{
+  "title": "CKAD: Preferred NodeAffinity for Balanced Scheduling",
+  "description": "Use preferredDuringSchedulingIgnoredDuringExecution to balance Pod distribution across nodes.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure Preferred NodeAffinity for balanced scheduling",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

@@ -1,0 +1,109 @@
+# 🧠 **CKAD: Preferred NodeAffinity for Balanced Scheduling**
+
+### 🏢 **Context**
+
+You are working 🧑‍💻 as a **Platform Engineer** managing GPU workloads.  
+Your team noticed that a critical Deployment is scheduling most of its **10 replicas** on a single node, causing resource imbalance.
+
+Both cluster nodes have GPU labels, but the scheduler needs guidance to **prefer** distributing Pods across both nodes.
+
+### ❓ **Question**
+
+A Deployment manifest is provided at:
+
+```
+/app/app.yaml
+```
+
+The Deployment currently schedules most of its Pods on a single node.
+
+Your cluster has two nodes:
+
+* `controlplane`
+* `node01`
+
+Both nodes contain GPU labels:
+
+```
+gpu.vendor=nvidia
+gpu.count=1
+```
+
+The Deployment runs **10 replicas**.
+
+---
+
+### **Your Tasks**
+
+1. Edit **only** the file `/app/app.yaml`.
+2. Add **NodeAffinity using `preferredDuringSchedulingIgnoredDuringExecution`** so that the scheduler *prefers* to place Pods on nodes that have **both** labels:
+   * `gpu.vendor = nvidia`
+   * `gpu.count = 1`
+3. Ensure the Deployment is eligible to run its Pods **equally across both nodes** (approximately 5 per node) based on preferred affinity.
+4. Do **not** change the number of replicas.
+5. Apply the updated Deployment manifest.
+
+---
+
+### Try it yourself first!
+
+<details><summary>✅ Solution (expand to view)</summary>
+
+Edit the file `/app/app.yaml` and add the `affinity` section under `spec.template.spec`:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: app-flask
+  name: app-flask
+  namespace: app
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: app-flask
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: app-flask
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: gpu.vendor
+                operator: In
+                values:
+                - nvidia
+              - key: gpu.count
+                operator: In
+                values:
+                - "1"
+      containers:
+      - image: public.ecr.aws/docker/library/httpd:alpine
+        name: httpd
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+```
+
+Then apply it:
+
+```bash
+kubectl apply -f /app/app.yaml
+```
+
+Wait a moment and verify the distribution:
+
+```bash
+kubectl get pods -n app -o wide
+```
+</details>

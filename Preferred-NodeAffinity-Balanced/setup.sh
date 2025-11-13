@@ -1,15 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-# Remove taint from controlplane to allow scheduling
-kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-
-
-# Create namespace
+# Create namespace first
 kubectl create ns app
 
 # Label both nodes with GPU labels
 kubectl label no controlplane gpu.vendor=nvidia gpu.count=1
 kubectl label no node01 gpu.vendor=nvidia gpu.count=1
+
+
 
 # Create the app directory
 mkdir -p /app
@@ -45,4 +44,11 @@ spec:
             memory: 16Mi
 EOF
 
+# Apply the deployment to show the problem (unbalanced distribution)
+kubectl apply -f /app/app.yaml
+
+# Remove taint from controlplane to allow scheduling
+kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-
+
 echo "✅ Setup complete! Check /app/app.yaml"
+echo "📊 Initial deployment applied - Pods may be unevenly distributed"

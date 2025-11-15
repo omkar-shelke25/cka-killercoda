@@ -50,6 +50,10 @@ The Deployment runs **10 replicas**.
 
 <details><summary>✅ Solution (expand to view)</summary>
 
+
+> `weight: 50` in preferred NodeAffinity only influences scoring and cannot ensure equal pod distribution—use topologySpreadConstraints with `maxSkew: 1` for guaranteed even spreading.
+
+
 Edit the file `/app/app.yaml` and add the `affinity` section under `spec.template.spec`:
 
 ```yaml

@@ -40,7 +40,7 @@ The Deployment runs **10 replicas**.
    * `gpu.vendor = nvidia`
    * `gpu.count = 1`
 3. Use a **weight of 50** for the preference.
-4. Ensure the Deployment is eligible to run its Pods **equally across both nodes** (approximately 5 per node) based on preferred affinity.
+4. Ensure the Deployment remains eligible to run its Pods across both nodes based on preferred affinity.
 5. Do **not** change the number of replicas.
 6. Apply the updated Deployment manifest.
 

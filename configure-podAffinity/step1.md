@@ -5,7 +5,7 @@
 ### 🏢 **Context**
 
 You are working 🧑‍💻 in your company's **application infrastructure team**.  
-A **`nara-frontend`** Deployment is already running in the **`nara`** namespace with 3 replicas on the **`controlplane`** node.
+A **`nara-frontend`** Deployment is already running in the **`nara`** namespace with `3` replicas on the **`controlplane`** node.
 
 Your backend team needs to ensure that backend Pods are **always scheduled on the same nodes** as frontend Pods for optimal performance and reduced latency.
 

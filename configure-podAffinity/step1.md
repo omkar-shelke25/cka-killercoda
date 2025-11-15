@@ -5,25 +5,25 @@
 ### 🏢 **Context**
 
 You are working 🧑‍💻 in your company's **application infrastructure team**.  
-A **nara-frontend** Deployment is already running in the **nara** namespace with 3 replicas on the **controlplane** node.
+A **`nara-frontend`** Deployment is already running in the **`nara`** namespace with 3 replicas on the **`controlplane`** node.
 
 Your backend team needs to ensure that backend Pods are **always scheduled on the same nodes** as frontend Pods for optimal performance and reduced latency.
 
 ### ❓ **Question**
 
-A Deployment named **nara-frontend** is already running in the **nara** namespace with 3 replicas.
+A Deployment named **`nara-frontend`** is already running in the **`nara`** namespace with `3` replicas.
 
 A backend Deployment manifest is stored at:
 ```
 /nara.io/nara-backend.yaml
 ```
 
-Update this file to add *required* PodAffinity so that all nara-backend Pods MUST be scheduled on the same node as nara-frontend Pods, using:
+Update this file to add *required* PodAffinity so that all `nara-backend` Pods MUST be scheduled on the same node as `nara-frontend` Pods, using:
 
 * `requiredDuringSchedulingIgnoredDuringExecution`
 * `topologyKey: nara.io/zone`
 
-After updating the manifest, **apply it** to create the backend Deployment.
+After updating the manifest, **`apply it`** to create the backend Deployment.
 
 ---
 

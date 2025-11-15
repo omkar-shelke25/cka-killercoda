@@ -39,7 +39,7 @@ The Deployment runs **10 replicas**.
 ### Try it yourself first!
 <details><summary>✅ Solution (expand to view)</summary>
 
-> `weight: 50` in preferred NodeAffinity only influences scoring and cannot ensure equal pod distribution—use topologySpreadConstraints with `maxSkew: 1` for guaranteed even spreading.
+
 
 Edit the file `/app/app.yaml` and add the `affinity` section under `spec.template.spec`:
 ```yaml
@@ -95,4 +95,6 @@ Check pod distribution across nodes:
 kubectl get pods -n app -o wide | grep -i node01 | wc -l
 kubectl get pods -n app -o wide | grep -i controlplane | wc -l
 ```
+> `weight: 50` in preferred NodeAffinity only influences scoring and cannot ensure equal pod distribution—use topologySpreadConstraints with `maxSkew: 1` for guaranteed even spreading.
+
 </details>

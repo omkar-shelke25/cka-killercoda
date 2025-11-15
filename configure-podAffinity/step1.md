@@ -27,24 +27,6 @@ After updating the manifest, **apply it** to create the backend Deployment.
 
 ---
 
-### 📋 **Requirements**
-
-- Edit `/nara.io/nara-backend.yaml`
-- Add PodAffinity under `spec.template.spec`
-- Use `requiredDuringSchedulingIgnoredDuringExecution`
-- Use topology key: `nara.io/zone`
-- Apply the updated manifest
-
----
-
-### 💡 **Hints**
-
-
-
-
-
----
-
 ### Try it yourself first!
 
 <details><summary>✅ Solution (expand to view)</summary>

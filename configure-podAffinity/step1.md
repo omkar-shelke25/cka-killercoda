@@ -36,8 +36,9 @@ After updating the manifest, **apply it** to create the backend Deployment.
 kubectl get nodes --show-labels
 ```
 
-Check which zones the nodes belong to:
+
 ```bash
+#🔍 Check which zones the nodes belong to:
 kubectl get nodes -L nara.io/zone
 ```
 

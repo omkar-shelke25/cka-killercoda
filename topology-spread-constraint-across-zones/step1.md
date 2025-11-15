@@ -1,26 +1,25 @@
 # 🧠 **CKA: TopologySpreadConstraints**
 
+📚 **Official Kubernetes Documentation**: [Kubernetes Documentation - Pod Topology Spread Constraints](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/)
+
 ### 🏢 **Context**
 
 You are working 🧑‍💻 on a **Japan Tourism Platform** that needs high availability across multiple deployment domains (zones).
 
 A Deployment manifest is already stored at:
-```
+```bash
 /japan-travel-application/japan-tourism.yaml
 ```
 
-The Deployment has **7 replicas** that need to be distributed evenly across nodes with different topology domains.
+The Deployment has **`7` replicas** that need to be distributed evenly across nodes with different topology domains.
 
 ### ❓ **Question**
 
-Edit the Deployment to add a **topologySpreadConstraints** section that satisfies the following requirements:
+Edit the Deployment to add a **`topologySpreadConstraints`** section that satisfies the following requirements:
 
 * **Minimum required number of domains** (zones) for balancing: **`2`** 
 * **Allowed difference between domains**: **`1`** 
-* Use the topology key:
-  ```
-  traveljp.io/deployment-domain
-  ```
+* Use the topology key: `traveljp.io/deployment-domain`
 * Ensure the constraint balances Pods across the available nodes only when at least two domains exist
 * The `labelSelector` must match the Pod labels: 
   - `app.kubernetes.io/component: frontend`

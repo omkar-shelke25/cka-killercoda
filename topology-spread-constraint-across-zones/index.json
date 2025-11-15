@@ -1,10 +1,10 @@
 {
-  "title": "CKA: TopologySpreadConstraints - Japan Tourism Platform",
+  "title": "CKA: Configure TopologySpreadConstraints for the Deployment",
   "description": "Configure topology spread constraints for balanced Pod distribution across deployment domains.",
   "details": {
     "steps": [
       {
-        "title": "Configure TopologySpreadConstraints for the Deployment",
+        "title": "TopologySpreadConstraints - Japan Tourism Platform",
         "text": "step1.md",
         "verify": "verify.sh"
       }

@@ -18,7 +18,7 @@ A backend Deployment manifest is stored at:
 /nara.io/nara-backend.yaml
 ```
 
-**Update this file to add *required* PodAffinity so that all nara-backend Pods MUST be scheduled on the same node as nara-frontend Pods**, using:
+Update this file to add *required* PodAffinity so that all nara-backend Pods MUST be scheduled on the same node as nara-frontend Pods, using:
 
 * `requiredDuringSchedulingIgnoredDuringExecution`
 * `topologyKey: nara.io/zone`
@@ -32,7 +32,6 @@ After updating the manifest, **apply it** to create the backend Deployment.
 - Edit `/nara.io/nara-backend.yaml`
 - Add PodAffinity under `spec.template.spec`
 - Use `requiredDuringSchedulingIgnoredDuringExecution`
-- Match Pods with label: `app: nara-frontend`
 - Use topology key: `nara.io/zone`
 - Apply the updated manifest
 
@@ -40,9 +39,18 @@ After updating the manifest, **apply it** to create the backend Deployment.
 
 ### 💡 **Hints**
 
-<details><summary>🔍 View current node labels</summary>
+
+
+
+
+---
+
+### Try it yourself first!
+
+<details><summary>✅ Solution (expand to view)</summary>
 
 ```bash
+#🔍 View current node labels
 kubectl get nodes --show-labels
 ```
 
@@ -51,23 +59,12 @@ Check which zones the nodes belong to:
 kubectl get nodes -L nara.io/zone
 ```
 
-</details>
-
-<details><summary>🔍 Check frontend Pod locations</summary>
-
 ```bash
+#🔍 Check frontend Pod locations
 kubectl get pods -n nara -l app=nara-frontend -o wide
 ```
 
 All frontend Pods should be on **controlplane** (zone-a).
-
-</details>
-
----
-
-### Try it yourself first!
-
-<details><summary>✅ Solution (expand to view)</summary>
 
 Edit the manifest:
 ```bash

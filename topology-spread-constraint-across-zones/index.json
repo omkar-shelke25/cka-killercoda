@@ -1,0 +1,31 @@
+{
+  "title": "CKA: TopologySpreadConstraints - Japan Tourism Platform",
+  "description": "Configure topology spread constraints for balanced Pod distribution across deployment domains.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure TopologySpreadConstraints for the Deployment",
+        "text": "step1.md"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        {
+          "file": "japan-tourism.yaml",
+          "target": "/japan-travel-application/",
+          "chmod": "+r"
+        }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

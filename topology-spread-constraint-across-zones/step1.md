@@ -15,8 +15,8 @@ The Deployment has **7 replicas** that need to be distributed evenly across node
 
 Edit the Deployment to add a **topologySpreadConstraints** section that satisfies the following requirements:
 
-* **Minimum required number of domains** (zones) for balancing: **2** (use `minDomains: 2`)
-* **Allowed difference between domains**: **1** (use `maxSkew: 1`)
+* **Minimum required number of domains** (zones) for balancing: **`2`** 
+* **Allowed difference between domains**: **`1`** 
 * Use the topology key:
   ```
   traveljp.io/deployment-domain

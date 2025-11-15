@@ -21,6 +21,7 @@ Kubernetes offers two types of NodeAffinity:
    - If no matching nodes exist, Pod can still be scheduled elsewhere
    - Uses **weights** (1-100) to influence scheduler decisions
 
+> `weight: 50` in preferred NodeAffinity only influences scoring and cannot ensure equal pod distribution—use topologySpreadConstraints with `maxSkew: 1` for guaranteed even spreading.
 
 ---
 

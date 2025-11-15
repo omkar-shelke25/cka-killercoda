@@ -89,4 +89,10 @@ Wait a moment and verify the distribution:
 ```bash
 kubectl get pods -n app -o wide
 ```
+
+Check pod distribution across nodes:
+```bash
+kubectl get pods -n app -o wide | grep -i node01 | wc -l
+kubectl get pods -n app -o wide | grep -i controlplane | wc -l
+```
 </details>

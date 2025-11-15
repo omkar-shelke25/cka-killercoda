@@ -94,10 +94,6 @@ spec:
         name: httpd
         ports:
         - containerPort: 80
-        resources:
-          requests:
-            cpu: 10m
-            memory: 16Mi
 ```
 
 Then apply it:

@@ -39,9 +39,10 @@ The Deployment runs **10 replicas**.
 2. Add **NodeAffinity using `preferredDuringSchedulingIgnoredDuringExecution`** so that the scheduler *prefers* to place Pods on nodes that have **both** labels:
    * `gpu.vendor = nvidia`
    * `gpu.count = 1`
-3. Ensure the Deployment is eligible to run its Pods **equally across both nodes** (approximately 5 per node) based on preferred affinity.
-4. Do **not** change the number of replicas.
-5. Apply the updated Deployment manifest.
+3. Use a **weight of 50** for the preference.
+4. Ensure the Deployment is eligible to run its Pods **equally across both nodes** (approximately 5 per node) based on preferred affinity.
+5. Do **not** change the number of replicas.
+6. Apply the updated Deployment manifest.
 
 ---
 

@@ -5,7 +5,8 @@
     "steps": [
       {
         "title": "Configure TopologySpreadConstraints for the Deployment",
-        "text": "step1.md"
+        "text": "step1.md",
+        "verify": "verify.sh"
       }
     ],
     "intro": {
@@ -14,15 +15,6 @@
     },
     "finish": {
       "text": "finish.md"
-    },
-    "assets": {
-      "host01": [
-        {
-          "file": "japan-tourism.yaml",
-          "target": "/japan-travel-application/",
-          "chmod": "+r"
-        }
-      ]
     }
   },
   "backend": {

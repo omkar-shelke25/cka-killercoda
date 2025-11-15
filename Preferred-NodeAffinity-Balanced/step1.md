@@ -1,40 +1,31 @@
 # 🧠 **CKAD: Preferred NodeAffinity for Balanced Scheduling**
 
-### 🏢 **Context**
+📚 **Official Kubernetes Documentation**: [Assigning Pods to Nodes - Node Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity)
 
+### 🏢 **Context**
 You are working 🧑‍💻 as a **Platform Engineer** managing GPU workloads.  
 Your team noticed that a critical Deployment is scheduling most of its **10 replicas** on a single node, causing resource imbalance.
-
 Both cluster nodes have GPU labels, but the scheduler needs guidance to **prefer** distributing Pods across both nodes.
 
 ### ❓ **Question**
-
 A Deployment manifest is provided at:
-
 ```
 /app/app.yaml
 ```
-
 The Deployment currently schedules most of its Pods on a single node.
-
 Your cluster has two nodes:
-
 * `controlplane`
 * `node01`
 
 Both nodes contain GPU labels:
-
 ```
 gpu.vendor=nvidia
 gpu.count=1
 ```
-
 The Deployment runs **10 replicas**.
 
 ---
-
 ### **Your Tasks**
-
 1. Edit **only** the file `/app/app.yaml`.
 2. Add **NodeAffinity using `preferredDuringSchedulingIgnoredDuringExecution`** so that the scheduler *prefers* to place Pods on nodes that have **both** labels:
    * `gpu.vendor = nvidia`
@@ -45,17 +36,12 @@ The Deployment runs **10 replicas**.
 6. Apply the updated Deployment manifest.
 
 ---
-
 ### Try it yourself first!
-
 <details><summary>✅ Solution (expand to view)</summary>
-
 
 > `weight: 50` in preferred NodeAffinity only influences scoring and cannot ensure equal pod distribution—use topologySpreadConstraints with `maxSkew: 1` for guaranteed even spreading.
 
-
 Edit the file `/app/app.yaml` and add the `affinity` section under `spec.template.spec`:
-
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -95,15 +81,11 @@ spec:
         ports:
         - containerPort: 80
 ```
-
 Then apply it:
-
 ```bash
 kubectl apply -f /app/app.yaml
 ```
-
 Wait a moment and verify the distribution:
-
 ```bash
 kubectl get pods -n app -o wide
 ```

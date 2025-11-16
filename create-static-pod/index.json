@@ -1,1 +1,23 @@
-
+{
+  "title": "CKA: Create Static Pod on Control Plane",
+  "description": "Create and configure a static pod with specific labels and commands on the control plane node.",
+  "details": {
+    "steps": [
+      {
+        "title": "Create MCP Grafana Static Pod",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

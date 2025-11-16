@@ -21,6 +21,7 @@ You must create a static pod named `mcp-grafana` in the namespace `mcp-tool`. Th
 - Image: `mcp/grafana:latest`
 - Command: `["sh", "-c"]`
 - Args: `["while true; do sleep 3600; done"]`
+- Make sure the YAML file name is `mcp-grafana.yaml`
 
 **Pod Labels:**
 ```yaml

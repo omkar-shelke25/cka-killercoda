@@ -31,51 +31,10 @@ The team requirement is that `mcp-postman` **must run only on `node01`**.
    * The toleration correctly matches the taint key, value, and effect
    * The Pod schedules correctly on `node01`
 
-4. **Apply the fix** and verify that at least one Pod from the `mcp-postman` Deployment reaches the `Running` state on `node01`.
+4. **Apply the fix** and verify that all Pod from the `mcp-postman` Deployment reaches the `Running` state on `node01`.
 
 ---
 
-### 💡 **Hints**
-
-<details><summary>🔍 Click for investigation commands</summary>
-
-Check the Pod status:
-```bash
-kubectl get pods -n mcp-inference
-```
-
-Describe a pending pod to see events:
-```bash
-kubectl describe pod -n mcp-inference -l ai.model/name=mcp
-```
-
-Check node taints:
-```bash
-kubectl describe node node01 | grep -A 5 Taints
-```
-
-Check namespace events:
-```bash
-kubectl get events -n mcp-inference --sort-by='.lastTimestamp'
-```
-
-</details>
-
-<details><summary>🎯 Click for conceptual hint</summary>
-
-When a node has a **taint**, Pods must have a matching **toleration** to be scheduled on that node. 
-
-Since the Deployment YAML currently has **no tolerations section**, you need to add one under `spec.template.spec`.
-
-The toleration must match:
-- The taint **key** (check the exact key on node01)
-- The taint **value** 
-- The taint **effect** (NoSchedule, PreferNoSchedule, or NoExecute)
-- The correct **operator** (Equal or Exists)
-
-</details>
-
----
 
 ### Try it yourself first!
 
@@ -196,25 +155,3 @@ Should show: `4`
 </details>
 
 ---
-
-### 🧪 **Understanding the Fix**
-
-The issue was that the Deployment was **missing the tolerations section entirely**:
-
-| Component | Configuration |
-|-----------|---------------|
-| **Node Taint** | `node-role.kubernetes.io/mcp=true:NoSchedule` |
-| **Original Deployment** | ❌ No tolerations section |
-| **Fixed Deployment** | ✅ Added tolerations with matching key, value, and effect |
-
-**Why the Pod was Pending:**
-- node01 has a taint that repels Pods without matching tolerations
-- controlplane doesn't match the nodeAffinity requirement (no `node-role.kubernetes.io/mcp` label)
-- Result: No node can accept the Pod
-
-**After adding tolerations:**
-- The Pod can now tolerate the taint on node01
-- The nodeAffinity ensures it only schedules on node01
-- Result: All Pods schedule successfully on node01
-
-For a Pod to schedule on a tainted node, it must have a toleration that **exactly matches** the taint's key, effect, and value (when using operator: Equal).

@@ -47,7 +47,7 @@ spec:
                 operator: Exists
       containers:
         - name: mcp-postman
-          image: nginx:alpine
+          image: mcp/postman
           command: ["sh", "-c", "while true; do sleep 3600; done"]
 EOF
 

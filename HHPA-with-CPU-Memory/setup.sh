@@ -3,6 +3,10 @@ set -euo pipefail
 
 echo "🔧 Setting up IoT Sensor API environment..."
 
+kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-
+
+sleep 5
+
 # Create namespace
 kubectl create ns iot-sys
 

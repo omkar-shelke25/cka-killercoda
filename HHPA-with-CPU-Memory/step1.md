@@ -6,7 +6,7 @@
 
 You are working 🧑‍💻 on an **IoT Sensor API Platform** that experiences variable traffic patterns throughout the day. The platform needs to scale automatically based on resource utilization to maintain performance while optimizing costs.
 
-A Deployment named **`sensor-api`** is already running in the **`iot-sys`** namespace with **`15` replicas**. The metrics-server has been installed and configured for you.
+A Deployment named **`sensor-api`** is already running in the **`iot-sys`** namespace with **`12` replicas**. The metrics-server has been installed and configured for you.
 
 ### ❓ **Question**
 
@@ -16,7 +16,7 @@ You must configure autoscaling for this Deployment by creating an HPA called **`
 
 The HPA should use **both CPU and memory utilization**, with each metric targeting **`80%` utilization**. 
 
-Reduce the Deployment replicas from `15 to 2` because `15` pods are running unnecessarily without traffic, and add `stabilizationWindowSeconds: 5` in the HPA so it waits at least `5 seconds` before scaling down.
+Reduce the Deployment replicas from `12 to 2` because `12` pods are running unnecessarily without traffic, and add `stabilizationWindowSeconds: 5` in the HPA so it waits at least `5 seconds` before scaling down.
 
 ---
 

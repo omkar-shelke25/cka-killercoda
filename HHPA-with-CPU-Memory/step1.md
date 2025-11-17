@@ -87,7 +87,7 @@ You can also check the current metrics:
 kubectl top pods -n iot-sys
 ```
 
-Expected result: The HPA should be created and will scale the deployment down from 15 to 2 replicas since there's minimal load on the pods.
+Expected result: The HPA should be created and will scale the deployment down from 12 to 2 replicas since there's minimal load on the pods.
 
 </details>
 

@@ -1,8 +1,6 @@
-# 🧠 **CKA: HorizontalPodAutoscaler (HPA)**
+# 🧠 Configure HorizontalPodAutoscaler (HPA) for ISRO-JAXA Deployment
 
 📚 **Official Kubernetes Documentation**: [Kubernetes Documentation - Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
-
-### 🛰️ CKA 
 
 The ISRO–JAXA Lunar Communication Service is running a Deployment named `isro-jaxa-collab-deployment` inside the `isro-jaxa` namespace.This service is receiving continuous telemetry traffic from the lunar rover `lunar-robot-01`, causing fluctuating load on the application.
 

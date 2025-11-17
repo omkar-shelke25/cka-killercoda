@@ -15,11 +15,11 @@ The ISRO–JAXA Lunar Communication Service is running a Deployment named `isro-
    * 📊 The HPA status
    * 🧩 The Deployment's replica count after the HPA is created
 
-3. 🧮 Operations requires a quick resource audit: Using top, calculate the total (sum) CPU and memory usage of all Pods in the `isro-jaxa` namespace and save the result to:
+3. 🧮 Operations requires a quick resource audit: Using `top` command, calculate the total (sum) CPU and memory usage of all Pods in the `isro-jaxa` namespace and save the result to:
    `/isro-jaxa/space-details.txt`
 
 
-**Note:** Wait 30-60 seconds after creating the HPA to allow metrics-server to collect data before performing the audit.
+**Note:** Wait 15-30 seconds after creating the HPA to allow metrics-server to collect data before performing the audit.
 
 ---
 

@@ -46,28 +46,6 @@ Example:
 desiredReplicas = ceil[2 * (80 / 50)] = ceil[3.2] = 4 Pods
 ```
 
-### 🔄 Scaling Behavior
-
-```
-High Load Scenario:
--------------------
-Time 0:00 → 1 Pod @ 90% CPU
-Time 0:15 → HPA detects high CPU
-Time 3:00 → Scale to 2 Pods (cooldown)
-Time 3:15 → Both @ 60% CPU
-Time 6:00 → Scale to 3 Pods
-Time 6:15 → All @ 45% CPU ✅ (within target)
-
-Low Load Scenario:
-------------------
-Time 0:00 → 3 Pods @ 30% CPU
-Time 0:15 → HPA detects low CPU
-Time 5:00 → Scale to 2 Pods (cooldown)
-Time 5:15 → Both @ 40% CPU
-Time 10:00 → Scale to 1 Pod
-Time 10:15 → 1 Pod @ 50% CPU ✅ (at target)
-```
-
 ## 💡 Real-World Use Cases
 
 - **Web applications**: Scale based on traffic patterns (more users → more Pods)
@@ -130,5 +108,6 @@ You've successfully mastered:
 - ✅ Monitoring resource usage with `kubectl top`
 - ✅ Performing resource auditing
 
-Keep sharpening your skills — your **CKA success** is on the horizon! 🌅  
+Keep sharpening your skills — your **CKA success** is on the horizon! 🌅  \
+
 **Outstanding performance, Kubernetes Engineer! 💪🐳**

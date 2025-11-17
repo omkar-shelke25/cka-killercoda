@@ -7,19 +7,17 @@ The ISRO–JAXA Lunar Communication Service is running a Deployment named `isro-
 ### 🛠️ Your tasks:
 
 1. To ensure the application `isro-jaxa-collab-deployment` can automatically scale based on CPU load, create an HPA for the Deployment with:
-   * 🎯 Target CPU utilization: 50%
-   * 🔽 Minimum replicas: 1
-   * 🔼 Maximum replicas: 5
+   * 🎯 Target CPU utilization: `50%`
+   * 🔽 Minimum replicas: `1`
+   * 🔼 Maximum replicas: `5`
 
 2. 🔍 Verify:
    * 📊 The HPA status
    * 🧩 The Deployment's replica count after the HPA is created
 
 3. 🧮 Operations requires a quick resource audit: Using top, calculate the total (sum) CPU and memory usage of all Pods in the `isro-jaxa` namespace and save the result to:
+   `/isro-jaxa/space-details.txt`
 
-   ```bash
-   /isro-jaxa/space-details.txt
-   ```
 
 **Note:** Wait 30-60 seconds after creating the HPA to allow metrics-server to collect data before performing the audit.
 

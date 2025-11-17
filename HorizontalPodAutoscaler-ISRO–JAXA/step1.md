@@ -1,4 +1,4 @@
-# 🧠 Configure HorizontalPodAutoscaler (HPA) for ISRO-JAXA Deployment
+## 🧠 Configure HorizontalPodAutoscaler (HPA) for ISRO-JAXA Deployment
 
 📚 **Official Kubernetes Documentation**: [Kubernetes Documentation - Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
 

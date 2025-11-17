@@ -31,7 +31,7 @@ metadata:
   annotations:
     purpose: "production-deployment"
 spec:
-  replicas: 15
+  replicas: 12
   selector:
     matchLabels:
       app: sensor-api

@@ -16,7 +16,7 @@ You must configure autoscaling for this Deployment by creating an HPA called **`
 
 The HPA should use **both CPU and memory utilization**, with each metric targeting **`80%` utilization**. 
 
-Reduce the Deployment replicas from 15 to 2 because 15 pods are running unnecessarily without traffic, and add stabilizationWindowSeconds: 5 in the HPA so it waits at least 5 seconds before scaling down.
+Reduce the Deployment replicas from `15 to 2` because `15` pods are running unnecessarily without traffic, and add `stabilizationWindowSeconds: 5` in the HPA so it waits at least `5 seconds` before scaling down.
 
 ---
 

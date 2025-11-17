@@ -6,7 +6,7 @@ The ISRO–JAXA Lunar Communication Service is running a Deployment named `isro-
 
 ### 🛠️ Your tasks:
 
-1. To ensure the application `isro-jaxa-collab-deployment` can automatically scale based on CPU load, create an HPA for the Deployment with:
+1. To ensure the application **`isro-jaxa-collab-deployment`** can automatically scale based on CPU load, create an HPA named **`isro-jaxa-collab-deployment`** for the same Deployment with:
    * 🎯 Target CPU utilization: `50%`
    * 🔽 Minimum replicas: `1`
    * 🔼 Maximum replicas: `5`

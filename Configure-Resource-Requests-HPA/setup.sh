@@ -99,8 +99,10 @@ spec:
           averageValue: 512Mi
 EOF
 
-kubectl apply -f /Jujutsu Kaisen/jujutsu-kaisen-deployment.yaml -n jujutsu-high
+sleep 2
 
-sleep 5
+kubectl apply -f /Jujutsu Kaisen/jujutsu-kaisen-deployment.yaml
+
+sleep 3
 
 echo "Setup complete!"

@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Configure Resource Requests and Limits for Deployment using HPA",
+  "description": "Fix a Deployment's resource configuration to enable HPA utilization metrics.",
+  "details": {
+    "steps": [
+      {
+        "title": "Resource Configuration - Jujutsu Kaisen Deployment",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

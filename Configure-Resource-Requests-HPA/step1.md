@@ -1,6 +1,7 @@
 # 🧠 **CKA: Configure Resource Requests and Limits for Deployment using HPA**
 
 📚 **Official Kubernetes Documentation**: [Kubernetes Documentation - Managing Resources for Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)
+📚 **Official Kubernetes Documentation**: [Kubernetes Documentation - Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
 
 ### 🏢 **Context**
 

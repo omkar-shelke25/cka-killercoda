@@ -23,7 +23,7 @@ sleep 5
 kubectl create ns jujutsu-high >/dev/null 2>&1 || true
 
 # Create directory (handle space in name)
-DEP_DIR="/Jujutsu Kaisen"
+DEP_DIR="/Jujutsu-Kaisen"
 DEP_FILE="${DEP_DIR}/jujutsu-kaisen-deployment.yaml"
 
 mkdir -p "$DEP_DIR"

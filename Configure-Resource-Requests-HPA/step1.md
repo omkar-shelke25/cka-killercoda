@@ -4,14 +4,15 @@
 
 ### 🏢 **Context**
 
-You are working on a production deployment for the Jujutsu High platform. A Deployment named **tokyo-jutsu** in the **jujutsu-high** namespace is running without any CPU or memory resource settings. 
+You are working on a production deployment for the `Jujutsu High platform`. A Deployment named **`tokyo-jutsu`** in the **`jujutsu-high`** namespace is running without any CPU or memory resource settings. 
 
-An HPA named **gojo-hpa** targets this Deployment and defines absolute CPU and memory values in millicores (m) and Mebibytes (Mi) instead of percentage-based metrics. 
+An HPA named **`gojo-hpa`** targets this Deployment and defines absolute CPU and memory values in millicores (m) and Mebibytes (Mi) instead of percentage-based metrics. 
 
 Because the Deployment has no resource requests, the HPA cannot calculate utilization and remains in an Unknown state, preventing it from scaling the Pods appropriately.
 
 The Deployment manifest is already stored at:
-```bash
+
+```vbnet
 /Jujutsu Kaisen/jujutsu-kaisen-deployment.yaml
 ```
 
@@ -19,7 +20,7 @@ The Deployment manifest is already stored at:
 
 Edit the Deployment manifest to configure proper resource requests and limits for the container so that the HPA can calculate utilization metrics correctly. 
 
-The HPA is configured to monitor CPU at 512m and memory at 512Mi as average values. 
+The HPA is configured to monitor CPU at `512m` and memory at `512Mi` as average values. 
 
 You must set the resource limits to match these values exactly, and set the resource requests to exactly half of those limits. 
 

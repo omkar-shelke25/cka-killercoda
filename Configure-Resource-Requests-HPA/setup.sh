@@ -2,7 +2,17 @@
 set -euo pipefail
 
 
+# Install metrics-server
+echo "📊 Installing metrics-server..."
+helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ 2>/dev/null || true
+helm repo update
 
+helm install metrics-server metrics-server/metrics-server \
+  --namespace kube-system \
+  --set args="{--kubelet-insecure-tls,--kubelet-preferred-address-types=InternalIP\,Hostname\,InternalDNS\,ExternalDNS,--metric-resolution=15s}" \
+  --wait
+
+sleep 5
 
 
 # Create namespace

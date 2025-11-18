@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+
+
+
+
 # Create namespace
 kubectl create ns jujutsu-high
 
@@ -84,6 +88,8 @@ spec:
           type: AverageValue
           averageValue: 512Mi
 EOF
+
+kubectl apply -f /Jujutsu Kaisen/jujutsu-kaisen-deployment.yaml -n jujutsu-high
 
 sleep 5
 

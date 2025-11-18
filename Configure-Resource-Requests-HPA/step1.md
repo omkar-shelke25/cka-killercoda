@@ -15,7 +15,7 @@ Because the Deployment has no resource requests, the HPA cannot calculate utiliz
 The Deployment manifest is already stored at:
 
 ```vbnet
-/Jujutsu Kaisen/jujutsu-kaisen-deployment.yaml
+/Jujutsu-Kaisen/jujutsu-kaisen-deployment.yaml
 ```
 
 ### ❓ **Question**

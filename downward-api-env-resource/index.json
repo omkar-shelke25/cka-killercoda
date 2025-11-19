@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Configure Downward API for Resource Monitoring",
+  "description": "Configure Downward API environment variables to expose container resource specifications to a sidecar monitoring container.",
+  "details": {
+    "steps": [
+      {
+        "title": "Downward API - Resource Monitoring Configuration",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

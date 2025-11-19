@@ -26,41 +26,6 @@ You must add the `env:` section to the `monitor-agent` container with the four r
 
 After updating the manifest file, apply the changes to update the Pod. Once complete, verify that the monitor-agent logs now display the correct resource values instead of empty strings.
 
-## Commands to Help You
-
-Inspect the monitoring script to understand what environment variables are needed:
-```bash
-kubectl exec -n react-frontend react-frontend-monitor -c monitor-agent -- cat /opt/monitor/monitor.sh
-```
-
-View the current pod configuration:
-```bash
-kubectl get pod react-frontend-monitor -n react-frontend -o yaml
-```
-
-Check the sidecar logs after making changes:
-```bash
-kubectl logs -n react-frontend react-frontend-monitor -c monitor-agent
-```
-
-## Expected Outcome
-
-After correctly configuring the Downward API environment variables and applying the updated manifest, the monitor-agent logs should display output similar to:
-
-```
-========================================
- 🚀 React Frontend Resource Monitor
-========================================
- ⚙️  CPU Request  : 100m
- ⚙️  CPU Limit    : 500m
- 🧠 Mem Request: 128Mi
- 🧠 Mem Limit  : 256Mi
-----------------------------------------
-2025-01-15T10:30:45+00:00  ⚙️ CPU_REQ=100m | CPU_LIM=500m | 🧩 MEM_REQ=128Mi | MEM_LIM=256Mi
-```
-
----
-
 ### Try it yourself first!
 
 <details><summary>✅ Solution (expand to view)</summary>

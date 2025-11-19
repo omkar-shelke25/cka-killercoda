@@ -20,10 +20,10 @@ data:
     echo "========================================"
     echo " 🚀 React Frontend Resource Monitor"
     echo "========================================"
-    echo " ⚙️  CPU Request  : \${APP_CPU_REQUEST}m"
-    echo " ⚙️  CPU Limit    : \${APP_CPU_LIMIT}m"
-    echo " 🧠 Mem Request: \${APP_MEM_REQUEST}Mi"
-    echo " 🧠 Mem Limit  : \${APP_MEM_LIMIT}Mi"
+    echo " ⚙️  CPU Request  : ${APP_CPU_REQUEST}m"
+    echo " ⚙️  CPU Limit    : ${APP_CPU_LIMIT}m"
+    echo " 🧠 Mem Request: ${APP_MEM_REQUEST}Mi"
+    echo " 🧠 Mem Limit  : ${APP_MEM_LIMIT}Mi"
     echo "----------------------------------------"
     while true; do
       TS=\$(date -Is)

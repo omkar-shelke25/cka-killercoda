@@ -26,8 +26,8 @@ data:
     echo " 🧠 Mem Limit  : ${APP_MEM_LIMIT}Mi"
     echo "----------------------------------------"
     while true; do
-      TS=\$(date -Is)
-      echo "\$TS  ⚙️ CPU_REQ=\${APP_CPU_REQUEST}m | CPU_LIM=\${APP_CPU_LIMIT}m | 🧩 MEM_REQ=\${APP_MEM_REQUEST}Mi | MEM_LIM=\${APP_MEM_LIMIT}Mi"
+      TS=`date -Is`
+      echo "$TS  ⚙️ CPU_REQ=${APP_CPU_REQUEST}m | CPU_LIM=${APP_CPU_LIMIT}m | 🧩 MEM_REQ=${APP_MEM_REQUEST}Mi | MEM_LIM=${APP_MEM_LIMIT}Mi"
       sleep 15
     done
 EOF

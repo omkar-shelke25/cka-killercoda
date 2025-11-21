@@ -124,24 +124,3 @@ cat /gitlab-cicd/pod-details.yaml | jq '.items[].metadata.name'
 
 </details>
 
----
-
-### 💡 **Hints**
-
-<details><summary>Hint 1: Creating RBAC resources</summary>
-
-Use `kubectl create clusterrole` and `kubectl create clusterrolebinding` commands with appropriate flags for verbs, resources, and service account references.
-
-</details>
-
-<details><summary>Hint 2: Token generation</summary>
-
-The `kubectl create token` command allows you to specify duration using the `--duration` flag. The format is like `2h`, `30m`, etc.
-
-</details>
-
-<details><summary>Hint 3: API authentication</summary>
-
-You'll need three things for the API request: the CA certificate, the bearer token, and the correct API endpoint. Extract the CA cert from your kubeconfig.
-
-</details>

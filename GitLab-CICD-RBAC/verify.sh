@@ -5,7 +5,7 @@ NS="gitlab-cicd"
 SA="gitlab-cicd-sa"
 CLUSTERROLE="gitlab-cicd-role"
 CLUSTERROLEBINDING="gitlab-cicd-rb"
-POD_DETAILS_FILE="/gitlab-cicd/pod-details.yaml"
+POD_DETAILS_FILE="/gitlab-cicd/pod-details.json"
 
 echo "🔍 Verifying RBAC and ServiceAccount Token configuration..."
 

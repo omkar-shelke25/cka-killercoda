@@ -13,7 +13,11 @@ Your task is to set up proper RBAC permissions and generate a secure token for A
 
 ### ❓ **Question**
 
-You need to configure RBAC and generate an API access token for the GitLab CI/CD integration. Create a ClusterRole named `gitlab-cicd-role` that grants the verbs `get`, `list`, `watch`, `create`, `patch`, `delete` on the resources `pods`, `deployments`, and `jobs`. Bind this role to the existing ServiceAccount `gitlab-cicd-sa` in the `gitlab-cicd` namespace using a ClusterRoleBinding named `gitlab-cicd-rb`.
+You need to configure RBAC and generate an API access token for the GitLab CI/CD integration. 
+
+Create a ClusterRole named `gitlab-cicd-role` that grants the verbs `get`, `list`, `watch`, `create`, `patch`, `delete` on the resources `pods`, `deployments`, and `jobs`. 
+
+Bind this role to the existing ServiceAccount `gitlab-cicd-sa` in the `gitlab-cicd` namespace using a ClusterRoleBinding named `gitlab-cicd-rb`.
 
 Next, create a 2-hour valid token for the ServiceAccount. Using this token, perform an HTTPS API request to list the pods in the `gitlab-cicd` namespace and store the resulting output in the file `/gitlab-cicd/pod-details.yaml`.
 

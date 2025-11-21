@@ -22,11 +22,7 @@ Create a ClusterRole named `gitlab-cicd-role` that grants the verbs `get`, `list
 
 Bind this role to the existing ServiceAccount `gitlab-cicd-sa` in the `gitlab-cicd` namespace using a ClusterRoleBinding named `gitlab-cicd-rb`.
 
-Next, create a 2-hour valid token for the ServiceAccount. 
-
-Paste the token you generated and view its details on [JWT](https://jwt.io/).
-
-Using this token perform an HTTPS API request to list the pods in the `gitlab-cicd` namespace and store the resulting output in the file `/gitlab-cicd/pod-details.json`.
+Next, create a 2-hour valid token for the ServiceAccount.Using this token perform an HTTPS API request to list the pods in the `gitlab-cicd` namespace and store the resulting output in the file `/gitlab-cicd/pod-details.json`.
 
 The API request should be made using the following format:
 ```bash
@@ -34,6 +30,8 @@ curl --cacert ca.crt -H "Authorization: Bearer $TOKEN" https://172.16.0.2:6443/a
 ```
 
 Do not delete or modify any existing cluster resources other than what is required for the task.
+
+> Paste the token you generated and view its details on [JWT](https://jwt.io/).
 
 ---
 

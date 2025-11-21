@@ -31,7 +31,7 @@ curl --cacert ca.crt -H "Authorization: Bearer $TOKEN" https://172.16.0.2:6443/a
 
 Do not delete or modify any existing cluster resources other than what is required for the task.
 
-> Paste the token you generated and view its details on [JWT](https://jwt.io/).
+> **Paste the token you generated and view its details on [JWT](https://jwt.io/).**
 
 ---
 

@@ -7,7 +7,9 @@
 
 ### 🏢 **Context**
 
-You are working 🧑‍💻 on integrating GitLab CI/CD with your Kubernetes cluster. The CI/CD pipeline needs programmatic access to manage pods, deployments, and jobs across the cluster. A ServiceAccount named `gitlab-cicd-sa` has already been created in the `gitlab-cicd` namespace, and a test pod named `gitlab-cicd-nginx` is running to verify your configuration.
+You are working 🧑‍💻 on integrating GitLab CI/CD with your Kubernetes cluster. 
+
+The CI/CD pipeline needs programmatic access to manage pods, deployments, and jobs across the cluster. A ServiceAccount named `gitlab-cicd-sa` has already been created in the `gitlab-cicd` namespace, and a test pod named `gitlab-cicd-nginx` is running to verify your configuration.
 
 Your task is to set up proper RBAC permissions and generate a secure token for API authentication.
 

@@ -4,6 +4,7 @@
 - [Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)
 - [Managing Service Accounts](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/)
 - [Kubernetes API Access](https://kubernetes.io/docs/tasks/administer-cluster/access-cluster-api/)
+- [JSON Web Tokens (JWT)](https://jwt.io/)
 
 ### 🏢 **Context**
 
@@ -21,7 +22,11 @@ Create a ClusterRole named `gitlab-cicd-role` that grants the verbs `get`, `list
 
 Bind this role to the existing ServiceAccount `gitlab-cicd-sa` in the `gitlab-cicd` namespace using a ClusterRoleBinding named `gitlab-cicd-rb`.
 
-Next, create a 2-hour valid token for the ServiceAccount. Using this token, perform an HTTPS API request to list the pods in the `gitlab-cicd` namespace and store the resulting output in the file `/gitlab-cicd/pod-details.yaml`.
+Next, create a 2-hour valid token for the ServiceAccount. 
+
+Paste the token you generated and view its details on [JWT](https://jwt.io/).
+
+Using this token perform an HTTPS API request to list the pods in the `gitlab-cicd` namespace and store the resulting output in the file `/gitlab-cicd/pod-details.json`.
 
 The API request should be made using the following format:
 ```bash
@@ -104,7 +109,7 @@ Note: The API server should be at `https://172.16.0.2:6443` based on the questio
 curl --cacert /tmp/ca.crt \
   -H "Authorization: Bearer $TOKEN" \
   https://172.16.0.2:6443/api/v1/namespaces/gitlab-cicd/pods/ \
-  -o /gitlab-cicd/pod-details.yaml
+  -o /gitlab-cicd/pod-details.json
 ```
 
 **Step 7: Verify the output**

@@ -1,0 +1,23 @@
+{
+  "title": "CKA: RBAC and ServiceAccount Token Management for GitLab CI/CD",
+  "description": "Configure RBAC with ClusterRole, ClusterRoleBinding, and ServiceAccount token for API access in a GitLab CI/CD integration scenario.",
+  "details": {
+    "steps": [
+      {
+        "title": "RBAC Configuration - GitLab CI/CD Integration",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

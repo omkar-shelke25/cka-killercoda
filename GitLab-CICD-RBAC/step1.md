@@ -25,8 +25,9 @@ Bind this role to the existing ServiceAccount `gitlab-cicd-sa` in the `gitlab-ci
 Next, create a 2-hour valid token for the ServiceAccount.Using this token perform an HTTPS API request to list the pods in the `gitlab-cicd` namespace and store the resulting output in the file `/gitlab-cicd/pod-details.json`.
 
 The API request should be made using the following format:
+
 ```bash
-curl --cacert ca.crt -H "Authorization: Bearer $TOKEN" https://172.16.0.2:6443/api/v1/namespaces/gitlab-cicd/pods/
+curl --cacert ca.cert -H "Authorization: Bearer $TOKEN"  https://172.30.1.2:6443/api/v1/namespaces/gitlab-cicd/pods/ > /gitlab-cicd/pod-details.json
 ```
 
 Do not delete or modify any existing cluster resources other than what is required for the task.
@@ -72,24 +73,24 @@ kubectl describe clusterrolebinding gitlab-cicd-rb
 ```bash
 kubectl create token gitlab-cicd-sa \
   --namespace=gitlab-cicd \
-  --duration=2h > /tmp/token.txt
+  --duration=2h > token.txt
 ```
 
 Store the token in a variable:
 ```bash
-TOKEN=$(cat /tmp/token.txt)
+TOKEN=$(cat token.txt)
 echo $TOKEN
 ```
 
 **Step 4: Extract the CA certificate**
 
 ```bash
-kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d > /tmp/ca.crt
+kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d > ca.crt
 ```
 
 Verify the certificate:
 ```bash
-ls -lh /tmp/ca.crt
+ls -lh ca.crt
 ```
 
 **Step 5: Get the API server address**
@@ -99,21 +100,18 @@ APISERVER=$(kubectl config view --raw -o jsonpath='{.clusters[0].cluster.server}
 echo $APISERVER
 ```
 
-Note: The API server should be at `https://172.16.0.2:6443` based on the question.
+Note: The API server should be at `https://172.30.1.2:6443` based on the question.
 
 **Step 6: Make the API request and store the output**
 
 ```bash
-curl --cacert /tmp/ca.crt \
-  -H "Authorization: Bearer $TOKEN" \
-  https://172.16.0.2:6443/api/v1/namespaces/gitlab-cicd/pods/ \
-  -o /gitlab-cicd/pod-details.json
+curl --cacert ca.cert -H "Authorization: Bearer $TOKEN"  https://172.30.1.2:6443/api/v1/namespaces/gitlab-cicd/pods/ > /gitlab-cicd/pod-details.json
 ```
 
 **Step 7: Verify the output**
 
 ```bash
-cat /gitlab-cicd/pod-details.yaml
+cat /gitlab-cicd/pod-details.json
 ```
 
 You should see JSON output containing the list of pods in the `gitlab-cicd` namespace, including the `gitlab-cicd-nginx` pod.
@@ -121,7 +119,7 @@ You should see JSON output containing the list of pods in the `gitlab-cicd` name
 **Optional: Format the output for better readability**
 
 ```bash
-cat /gitlab-cicd/pod-details.yaml | jq '.items[].metadata.name'
+cat /gitlab-cicd/pod-details.json | jq '.items[].metadata.name'
 ```
 
 **Verification checklist:**

@@ -19,7 +19,7 @@ The cluster uses the **Rancher Local Path Provisioner** with a StorageClass name
 Complete the following tasks to add persistent storage to the image processor application:
 
 1. **Create a PersistentVolumeClaim** named `processor-cache` in the `operations` namespace that:
-   - Requests **1Gi** of storage
+   - Request `1Gi` of storage with `ReadWriteOnce` access.
    - Uses the `local-path` StorageClass
    - Is dynamically provisioned (no manual PV creation needed)
 

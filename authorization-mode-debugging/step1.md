@@ -60,8 +60,8 @@ Example:
 
 Modify it to:
 
-```
---authorization-mode=Node,AlwaysDeny
+```bash
+- --authorization-mode=Node,AlwaysDeny
 ```
 
 ---
@@ -69,7 +69,6 @@ Modify it to:
 ### **4️⃣ Save the file**
 
 The kubelet automatically restarts the API server.
-
 
 ---
 
@@ -80,6 +79,18 @@ Run any kubectl command:
 ```
 kubectl get pods 2> /root/auth-debug/forbidden-error.txt
 ```
+output of files /root/auth-debug/forbidden-error.txt
+
+```bash
+controlplane:~$ cat /root/auth-debug/forbidden-error.txt
+E1122 13:10:54.231749    9289 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: unknown"
+E1122 13:10:54.236360    9289 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: unknown"
+E1122 13:10:54.239165    9289 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: unknown"
+E1122 13:10:54.241088    9289 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: unknown"
+E1122 13:10:54.245284    9289 memcache.go:265] "Unhandled Error" err="couldn't get current server API group list: unknown"
+Error from server (Forbidden): unknown
+```
+
 
 You should see a **Forbidden** or **Unauthorized** error, confirming that **all API requests are denied**.
 

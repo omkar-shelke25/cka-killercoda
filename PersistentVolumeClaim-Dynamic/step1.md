@@ -24,11 +24,11 @@ Complete the following tasks to add persistent storage to the image processor ap
    - Is dynamically provisioned (no manual PV creation needed)
 
 2. **Modify the existing Deployment manifest** at `/src/k8s/image-processor.yaml`:
-   - Add a `volume` that references the PVC `processor-cache`
+   - Add a volume that references the PVC `processor-cache`; the volume name should be `cache-storage`.
    - Add a `volumeMount` to mount the PVC at `/cache` inside the container
    - **Do not change any other part of the Deployment**
 
-3. **Apply your changes and verify**:
+4. **Apply your changes and verify**:
    - The PVC becomes `Bound`
    - A dynamically provisioned PV is created automatically
    - The running pod mounts the volume at `/cache`

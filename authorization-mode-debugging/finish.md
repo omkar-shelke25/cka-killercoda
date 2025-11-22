@@ -6,8 +6,6 @@ This demonstrates your understanding of **Kubernetes authorization mechanisms**,
 
 ---
 
-## 🧩 **Conceptual Summary**
-
 ## 🔐 Authorization Modes
 
 ### 1. **Node**

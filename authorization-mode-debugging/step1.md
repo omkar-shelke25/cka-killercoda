@@ -26,6 +26,9 @@ Record the resulting error message in:
 /root/auth-debug/forbidden-error.txt
 ```
 
+Use stderr redirection so the error gets saved in `/root/auth-debug/forbidden-error.txt`.
+
+
 ---
 
 ### Try it yourself first!

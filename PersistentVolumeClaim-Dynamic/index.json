@@ -1,0 +1,23 @@
+{
+  "title": "CKA: PersistentVolumeClaim with Dynamic Provisioning",
+  "description": "Configure a PersistentVolumeClaim with dynamic provisioning using Rancher Local Path Provisioner and mount it to an existing Deployment.",
+  "details": {
+    "steps": [
+      {
+        "title": "PVC Configuration and Dynamic Provisioning",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "title": "CKA: AlwaysDeny Authorization Mode for Debugging",
+  "title": "CKA: AlwaysDeny Authorization Mode",
   "description": "Configure the kube-apiserver to use AlwaysDeny authorization mode to understand authorization evaluation order and troubleshoot authorization issues.",
   "details": {
     "steps": [

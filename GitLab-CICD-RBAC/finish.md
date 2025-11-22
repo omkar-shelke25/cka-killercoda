@@ -105,7 +105,7 @@ Permissions: Can I "list" "pods" in "gitlab-cicd" namespace?
 ### API Request Components
 
 ```bash
-curl --cacert ca.crt \                    # CA certificate for HTTPS
+curl --cacert ca.cert \                    # CA certificate for HTTPS
   -H "Authorization: Bearer $TOKEN" \     # Authentication token
   https://API_SERVER:6443/               # API server endpoint
   api/v1/namespaces/NAMESPACE/pods/      # Resource path

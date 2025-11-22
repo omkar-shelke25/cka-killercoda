@@ -14,7 +14,7 @@ To demonstrate how authorization modes are evaluated, they want to temporarily f
 
 ### **Task:**
 
-On the control-plane node, modify the `kube-apiserver` static pod manifest so that the `--authorization-mode` flag includes **`AlwaysDeny`** immediately after **`Node`**, and remove the **RBAC** mode from the list.
+On the control-plane node, modify the `kube-apiserver` static pod manifest so that the `--authorization-mode` flag includes **`AlwaysDeny`** immediately after **`Node`**, and remove the **`RBAC`** mode from the list.
 
 Use `crictl ps` to verify which static pods were restarted.
 

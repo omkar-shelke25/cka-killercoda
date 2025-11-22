@@ -77,7 +77,7 @@ The kubelet automatically restarts the API server.
 Run any kubectl command:
 
 ```
-kubectl get pods > /root/auth-debug/forbidden-error.txt
+kubectl get pods 2> /root/auth-debug/forbidden-error.txt
 ```
 
 You should see a **Forbidden** or **Unauthorized** error, confirming that **all API requests are denied**, regardless of user identity, credentials, or RBAC rules.

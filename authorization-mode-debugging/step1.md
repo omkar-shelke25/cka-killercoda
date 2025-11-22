@@ -61,7 +61,7 @@ Example:
 Modify it to:
 
 ```
-- --authorization-mode=Node,AlwaysDeny
+--authorization-mode=Node,AlwaysDeny
 ```
 
 ---

@@ -72,8 +72,14 @@ The kubelet automatically restarts the API server.
 
 Use the command below to check whether the container was restarted or newly created:
 
-`crictl ps | head -n 4`**
+`crictl ps | head -n 4`
 
+```bash
+CONTAINER           IMAGE               CREATED                  STATE               NAME                      ATTEMPT                                 
+1c59501da51ec       c3994bc696102       Less than a second ago   Running             kube-apiserver            0                               
+4dbc53f252db7       c80c8dbafe7dd       19 seconds ago           Running             kube-controller-manager   3                 
+9155d784bdc15       7dd6aaa1717ab       19 seconds ago           Running             kube-scheduler            3                  
+```
 ---
 
 ### **5️⃣ Verify it works**

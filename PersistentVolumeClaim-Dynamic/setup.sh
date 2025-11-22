@@ -49,6 +49,10 @@ spec:
             cpu: "200m"
 EOF
 
+
+kubectl apply -f /src/k8s/image-processor.yaml
+
+
 echo "✅ Setup complete!"
 echo ""
 echo "📁 Resources created:"

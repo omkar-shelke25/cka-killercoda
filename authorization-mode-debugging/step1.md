@@ -86,10 +86,10 @@ CONTAINER           IMAGE               CREATED                  STATE          
 
 Run any kubectl command:
 
-```
+```bash
 kubectl get pods 2> /root/auth-debug/forbidden-error.txt
 ```
-output of files /root/auth-debug/forbidden-error.txt
+output of files `/root/auth-debug/forbidden-error.txt`
 
 ```bash
 controlplane:~$ cat /root/auth-debug/forbidden-error.txt

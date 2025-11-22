@@ -8,21 +8,23 @@
 
 ### 🔧 **Context**
 
-You are working 🧑‍💻 with a trainee Kubernetes engineer who is learning about authorization mechanisms in a lab cluster. 
+You are working 🧑‍💻 with a trainee Kubernetes engineer who is learning about authorization mechanisms in a lab cluster.
 
-To demonstrate how authorization modes are evaluated, they want to temporarily force the API server to **deny all API requests**.
+To demonstrate how authorization modes are evaluated, they want to temporarily force the API server to deny all API requests.
 
-**Task:**
+### **Task:**
 
-On the control-plane node, modify the kube-apiserver static pod manifest to enable the `AlwaysDeny` authorization mode **as the first entry** in the `--authorization-mode` flag so that all API requests are rejected.
+On the control-plane node, modify the `kube-apiserver` static pod manifest so that the `--authorization-mode` flag includes **`AlwaysDeny`** immediately after **`NODE`**, and remove the **RBAC** mode from the list.
 
-Requirements:
+Use `crictl ps` to verify which static pods were restarted.
 
-1. Add `AlwaysDeny` at the beginning of the `--authorization-mode` list (e.g., `AlwaysDeny,RBAC,...`).
-2. Do **not** remove any existing authorization modes.
-3. Save the file and allow the kubelet to automatically restart the kube-apiserver.
-4. Verify that `kubectl get pods` now fails with a *Forbidden* error.
-5. **Document** the error message in `/root/auth-debug/forbidden-error.txt`
+Verify that `kubectl get pods` now fails with a **Forbidden** error.
+
+Record the resulting error message in:
+
+```
+/root/auth-debug/forbidden-error.txt
+```
 
 ---
 
@@ -45,22 +47,19 @@ Open:
 Example:
 
 ```
-- --authorization-mode=RBAC,Node
+- --authorization-mode=Node,RBAC
 ```
 
-(Note: the current modes may differ; do not delete them.)
 
 ---
 
-### **3️⃣ Prepend `AlwaysDeny` to the list**
+### **3️⃣ Add `AlwaysDeny` after NODE and remove RBAC from  the list**
 
 Modify it to:
 
 ```
-- --authorization-mode=AlwaysDeny,RBAC,Node
+- --authorization-mode=Node,AlwaysDeny
 ```
-
-(Only add `AlwaysDeny` at the beginning.)
 
 ---
 
@@ -75,12 +74,10 @@ The kubelet automatically restarts the API server.
 Run any kubectl command:
 
 ```
-kubectl get pods
+kubectl get pods > /root/auth-debug/forbidden-error.txt
 ```
 
 You should see a **Forbidden** or **Unauthorized** error, confirming that **all API requests are denied**, regardless of user identity, credentials, or RBAC rules.
-
-
 
 
 </details>

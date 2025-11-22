@@ -70,6 +70,10 @@ Modify it to:
 
 The kubelet automatically restarts the API server.
 
+Use the command below to check whether the container was restarted or newly created:
+
+`crictl ps | head -n 4`**
+
 ---
 
 ### **5️⃣ Verify it works**

@@ -127,7 +127,7 @@ cat /gitlab-cicd/pod-details.json | jq '.items[].metadata.name'
 - ✅ ClusterRoleBinding `gitlab-cicd-rb` binds the role to `gitlab-cicd-sa`
 - ✅ Token generated with 2-hour validity
 - ✅ API request successful with token authentication
-- ✅ Pod details stored in `/gitlab-cicd/pod-details.yaml`
+- ✅ Pod details stored in `/gitlab-cicd/pod-details.json`
 
 </details>
 

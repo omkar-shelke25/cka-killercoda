@@ -1,51 +1,72 @@
 #!/bin/bash
-set -euo pipefail
 
-MANIFEST_PATH="/etc/kubernetes/manifests/kube-apiserver.yaml"
+APISERVER_MANIFEST="/etc/kubernetes/manifests/kube-apiserver.yaml"
+ERROR_FILE="/root/auth-debug/forbidden-error.txt"
 
-# Check if kube-apiserver manifest exists
-if [[ ! -f "${MANIFEST_PATH}" ]]; then
-  echo "❌ kube-apiserver manifest not found at ${MANIFEST_PATH}"
-  exit 1
+echo "🔍 Verifying kube-apiserver authorization-mode configuration..."
+echo
+
+# 1️⃣ Check that the manifest exists
+if [[ ! -f "$APISERVER_MANIFEST" ]]; then
+    echo "❌ kube-apiserver manifest not found at $APISERVER_MANIFEST"
+    exit 1
 fi
-echo "✅ kube-apiserver manifest exists"
 
-# Extract the authorization mode from the manifest
-AUTH_MODE=$(grep -- '--authorization-mode' "${MANIFEST_PATH}" | sed 's/.*--authorization-mode=//' | tr -d ' ' || echo "")
+# 2️⃣ Check authorization-mode contains Node,AlwaysDeny (in that order)
+AUTH_LINE=$(grep -- "--authorization-mode" "$APISERVER_MANIFEST")
 
-if [[ -z "${AUTH_MODE}" ]]; then
-  echo "❌ Could not find --authorization-mode flag in manifest"
-  exit 1
+echo "🔍 Found authorization-mode: $AUTH_LINE"
+
+if ! echo "$AUTH_LINE" | grep -q "Node,AlwaysDeny"; then
+    echo "❌ AlwaysDeny is not placed immediately after Node."
+    exit 1
 fi
-echo "✅ Found authorization mode configuration: ${AUTH_MODE}"
 
-# Check if AlwaysDeny is present
-if ! echo "${AUTH_MODE}" | grep -q "AlwaysDeny"; then
-  echo "❌ AlwaysDeny not found in authorization mode"
-  echo "   Current: ${AUTH_MODE}"
-  exit 1
+# 3️⃣ Ensure RBAC is removed
+if echo "$AUTH_LINE" | grep -q "RBAC"; then
+    echo "❌ RBAC must be removed from the authorization-mode list."
+    exit 1
 fi
-echo "✅ AlwaysDeny is present in authorization mode"
 
-# Check if AlwaysDeny is at the beginning
-if ! echo "${AUTH_MODE}" | grep -q "^AlwaysDeny"; then
-  echo "❌ AlwaysDeny is not the first authorization mode"
-  echo "   Current: ${AUTH_MODE}"
-  echo "   Expected: AlwaysDeny should be first"
-  exit 1
+echo "✅ Authorization-mode configuration looks correct!"
+echo
+
+# 4️⃣ Check static pod restarted using crictl
+echo "🔍 Checking kube-apiserver container status..."
+
+if ! crictl ps | grep -q "kube-apiserver"; then
+    echo "❌ kube-apiserver container not found via crictl ps."
+    exit 1
 fi
-echo "✅ AlwaysDeny is the first authorization mode"
 
+crictl ps | grep kube-apiserver
+echo "✅ kube-apiserver is running (restart likely occurred)."
+echo
 
-# Check if kube-apiserver container is running
-APISERVER_RUNNING=$(crictl ps 2>/dev/null | grep -c "kube-apiserver" || echo "0")
-if [[ "${APISERVER_RUNNING}" -lt 1 ]]; then
-  echo "❌ kube-apiserver container is not running"
-  echo "   Checking for errors..."
-  crictl ps -a | grep kube-apiserver | head -5
-  exit 1
+# 5️⃣ Verify kubectl returns Forbidden
+echo "🔍 Testing kubectl get pods denies access..."
+
+KUBE_OUTPUT=$(kubectl get pods 2>&1)
+
+if echo "$KUBE_OUTPUT" | grep -qi "forbidden"; then
+    echo "✅ kubectl is correctly forbidden."
+else
+    echo "❌ kubectl did NOT return Forbidden. Output:"
+    echo "$KUBE_OUTPUT"
+    exit 1
 fi
-echo "✅ kube-apiserver container is running"
 
+# 6️⃣ Check error file
+echo "🔍 Checking error log file..."
 
+if [[ ! -s "$ERROR_FILE" ]]; then
+    echo "❌ Forbidden error file missing or empty: $ERROR_FILE"
+    exit 1
+fi
 
+echo "📄 Error message recorded in $ERROR_FILE:"
+cat "$ERROR_FILE"
+
+echo
+echo "🎉 All checks passed successfully!"
+exit 0

@@ -85,7 +85,7 @@ echo $TOKEN
 **Step 4: Extract the CA certificate**
 
 ```bash
-kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d > ca.crt
+kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d > ca.cert
 ```
 
 Verify the certificate:

@@ -1,0 +1,23 @@
+{
+  "title": "CKA: AlwaysDeny Authorization Mode for Debugging",
+  "description": "Configure the kube-apiserver to use AlwaysDeny authorization mode to understand authorization evaluation order and troubleshoot authorization issues.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure AlwaysDeny Authorization Mode",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

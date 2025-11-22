@@ -40,7 +40,7 @@ Use stderr redirection so the error gets saved in `/root/auth-debug/forbidden-er
 Open:
 
 ```
-/etc/kubernetes/manifests/kube-apiserver.yaml
+vi /etc/kubernetes/manifests/kube-apiserver.yaml
 ```
 
 ---
@@ -56,7 +56,7 @@ Example:
 
 ---
 
-### **3️⃣ Add `AlwaysDeny` after NODE and remove RBAC from  the list**
+### **3️⃣ Add `AlwaysDeny` after NODE and remove `RBAC` from  the list**
 
 Modify it to:
 
@@ -70,6 +70,7 @@ Modify it to:
 
 The kubelet automatically restarts the API server.
 
+
 ---
 
 ### **5️⃣ Verify it works**
@@ -80,7 +81,7 @@ Run any kubectl command:
 kubectl get pods 2> /root/auth-debug/forbidden-error.txt
 ```
 
-You should see a **Forbidden** or **Unauthorized** error, confirming that **all API requests are denied**, regardless of user identity, credentials, or RBAC rules.
+You should see a **Forbidden** or **Unauthorized** error, confirming that **all API requests are denied**.
 
 
 </details>

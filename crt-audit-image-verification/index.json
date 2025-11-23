@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Certificate Audit & Control-Plane Image Verification",
+  "description": "Configure certificate lifecycle management and auditing on kubeadm-deployed Kubernetes clusters.",
+  "details": {
+    "steps": [
+      {
+        "title": "Certificate Audit & Control-Plane Image Verification",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

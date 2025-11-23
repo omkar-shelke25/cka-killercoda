@@ -36,6 +36,11 @@ Renew all kubeadm-managed control-plane certificates to ensure compliance with s
 /k8s/cert-details-new.txt
 ```
 
+Then restart the kubelet and use the command below to view the differences between the two files
+```bash
+colordiff -u /k8s/cert-details-old.txt /k8s/cert-details-new.txt
+```
+
 **Task 3: Document required control-plane images**
 
 Retrieve the list of container images that kubeadm expects for the cluster's control-plane components and save the output to:
@@ -114,11 +119,7 @@ You should now see updated expiration dates, typically extended by 1 year from t
 **Step 5: Compare old and new certificate expiration dates**
 
 ```bash
-echo "=== OLD CERTIFICATES ==="
-cat /k8s/cert-details-old.txt
-echo ""
-echo "=== NEW CERTIFICATES ==="
-cat /k8s/cert-details-new.txt
+colordiff -u /k8s/cert-details-old.txt /k8s/cert-details-new.txt
 ```
 
 **Step 6: Restart control-plane components to use new certificates**

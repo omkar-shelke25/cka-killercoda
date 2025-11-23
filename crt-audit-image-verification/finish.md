@@ -28,9 +28,9 @@ Root CA (ca.crt) - 10 years validity
 
 ```
                      ┌─────────────────────────────┐
-                     │      Cluster CA (Root)       │
-                     │   ca.crt / ca.key (10 yrs)   │
-                     └──────────────┬───────────────┘
+                     │      Cluster CA (Root)      │
+                     │   ca.crt / ca.key (10 yrs)  │
+                     └──────────────┬──────────────┘
                                     │
                      Signs all component certificates
                                     │

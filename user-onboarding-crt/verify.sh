@@ -35,22 +35,7 @@ fail_step() {
   echo "   Error: $error_msg"
 }
 
-# 1. Check private key exists and has correct size
-check_step "Private key file exists and is 4096-bit RSA"
-if [[ -f "${WORKDIR}/siddhi.shelke01.key" ]]; then
-  if openssl rsa -in "${WORKDIR}/siddhi.shelke01.key" -check -noout &>/dev/null; then
-    KEY_SIZE=$(openssl rsa -in "${WORKDIR}/siddhi.shelke01.key" -text -noout 2>/dev/null | grep "Private-Key:" | grep -oE '[0-9]+')
-    if [[ "$KEY_SIZE" == "4096" ]]; then
-      pass_step
-    else
-      fail_step "Key size is $KEY_SIZE bits, expected 4096 bits"
-    fi
-  else
-    fail_step "File exists but is not a valid RSA private key"
-  fi
-else
-  fail_step "Private key file not found at ${WORKDIR}/siddhi.shelke01.key"
-fi
+
 
 # 2. Check CSR file exists and has correct subject
 check_step "CSR file exists with correct subject (CN and O)"

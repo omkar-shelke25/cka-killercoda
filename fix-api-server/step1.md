@@ -28,9 +28,7 @@ Do not manually create certificates using OpenSSL or any other tools.
 
 Use `kubeadm` built-in certificate management commands.
 
-Do not modify or touch any other certificates
-
-Do not modify any other cluster resources or configurations beyond what is necessary to complete the recovery.
+Do not modify or touch any other certificates or configurations beyond what is necessary to complete the recovery.
 
 ---
 

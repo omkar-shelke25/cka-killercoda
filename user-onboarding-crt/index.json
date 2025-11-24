@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Complete User Onboarding with Certificates, Kubeconfig, and RBAC",
+  "description": "Provision secure Kubernetes access for a new developer using client certificates, kubeconfig management, and RBAC configuration in a real-world game studio scenario.",
+  "details": {
+    "steps": [
+      {
+        "title": "User Onboarding - Certificate-Based Authentication and RBAC",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

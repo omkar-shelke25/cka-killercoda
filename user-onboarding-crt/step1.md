@@ -79,18 +79,6 @@ Export a minimal kubeconfig file for the user `siddhi.shelke01` that includes on
 
 ---
 
-## 🔍 **Important Notes**
-
-- Work in the directory: `/root/gameforge-onboarding/`
-- The Kubernetes cluster name is: `kubernetes`
-- The context name is: `mecha-pulse-game-dev`
-- The `game-dev` namespace already exists with sample deployments
-- Use the Kubernetes CSR API (not manual OpenSSL signing)
-- Embed certificates in kubeconfig for portability
-- Do not modify existing cluster resources except as required
-
----
-
 ### 💡 Try it yourself first!
 
 <details><summary>✅ Solution (expand to view)</summary>

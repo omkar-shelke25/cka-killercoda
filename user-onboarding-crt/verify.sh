@@ -13,6 +13,8 @@ WORKDIR="/root/gameforge-onboarding"
 echo "🔍 Verifying GameForge Studios User Onboarding Configuration..."
 echo ""
 
+kubectl config use-context mecha-pulse-game-dev
+
 # Track verification status
 PASSED=0
 TOTAL=0

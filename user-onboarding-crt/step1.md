@@ -1,4 +1,4 @@
-# 🎮 **CKA: Complete User Onboarding with Certificates and RBAC**
+# 🎮 **CKA: Complete User Onboarding with Kubernetes CSR API and RBAC**
 
 📚 **Official Kubernetes Documentation**: 
 - [Certificate Signing Requests](https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/)
@@ -10,9 +10,7 @@
 
 ## 🎯 **Scenario Context**
 
-**GameForge Studios** is onboarding a new developer named **Siddhi Shelke** to work on the "Mecha Pulse" game project. 
-
-You are the Kubernetes administrator responsible for provisioning secure access to the development cluster `mecha-pulse-game-dev`.
+**GameForge Studios** is onboarding a new developer named **Siddhi Shelke** to work on the "Mecha Pulse" game project. You are the Kubernetes administrator responsible for provisioning secure access to the development cluster.
 
 The developer needs read-only access to Pods and Deployments in the `game-dev` namespace to monitor application deployments but should not be able to modify any resources.
 
@@ -32,21 +30,23 @@ Create a CSR using the private key with the following subject:
 - **Organization (O)**: `gameforge-studios`
 - Save the CSR to: `/root/gameforge-onboarding/siddhi.shelke01.csr`
 
-### **Task 3: Sign the Certificate**
-Sign the CSR using the Kubernetes CA located at:
-- CA Certificate: `/etc/kubernetes/pki/ca.crt`
-- CA Key: `/etc/kubernetes/pki/ca.key`
-- Validity: 365 days (1 year)
-- Save the signed certificate to: `/root/gameforge-onboarding/siddhi.shelke01.crt`
+### **Task 3: Submit and Approve CSR using Kubernetes API**
+1. Create a Kubernetes CertificateSigningRequest resource named `siddhi` with:
+   - The base64-encoded CSR content
+   - `signerName: kubernetes.io/kube-apiserver-client`
+   - `usages: ["client auth"]`
+2. Approve the CSR using `kubectl certificate approve`
+3. Extract the signed certificate and save to: `/root/gameforge-onboarding/siddhi.shelke01.crt`
 
 ### **Task 4: Configure Kubeconfig User Entry**
 Add a new user entry named `siddhi.shelke01` to your kubeconfig using:
 - Client certificate: `/root/gameforge-onboarding/siddhi.shelke01.crt`
 - Client key: `/root/gameforge-onboarding/siddhi.shelke01.key`
+- **Important**: Use `--embed-certs=true` to embed certificates in kubeconfig
 
 ### **Task 5: Create Context**
 Create a new context named `siddhi-mecha-dev` configured with:
-- **Cluster**: `mecha-pulse-game-dev`
+- **Cluster**: `kubernetes` (the actual cluster name)
 - **User**: `siddhi.shelke01`
 - **Namespace**: `game-dev`
 
@@ -74,7 +74,7 @@ Switch back to the `siddhi-mecha-dev` context and verify:
 Export a minimal kubeconfig file for the user `siddhi.shelke01` that includes only:
 - The user credentials for `siddhi.shelke01`
 - The `siddhi-mecha-dev` context
-- The cluster entry for `mecha-pulse-game-dev`
+- The cluster entry for `kubernetes`
 - Save to: `/root/gameforge-onboarding/siddhi-kubeconfig.yaml`
 
 ---
@@ -82,10 +82,12 @@ Export a minimal kubeconfig file for the user `siddhi.shelke01` that includes on
 ## 🔍 **Important Notes**
 
 - Work in the directory: `/root/gameforge-onboarding/`
-- The Kubernetes CA files are located at: `/etc/kubernetes/pki/`
+- The Kubernetes cluster name is: `kubernetes`
+- The context name is: `mecha-pulse-game-dev`
 - The `game-dev` namespace already exists with sample deployments
+- Use the Kubernetes CSR API (not manual OpenSSL signing)
+- Embed certificates in kubeconfig for portability
 - Do not modify existing cluster resources except as required
-- Use the current cluster context name: `mecha-pulse-game-dev`
 
 ---
 
@@ -131,38 +133,98 @@ Subject: CN=siddhi.shelke01, O=gameforge-studios
 
 ---
 
-### **Step 3: Sign the Certificate**
+### **Step 3: Submit and Approve CSR using Kubernetes API**
 
+**3.1: Encode the CSR in base64**
 ```bash
-openssl x509 -req \
-  -in siddhi.shelke01.csr \
-  -CA /etc/kubernetes/pki/ca.crt \
-  -CAkey /etc/kubernetes/pki/ca.key \
-  -CAcreateserial \
-  -out siddhi.shelke01.crt \
-  -days 365
+cat /root/gameforge-onboarding/siddhi.shelke01.csr | base64 | tr -d "\n"
+```
+
+Copy the output (base64-encoded CSR).
+
+**3.2: Create CertificateSigningRequest YAML**
+```bash
+cat > /root/gameforge-onboarding/siddhi-csr.yaml <<EOF
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: siddhi
+spec:
+  request: $(cat /root/gameforge-onboarding/siddhi.shelke01.csr | base64 | tr -d "\n")
+  signerName: kubernetes.io/kube-apiserver-client
+  expirationSeconds: 31536000  # 1 year (365 days)
+  usages:
+  - client auth
+EOF
+```
+
+**3.3: Apply the CSR**
+```bash
+kubectl apply -f /root/gameforge-onboarding/siddhi-csr.yaml
+```
+
+Verify CSR was created:
+```bash
+kubectl get csr
+```
+
+You should see the CSR in "Pending" state.
+
+**3.4: Approve the CSR**
+```bash
+kubectl certificate approve siddhi
+```
+
+Verify it's approved:
+```bash
+kubectl get csr siddhi
+```
+
+Output should show:
+```
+NAME     AGE   SIGNERNAME                            REQUESTOR          REQUESTEDDURATION   CONDITION
+siddhi   10s   kubernetes.io/kube-apiserver-client   kubernetes-admin   365d                Approved,Issued
+```
+
+**3.5: Extract the signed certificate**
+```bash
+kubectl get csr siddhi -o jsonpath='{.status.certificate}' | base64 -d > /root/gameforge-onboarding/siddhi.shelke01.crt
 ```
 
 Verify the certificate:
 ```bash
-openssl x509 -in siddhi.shelke01.crt -noout -text | grep -A 2 Subject
-openssl x509 -in siddhi.shelke01.crt -noout -dates
+openssl x509 -in /root/gameforge-onboarding/siddhi.shelke01.crt -text -noout
+```
+
+Check subject and validity:
+```bash
+openssl x509 -in /root/gameforge-onboarding/siddhi.shelke01.crt -noout -subject -dates
 ```
 
 ---
 
-### **Step 4: Add User to Kubeconfig**
+### **Step 4: Add User to Kubeconfig with Embedded Certificates**
 
 ```bash
 kubectl config set-credentials siddhi.shelke01 \
   --client-certificate=/root/gameforge-onboarding/siddhi.shelke01.crt \
-  --client-key=/root/gameforge-onboarding/siddhi.shelke01.key
+  --client-key=/root/gameforge-onboarding/siddhi.shelke01.key \
+  --embed-certs=true
 ```
+
+**Important**: The `--embed-certs=true` flag embeds the certificate data directly in the kubeconfig file (base64-encoded), making it portable.
 
 Verify the user was added:
 ```bash
 kubectl config get-users
 ```
+
+Check that certificates are embedded:
+```bash
+kubectl config view --raw | grep -A 5 "name: siddhi.shelke01"
+```
+
+You should see `client-certificate-data` and `client-key-data` instead of file paths.
 
 ---
 
@@ -170,14 +232,21 @@ kubectl config get-users
 
 ```bash
 kubectl config set-context siddhi-mecha-dev \
-  --cluster=mecha-pulse-game-dev \
+  --cluster=kubernetes \
   --namespace=game-dev \
   --user=siddhi.shelke01
 ```
 
+**Important**: The cluster name is `kubernetes`, not `mecha-pulse-game-dev` (which is the context name).
+
 Verify the context:
 ```bash
 kubectl config get-contexts siddhi-mecha-dev
+```
+
+View full context details:
+```bash
+kubectl config view | grep -A 4 "name: siddhi-mecha-dev"
 ```
 
 ---
@@ -217,6 +286,17 @@ Verify the role:
 kubectl describe role dev-access-role -n game-dev
 ```
 
+Expected output:
+```
+Name:         dev-access-role
+Namespace:    game-dev
+PolicyRule:
+  Resources   Non-Resource URLs  Resource Names  Verbs
+  ---------   -----------------  --------------  -----
+  deployments []                 []              [get list watch]
+  pods        []                 []              [get list watch]
+```
+
 ---
 
 ### **Step 8: Create RoleBinding**
@@ -233,6 +313,19 @@ Verify the binding:
 kubectl describe rolebinding siddhi-dev-binding -n game-dev
 ```
 
+Expected output:
+```
+Name:         siddhi-dev-binding
+Namespace:    game-dev
+Role:
+  Kind:  Role
+  Name:  dev-access-role
+Subjects:
+  Kind  Name              Namespace
+  ----  ----              ---------
+  User  siddhi.shelke01
+```
+
 ---
 
 ### **Step 9: Verify Permissions**
@@ -247,27 +340,37 @@ kubectl config use-context siddhi-mecha-dev
 kubectl get pods
 kubectl get deployments
 kubectl get pods -n game-dev
-kubectl get deployment mecha-pulse-api -n game-dev
+kubectl get deployment mecha-pulse-api -n game-dev -o wide
 ```
+
+Expected output: You should see the list of pods and deployments.
 
 ❌ **Test write operations (should fail):**
 ```bash
 kubectl run test-pod --image=nginx -n game-dev
-# Expected: Error from server (Forbidden)
-
-kubectl delete deployment mecha-pulse-api -n game-dev
-# Expected: Error from server (Forbidden)
 ```
+Expected error: `Error from server (Forbidden): pods is forbidden: User "siddhi.shelke01" cannot create resource "pods"`
+
+```bash
+kubectl delete deployment mecha-pulse-api -n game-dev
+```
+Expected error: `Error from server (Forbidden): deployments.apps "mecha-pulse-api" is forbidden: User "siddhi.shelke01" cannot delete resource "deployments"`
 
 Use `kubectl auth can-i` to verify permissions:
 ```bash
 kubectl auth can-i list pods -n game-dev
 # yes
 
+kubectl auth can-i get deployments -n game-dev
+# yes
+
 kubectl auth can-i create pods -n game-dev
 # no
 
 kubectl auth can-i delete deployments -n game-dev
+# no
+
+kubectl auth can-i update pods -n game-dev
 # no
 ```
 
@@ -280,37 +383,38 @@ kubectl config use-context mecha-pulse-game-dev
 
 ### **Step 10: Export Minimal Kubeconfig**
 
-Export only the necessary components:
+Export only the necessary components for the user:
 ```bash
 kubectl config view --minify \
   --flatten \
   --context=siddhi-mecha-dev > /root/gameforge-onboarding/siddhi-kubeconfig.yaml
 ```
 
+**Note**: The `--minify` flag includes only the current context and its dependencies.
+
 Verify the exported kubeconfig:
 ```bash
 cat /root/gameforge-onboarding/siddhi-kubeconfig.yaml
 ```
+
+You should see:
+- One cluster: `kubernetes`
+- One user: `siddhi.shelke01` (with embedded certificate data)
+- One context: `siddhi-mecha-dev`
+- Current context set to: `siddhi-mecha-dev`
 
 Test the exported kubeconfig:
 ```bash
 kubectl --kubeconfig=/root/gameforge-onboarding/siddhi-kubeconfig.yaml get pods
 ```
 
-**Alternative manual method** (if you need more control):
+Expected output: List of pods in the `game-dev` namespace.
+
+Verify it cannot create pods:
 ```bash
-# Create a new kubeconfig from scratch
-kubectl config view --raw > /tmp/full-config.yaml
-
-# Extract specific elements
-kubectl --kubeconfig=/tmp/full-config.yaml config view \
-  --flatten \
-  --minify \
-  --context=siddhi-mecha-dev > /root/gameforge-onboarding/siddhi-kubeconfig.yaml
-
-# Clean up temp file
-rm /tmp/full-config.yaml
+kubectl --kubeconfig=/root/gameforge-onboarding/siddhi-kubeconfig.yaml run test --image=nginx
 ```
+Expected: Forbidden error.
 
 ---
 
@@ -321,39 +425,75 @@ Run these commands to verify everything is configured correctly:
 ```bash
 # 1. Check files exist
 ls -lh /root/gameforge-onboarding/siddhi.shelke01.{key,csr,crt}
+ls -lh /root/gameforge-onboarding/siddhi-csr.yaml
 ls -lh /root/gameforge-onboarding/siddhi-kubeconfig.yaml
 
-# 2. Verify user in kubeconfig
-kubectl config get-users | grep siddhi.shelke01
+# 2. Verify CSR was approved
+kubectl get csr siddhi
 
-# 3. Verify context
-kubectl config get-contexts | grep siddhi-mecha-dev
+# 3. Verify user in kubeconfig (with embedded certs)
+kubectl config view --raw | grep -A 3 "name: siddhi.shelke01"
 
-# 4. Verify Role
+# 4. Verify context references correct cluster
+kubectl config view | grep -A 3 "name: siddhi-mecha-dev"
+
+# 5. Verify Role
 kubectl get role dev-access-role -n game-dev
+kubectl describe role dev-access-role -n game-dev
 
-# 5. Verify RoleBinding
+# 6. Verify RoleBinding
 kubectl get rolebinding siddhi-dev-binding -n game-dev
+kubectl describe rolebinding siddhi-dev-binding -n game-dev
 
-# 6. Test permissions with kubectl auth can-i
+# 7. Test permissions with kubectl auth can-i (as admin)
 kubectl auth can-i list pods -n game-dev --as=siddhi.shelke01
 kubectl auth can-i create pods -n game-dev --as=siddhi.shelke01
 kubectl auth can-i delete deployments -n game-dev --as=siddhi.shelke01
 
-# 7. Test with exported kubeconfig
+# 8. Test with user context
+kubectl config use-context siddhi-mecha-dev
+kubectl get pods
+kubectl get deployments
+kubectl auth can-i create pods
+kubectl config use-context mecha-pulse-game-dev
+
+# 9. Test exported kubeconfig
 kubectl --kubeconfig=/root/gameforge-onboarding/siddhi-kubeconfig.yaml get pods
+kubectl --kubeconfig=/root/gameforge-onboarding/siddhi-kubeconfig.yaml auth can-i create pods
 ```
+
+---
+
+## **🔐 Key Differences: Kubernetes CSR API vs Manual Signing**
+
+### **Kubernetes CSR API (Current Approach)**
+✅ Uses native Kubernetes API
+✅ Certificate approval workflow with audit trail
+✅ Automatic certificate storage in cluster
+✅ Consistent with Kubernetes RBAC model
+✅ Can be automated with controllers
+✅ Supports certificate rotation workflows
+
+### **Manual OpenSSL Signing (Old Approach)**
+❌ Direct access to CA private key required
+❌ No audit trail for approvals
+❌ Manual certificate management
+❌ Higher security risk (CA key exposure)
+❌ Less automation-friendly
+
+**For CKA exam**: You should know **both methods**, but Kubernetes CSR API is the recommended approach!
 
 ---
 
 ## **🔐 Security Best Practices Demonstrated**
 
 ✅ **Strong encryption**: 4096-bit RSA keys
-✅ **Certificate validity**: Time-limited (1 year)
+✅ **Kubernetes-native workflow**: Using CSR API instead of manual signing
+✅ **Embedded certificates**: Portable kubeconfig with `--embed-certs`
 ✅ **Least privilege**: Read-only access only
 ✅ **Namespace isolation**: Permissions scoped to `game-dev` only
-✅ **Audit trail**: User identity embedded in certificate (CN and O fields)
-✅ **Clean credential management**: Minimal kubeconfig export
+✅ **Audit trail**: CSR approval is logged in Kubernetes audit logs
+✅ **Time-limited certificates**: 1-year validity (can be shorter)
 
 </details>
 
@@ -361,9 +501,10 @@ kubectl --kubeconfig=/root/gameforge-onboarding/siddhi-kubeconfig.yaml get pods
 
 ## 🎓 **Key Concepts Covered**
 
-- **X.509 Client Certificates**: Industry-standard authentication method
-- **PKI**: Public Key Infrastructure and Certificate Authorities
-- **Kubeconfig Structure**: users, clusters, contexts
+- **Kubernetes CSR API**: certificates.k8s.io/v1 CertificateSigningRequest
+- **Certificate Approval Workflow**: kubectl certificate approve/deny
+- **X.509 Client Certificates**: Industry-standard authentication
+- **Kubeconfig Structure**: users, clusters, contexts with embedded certs
 - **RBAC**: Role-Based Access Control with Roles and RoleBindings
 - **Principle of Least Privilege**: Granting minimal necessary permissions
 - **Namespace Scoping**: Isolating permissions to specific namespaces

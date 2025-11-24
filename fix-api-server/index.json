@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Fix Kubernetes API Server After Certificate Deletion",
+  "description": "Fix a broken Kubernetes control plane by regenerating deleted API server certificates after an automated rotation script failure.",
+  "details": {
+    "steps": [
+      {
+        "title": "Recover API Server Certificates",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

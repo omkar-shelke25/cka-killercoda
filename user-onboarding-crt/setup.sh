@@ -28,40 +28,9 @@ kubectl expose deployment mecha-pulse-api \
   --name=mecha-api-service \
   -n game-dev
 
-# Rename the default cluster to match the scenario
-kubectl config rename-context kubernetes-admin@kubernetes mecha-pulse-game-dev
+# Rename the default context to match the scenario
+kubectl config rename-context kubernetes-admin@kubernetes mecha-pulse-game-dev 2>/dev/null || true
 
-# Create directory for user certificates
-mkdir -p /etc/kubernetes/pki/users
+
 mkdir -p /root/gameforge-onboarding
 
-# Create a README file with CA location info
-cat > /root/gameforge-onboarding/README.txt << 'EOF'
-GameForge Studios - Kubernetes User Onboarding
-===============================================
-
-Important Information:
-- Kubernetes CA certificate: /etc/kubernetes/pki/ca.crt
-- Kubernetes CA key: /etc/kubernetes/pki/ca.key
-- Target namespace: game-dev
-- New user: siddhi.shelke01
-- Organization: gameforge-studios
-
-Working directory: /root/gameforge-onboarding/
-
-Sample resources deployed in game-dev namespace:
-- Deployment: mecha-pulse-api (2 replicas)
-- Deployment: mecha-pulse-frontend (1 replica)
-- Service: mecha-api-service
-
-Your task: Complete the full user onboarding workflow!
-EOF
-
-echo ""
-echo "✅ Setup complete!"
-echo ""
-echo "📁 Working directory: /root/gameforge-onboarding/"
-echo "🎯 Target namespace: game-dev"
-echo "👤 New user: siddhi.shelke01"
-echo ""
-echo "Ready to begin user onboarding! 🚀"

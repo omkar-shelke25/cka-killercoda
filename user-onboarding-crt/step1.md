@@ -462,51 +462,7 @@ kubectl --kubeconfig=/root/gameforge-onboarding/siddhi-kubeconfig.yaml get pods
 kubectl --kubeconfig=/root/gameforge-onboarding/siddhi-kubeconfig.yaml auth can-i create pods
 ```
 
----
-
-## **🔐 Key Differences: Kubernetes CSR API vs Manual Signing**
-
-### **Kubernetes CSR API (Current Approach)**
-✅ Uses native Kubernetes API
-✅ Certificate approval workflow with audit trail
-✅ Automatic certificate storage in cluster
-✅ Consistent with Kubernetes RBAC model
-✅ Can be automated with controllers
-✅ Supports certificate rotation workflows
-
-### **Manual OpenSSL Signing (Old Approach)**
-❌ Direct access to CA private key required
-❌ No audit trail for approvals
-❌ Manual certificate management
-❌ Higher security risk (CA key exposure)
-❌ Less automation-friendly
-
-**For CKA exam**: You should know **both methods**, but Kubernetes CSR API is the recommended approach!
-
----
-
-## **🔐 Security Best Practices Demonstrated**
-
-✅ **Strong encryption**: 4096-bit RSA keys
-✅ **Kubernetes-native workflow**: Using CSR API instead of manual signing
-✅ **Embedded certificates**: Portable kubeconfig with `--embed-certs`
-✅ **Least privilege**: Read-only access only
-✅ **Namespace isolation**: Permissions scoped to `game-dev` only
-✅ **Audit trail**: CSR approval is logged in Kubernetes audit logs
-✅ **Time-limited certificates**: 1-year validity (can be shorter)
 
 </details>
 
----
 
-## 🎓 **Key Concepts Covered**
-
-- **Kubernetes CSR API**: certificates.k8s.io/v1 CertificateSigningRequest
-- **Certificate Approval Workflow**: kubectl certificate approve/deny
-- **X.509 Client Certificates**: Industry-standard authentication
-- **Kubeconfig Structure**: users, clusters, contexts with embedded certs
-- **RBAC**: Role-Based Access Control with Roles and RoleBindings
-- **Principle of Least Privilege**: Granting minimal necessary permissions
-- **Namespace Scoping**: Isolating permissions to specific namespaces
-
-This comprehensive scenario mirrors real-world enterprise user onboarding workflows and is representative of complex CKA exam questions! 🚀

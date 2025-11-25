@@ -18,10 +18,10 @@ Docker is already installed and running on the system, but the CRI (Container Ru
 Install cri-dockerd from the provided `.deb` package, enable the cri-docker service, and ensure it is running. 
 
 Additionally, configure the system with the following required kernel and networking parameters: 
-`net.bridge.bridge-nf-call-iptables` should be set to 1
-`net.ipv6.conf.all.forwarding` should be set to 1,
-`net.ipv4.ip_forward` should be set to 1
-`net.netfilter.nf_conntrack_max` should be set to 131072. 
+- `net.bridge.bridge-nf-call-iptables` should be set to 1
+- `net.ipv6.conf.all.forwarding` should be set to 1,
+- `net.ipv4.ip_forward` should be set to 1
+- `net.netfilter.nf_conntrack_max` should be set to 131072. 
 
 All parameter changes must persist across system reboots.
 

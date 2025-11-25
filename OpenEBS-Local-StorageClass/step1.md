@@ -7,7 +7,9 @@
 
 ### 🏢 **Context**
 
-Your organization is migrating from Rancher's local-path storage to OpenEBS local storage for improved node-level volume management. The cluster currently has a default StorageClass named `local-storage`, but developers need a new OpenEBS-backed StorageClass for upcoming workloads.
+Your organization is migrating from Rancher's local-path storage to OpenEBS local storage for improved node-level volume management. 
+
+The cluster currently has a default StorageClass named `local-storage`, but developers need a new OpenEBS-backed StorageClass for upcoming workloads.
 
 You have been asked to prepare the cluster accordingly. The manifest you create must be stored at `/internal/openebs-local-sc.yaml`.
 

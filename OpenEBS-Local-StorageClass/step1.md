@@ -20,7 +20,7 @@ You have been asked to prepare the cluster accordingly. The manifest you create 
 Create a new StorageClass named `openebs-local` that uses OpenEBS local provisioning with the following requirements: 
 - the provisioner should be `openebs.io/local`, the volumeBindingMode should be `WaitForFirstConsumer`
 - the reclaimPolicy should be `Delete`
-- `allowVolumeExpansion` should be set to `true`. Include the field for driver-specific parameters. Save the manifest at `/internal/openebs-local-sc.yaml`.
+- `allowVolumeExpansion` should be set to `true`. Save the manifest at `/internal/openebs-local-sc.yaml`.
 
 After creating it, make `openebs-local` the new default StorageClass and ensure that the existing default StorageClass named `local-storage` is no longer marked as default. 
 

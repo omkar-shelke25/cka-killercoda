@@ -23,7 +23,8 @@ Additionally, configure the system with the following required kernel and networ
 - `net.ipv4.ip_forward` should be set to 1
 - `net.netfilter.nf_conntrack_max` should be set to 131072. 
 
-All parameter changes must persist across system reboots.
+All parameter configurations must be made persistent by placing them in the file:
+- `/etc/sysctl.d/99-kubernetes-cri.conf`
 
 ---
 

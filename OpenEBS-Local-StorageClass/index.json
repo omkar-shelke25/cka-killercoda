@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Storage Migration - OpenEBS Local StorageClass Configuration",
+  "description": "Migrate from Rancher local-path storage to OpenEBS local storage by creating and configuring a new default StorageClass.",
+  "details": {
+    "steps": [
+      {
+        "title": "Storage Migration - OpenEBS Local StorageClass",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

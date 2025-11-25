@@ -11,18 +11,16 @@ Your organization is migrating from Rancher's local-path storage to OpenEBS loca
 
 You have been asked to prepare the cluster accordingly. The manifest you create must be stored at `/internal/openebs-local-sc.yaml`.
 
-OpenEBS has already been installed in the cluster using the following commands:
-```bash
-helm repo add openebs https://openebs.github.io/charts
-helm repo update
-helm install openebs --namespace openebs openebs/openebs --create-namespace
-```
+
 
 ### ❓ **Question**
 
-Create a new StorageClass named `openebs-local` that uses OpenEBS local provisioning with the following requirements: the provisioner should be `openebs.io/local`, the volumeBindingMode should be `WaitForFirstConsumer`, the reclaimPolicy should be `Delete`, and allowVolumeExpansion should be set to `true`. Include the field for driver-specific parameters. Save the manifest at `/internal/openebs-local-sc.yaml`.
+Create a new StorageClass named `openebs-local` that uses OpenEBS local provisioning with the following requirements: 
+- the provisioner should be `openebs.io/local`, the volumeBindingMode should be `WaitForFirstConsumer`
+- the reclaimPolicy should be `Delete`
+- `allowVolumeExpansion` should be set to `true`. Include the field for driver-specific parameters. Save the manifest at `/internal/openebs-local-sc.yaml`.
 
-After creating it, make `openebs-local` the new default StorageClass and ensure that the existing default StorageClass named `local-storage` is no longer marked as default. Do NOT modify or recreate any existing Deployments or PVCs.
+After creating it, make `openebs-local` the new default StorageClass and ensure that the existing default StorageClass named `local-storage` is no longer marked as default. 
 
 ---
 
@@ -112,53 +110,6 @@ Expected output should show:
 - `local-storage` (not default)
 - `openebs-local` (default)
 
-**Verification checklist:**
-- ✅ StorageClass manifest saved at `/internal/openebs-local-sc.yaml`
-- ✅ StorageClass named `openebs-local` created
-- ✅ Provisioner set to `openebs.io/local`
-- ✅ `volumeBindingMode: WaitForFirstConsumer`
-- ✅ `reclaimPolicy: Delete`
-- ✅ `allowVolumeExpansion: true`
-- ✅ `openebs-local` is marked as default
-- ✅ `local-storage` is no longer default
-- ✅ No existing workloads modified
-
 </details>
 
----
 
-### 💡 **Hints**
-
-<details><summary>Hint 1: StorageClass annotations</summary>
-
-To make a StorageClass the default, add this annotation to the metadata:
-```yaml
-annotations:
-  storageclass.kubernetes.io/is-default-class: "true"
-```
-
-</details>
-
-<details><summary>Hint 2: Changing default StorageClass</summary>
-
-You can patch an existing StorageClass to remove the default annotation:
-```bash
-kubectl patch storageclass <name> -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
-```
-
-</details>
-
-<details><summary>Hint 3: OpenEBS parameters</summary>
-
-OpenEBS StorageClass can include configuration parameters under the `cas.openebs.io/config` annotation for driver-specific settings like StorageType and BasePath.
-
-</details>
-
-<details><summary>Hint 4: Verification commands</summary>
-
-Use these commands to verify your work:
-- `kubectl get storageclass` - Shows which is default
-- `kubectl describe storageclass <name>` - Shows detailed configuration
-- `ls -l /internal/` - Confirms manifest file exists
-
-</details>

@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Configure cri-dockerd Container Runtime",
+  "description": "Install and configure cri-dockerd as the container runtime interface for Docker-based Kubernetes workloads with required kernel parameters.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure cri-dockerd Runtime",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu-4GB"
+  }
+}

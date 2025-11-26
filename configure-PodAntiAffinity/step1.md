@@ -25,7 +25,7 @@ Your task:
 
 1. **Delete the existing StatefulSet** to prepare for reconfiguration
 2. **Update the manifest** at `/mongodb/mongodb-stateful.yaml` to add *required* PodAntiAffinity so that:
-   - No two MongoDB pods can run on the same node
+   - Ensure that no two MongoDB pods can run on the same node
    - Use `requiredDuringSchedulingIgnoredDuringExecution`
    - Use `topologyKey: topology.kubernetes.io/zone`
 

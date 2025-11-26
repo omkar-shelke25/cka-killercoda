@@ -5,12 +5,6 @@ set -euo pipefail
 kubectl label node controlplane topology.kubernetes.io/zone=zone-a
 kubectl label node node01 topology.kubernetes.io/zone=zone-b
 
-# Remove taint from controlplane to allow scheduling
-kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-
-
-# Wait for cluster to stabilize
-sleep 7
-
 # Create namespace
 kubectl create ns database-services
 
@@ -64,7 +58,10 @@ spec:
         resources:
           requests:
             storage: 500Mi
----
+EOF
+
+# Create the Service manifest separately
+cat <<'EOF' > /mongodb/mongodb-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -81,11 +78,20 @@ spec:
     app: mongodb-users-db
 EOF
 
-# Apply the initial manifest (without anti-affinity)
+# Apply the service first
+kubectl apply -f /mongodb/mongodb-service.yaml
+
+# Apply the initial StatefulSet manifest (without anti-affinity)
 kubectl apply -f /mongodb/mongodb-stateful.yaml
 
 # Wait for StatefulSet to be created
-sleep 5
+sleep 10
+
+# Remove taint from controlplane to allow scheduling
+kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-
+
+
 
 echo "✅ Setup complete! MongoDB StatefulSet manifest is ready at /mongodb/mongodb-stateful.yaml"
+echo "✅ MongoDB Service is already created at /mongodb/mongodb-service.yaml"
 echo "⚠️  Current configuration does NOT enforce pod anti-affinity - your task is to add it!"

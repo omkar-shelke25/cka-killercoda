@@ -88,10 +88,10 @@ kubectl apply -f /mongodb/mongodb-service.yaml
 
 
 # Wait for StatefulSet to be created
-sleep 15
+sleep 30
 
 
-
+kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-
 
 
 echo "✅ Setup complete! MongoDB StatefulSet manifest is ready at /mongodb/mongodb-stateful.yaml"

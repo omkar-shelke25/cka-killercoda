@@ -1,6 +1,7 @@
 # 🧠 **CKA: PodAntiAffinity - MongoDB High Availability**
 
 📚 **[Kubernetes PodAntiAffinity Documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity)**
+
 📚 **[Kubernetes StatefulSets Documentation](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/)**
 
 ### 🏢 **Context**

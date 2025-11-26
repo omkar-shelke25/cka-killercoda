@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Configure PodAntiAffinity - MongoDB High Availability",
+  "description": "Configure PodAntiAffinity to spread MongoDB StatefulSet replicas across different nodes for high availability.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure PodAntiAffinity for MongoDB StatefulSet",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

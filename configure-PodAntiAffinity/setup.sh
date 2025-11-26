@@ -90,8 +90,7 @@ kubectl apply -f /mongodb/mongodb-service.yaml
 # Wait for StatefulSet to be created
 sleep 15
 
-# Remove taint from controlplane to allow scheduling
-kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-
+
 
 
 

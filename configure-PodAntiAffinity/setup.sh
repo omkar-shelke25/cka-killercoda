@@ -60,6 +60,10 @@ spec:
             storage: 500Mi
 EOF
 
+kubectl apply -f /mongodb/mongodb-stateful.yaml
+
+sleep 5
+
 # Create the Service manifest separately
 cat <<'EOF' > /mongodb/mongodb-service.yaml
 apiVersion: v1
@@ -81,11 +85,10 @@ EOF
 # Apply the service first
 kubectl apply -f /mongodb/mongodb-service.yaml
 
-# Apply the initial StatefulSet manifest (without anti-affinity)
-kubectl apply -f /mongodb/mongodb-stateful.yaml
+
 
 # Wait for StatefulSet to be created
-sleep 10
+sleep 15
 
 # Remove taint from controlplane to allow scheduling
 kubectl taint no controlplane node-role.kubernetes.io/control-plane:NoSchedule-

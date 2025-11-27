@@ -199,7 +199,7 @@ kubectl exec -n mysql -it $(kubectl get pod -n mysql -l app=mysql -o jsonpath='{
 You should see the files including `IMPORTANT_DATA.txt`.
 
 ```bash
-kubectl exec -n mysql -it $(kubectl get pod -n mysql -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- cat /home/data/IMPORTANT_DATA.txt
+kubectl exec -n mysql -it $(kubectl get pod -n mysql -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- cat /home/data/movie-booking.sql
 ```
 
 This confirms the existing data has been preserved!

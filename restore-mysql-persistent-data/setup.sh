@@ -4,8 +4,6 @@ set -euo pipefail
 # Create namespace
 kubectl create ns mysql
 
-# Create a directory for MySQL data on the node
-ssh node01 "mkdir -p /mnt/mysql-data"
 
 # Create a PersistentVolume with Retain policy (simulating existing data)
 cat <<EOF | kubectl apply -f -
@@ -51,9 +49,8 @@ kubectl delete pvc mysql-pvc -n mysql
 
 
 # Create some dummy data to simulate existing database files
-ssh node01
-
-cat <<EOF > /mnt/mysql-data/movie-booking.sql
+# --- fixed: non-interactive upload of SQL to remote node01 ---
+cat <<'SQL' | ssh node01 "sudo mkdir -p /mnt/mysql-data && sudo tee /mnt/mysql-data/movie-booking.sql > /dev/null"
 -- Movie booking sample MySQL dump
 -- Charset and engine
 SET NAMES utf8mb4;
@@ -261,15 +258,16 @@ ALTER TABLE seats ADD INDEX idx_seats_screen (screen_id);
 ALTER TABLE paymentS ADD INDEX idx_pay_booking (booking_id);
 
 SET FOREIGN_KEY_CHECKS = 1;
-EOF
+SQL
 
-echo "Existing database data preserved" > /mnt/mysql-data/.data_exists
+# write marker file non-interactively
+ssh node01 "echo 'Existing database data preserved' | sudo tee /mnt/mysql-data/.data_exists >/dev/null"
 
 # Wait for PV to be available
 sleep 3
 
-ssh controlplane
-
+# make ssh to controlplane non-interactive (run a harmless command instead of opening shell)
+ssh controlplane "echo 'connected to controlplane' >/dev/null"
 
 # Create the MySQL Deployment manifest WITHOUT volume mount (student needs to add it)
 cat <<'EOF' > ~/mysql-deploy.yaml

@@ -74,7 +74,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql
+  name: mysql-pvc
   namespace: mysql
 spec:
   storageClassName: ""
@@ -98,7 +98,7 @@ You should see `STATUS: Bound`.
 kubectl get pv
 ```
 
-The PV should now show `STATUS: Bound` and `CLAIM: mysql/mysql`.
+The PV should now show `STATUS: Bound` and `CLAIM: mysql/mysql-pvc`.
 
 ---
 

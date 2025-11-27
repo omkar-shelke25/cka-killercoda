@@ -3,7 +3,7 @@ set -euo pipefail
 
 NS="mysql"
 DEPLOYMENT="mysql"
-PVC_NAME="mysql"
+PVC_NAME="mysql-pvc"
 PV_NAME="mysql-pv-retain"
 
 echo "🔍 Verifying MySQL Deployment restoration with persistent storage..."
@@ -130,7 +130,7 @@ echo "✅ MySQL Pod is ready"
 
 # Check if the existing data is accessible
 POD_NAME=$(kubectl get pod -n "${NS}" -l app=mysql -o jsonpath='{.items[0].metadata.name}')
-if kubectl exec -n "${NS}" "${POD_NAME}" -- test -f /var/lib/mysql/IMPORTANT_DATA.txt 2>/dev/null; then
+if kubectl exec -n "${NS}" "${POD_NAME}" -- test -f /var/lib/mysql/movie-booking.sql 2>/dev/null; then
   echo "✅ Existing data is accessible in the Pod"
 else
   echo "❌ Existing data file not found in the Pod"
@@ -139,7 +139,7 @@ else
 fi
 
 # Verify data content
-DATA_CONTENT=$(kubectl exec -n "${NS}" "${POD_NAME}" -- cat /var/lib/mysql/IMPORTANT_DATA.txt 2>/dev/null || echo "")
+DATA_CONTENT=$(kubectl exec -n "${NS}" "${POD_NAME}" -- cat /var/lib/mysql/movie-booking.sql 2>/dev/null || echo "")
 if echo "${DATA_CONTENT}" | grep -q "CRITICAL CUSTOMER DATABASE DATA"; then
   echo "✅ Data integrity verified - existing data is preserved"
 else

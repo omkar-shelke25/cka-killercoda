@@ -91,6 +91,7 @@ EOF
 
 # Apply the PV and Service (these are already provided)
 kubectl apply -f /src/nginx/nginx-pv.yaml
+kubectl apply -f /src/nginx/nginx-deployment.yaml
 kubectl apply -f /src/nginx/nginx-service.yaml
 
 # Wait for PV to be available

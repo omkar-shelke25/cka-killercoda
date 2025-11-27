@@ -91,11 +91,11 @@ EOF
 
 # Apply the PV and Service (these are already provided)
 kubectl apply -f /src/nginx/nginx-pv.yaml
+sleep 3
+
 kubectl apply -f /src/nginx/nginx-deployment.yaml
 kubectl apply -f /src/nginx/nginx-service.yaml
 
-# Wait for PV to be available
-sleep 3
 
 #!/bin/bash
 set -euo pipefail

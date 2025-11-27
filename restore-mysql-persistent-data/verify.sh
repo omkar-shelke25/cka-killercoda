@@ -106,8 +106,8 @@ echo "✅ Deployment has PVC configured as a volume"
 
 # Check volume mount path
 MOUNT_PATH=$(kubectl get deployment "${DEPLOYMENT}" -n "${NS}" -o jsonpath='{.spec.template.spec.containers[0].volumeMounts[?(@.name=="'"${VOLUME_CHECK}"'")].mountPath}')
-if [[ "${MOUNT_PATH}" != "/var/lib/mysql" ]]; then
-  echo "❌ Incorrect mount path: ${MOUNT_PATH} (expected: /var/lib/mysql)"
+if [[ "${MOUNT_PATH}" != "/home/data" ]]; then
+  echo "❌ Incorrect mount path: ${MOUNT_PATH} (expected: /home/data)"
   exit 1
 fi
 
@@ -130,7 +130,7 @@ echo "✅ MySQL Pod is ready"
 
 # Check if the existing data is accessible
 POD_NAME=$(kubectl get pod -n "${NS}" -l app=mysql -o jsonpath='{.items[0].metadata.name}')
-if kubectl exec -n "${NS}" "${POD_NAME}" -- test -f /var/lib/mysql/movie-booking.sql 2>/dev/null; then
+if kubectl exec -n "${NS}" "${POD_NAME}" -- test -f /home/data/movie-booking.sql 2>/dev/null; then
   echo "✅ Existing data is accessible in the Pod"
 else
   echo "❌ Existing data file not found in the Pod"
@@ -139,8 +139,8 @@ else
 fi
 
 # Verify data content
-DATA_CONTENT=$(kubectl exec -n "${NS}" "${POD_NAME}" -- cat /var/lib/mysql/movie-booking.sql 2>/dev/null || echo "")
-if echo "${DATA_CONTENT}" | grep -q "CRITICAL CUSTOMER DATABASE DATA"; then
+DATA_CONTENT=$(kubectl exec -n "${NS}" "${POD_NAME}" -- cat /home/data/movie-booking.sql 2>/dev/null || echo "")
+if echo "${DATA_CONTENT}" | grep -q "Movie booking sample"; then
   echo "✅ Data integrity verified - existing data is preserved"
 else
   echo "❌ Data verification failed - existing data may be lost"

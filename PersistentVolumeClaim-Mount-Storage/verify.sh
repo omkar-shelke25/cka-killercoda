@@ -158,6 +158,25 @@ if kubectl get svc nginx-scifi-portal-service -n "${NS}" &>/dev/null; then
   echo "✅ Service exposed on NodePort: ${SVC_NODEPORT}"
 fi
 
+
+URL="${1:-http://localhost:30339}"
+
+# fetch page (silent, but show curl errors)
+PAGE="$(curl -sS "$URL" 2>/dev/null || { echo "❌ curl failed to fetch $URL"; exit 2; })"
+
+# match several dash variants: em-dash (—), en-dash (–), HTML entities (&mdash; &#8212; &ndash;), or plain hyphen (-)
+if echo "$PAGE" | grep -qiE 'NGINX (—|–|&mdash;|&#8212;|-|&ndash;) Matrix Rain \(Enhanced\)'; then
+  echo "✅ Found: NGINX — Matrix Rain (Enhanced)"
+  exit 0
+else
+  echo "❌ Not found: NGINX — Matrix Rain (Enhanced)"
+  echo ""
+  echo "Snippet(s) around 'Matrix Rain' (if any):"
+  echo "$PAGE" | grep -n -i 'Matrix Rain' || echo "(no 'Matrix Rain' occurrences found)"
+  exit 1
+fi
+
+
 echo ""
 echo "🎉 Verification passed!"
 echo "✅ PVC '${PVC_NAME}' created and bound to PV '${PV_NAME}'"

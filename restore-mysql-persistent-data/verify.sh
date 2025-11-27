@@ -48,8 +48,8 @@ echo "✅ PVC has correct access mode: ${PVC_ACCESS_MODE}"
 
 # Check PVC storage class
 PVC_STORAGE_CLASS=$(kubectl get pvc "${PVC_NAME}" -n "${NS}" -o jsonpath='{.spec.storageClassName}')
-if [[ "${PVC_STORAGE_CLASS}" != "manual" ]]; then
-  echo "❌ Incorrect storageClassName: ${PVC_STORAGE_CLASS} (expected: manual)"
+if [[ "${PVC_STORAGE_CLASS}" != "" ]]; then
+  echo "❌ Incorrect storageClassName: ${PVC_STORAGE_CLASS} (expected: empty)"
   exit 1
 fi
 

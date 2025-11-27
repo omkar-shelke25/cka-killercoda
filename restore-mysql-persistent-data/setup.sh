@@ -51,6 +51,8 @@ kubectl delete pvc mysql-pvc -n mysql
 
 
 # Create some dummy data to simulate existing database files
+ssh node01
+
 cat <<EOF > /mnt/mysql-data/movie-booking.sql
 -- Movie booking sample MySQL dump
 -- Charset and engine
@@ -266,6 +268,7 @@ echo "Existing database data preserved" > /mnt/mysql-data/.data_exists
 # Wait for PV to be available
 sleep 3
 
+ssh controlplane
 
 
 # Create the MySQL Deployment manifest WITHOUT volume mount (student needs to add it)

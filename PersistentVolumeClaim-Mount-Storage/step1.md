@@ -16,6 +16,7 @@ The following resources are already configured:
 1. **PersistentVolume**: A PV named `nginx-pv` with 700Mi capacity exists (manifest at `/src/nginx/nginx-pv.yaml`)
 2. **Deployment manifest**: Located at `/src/nginx/nginx-deployment.yaml` (needs volume configuration)
 3. **Service**: A NodePort service is already deployed at port 30339
+4. *Before creating the PVC and mounting it, ensure that the PV is available, properly configured, and verify where the data is stored.*
 
 **Your tasks:**
 
@@ -32,7 +33,8 @@ The following resources are already configured:
    - Mount this volume to the container at path `/usr/share/nginx/html`
    - The volume should be named `nginx-pv`
 
-3. **Deploy** the updated deployment to the `nginx-cyperpunk` namespace
+3. **Deploy** the updated deployment to the `nginx-cyperpunk` namespace.Verify that the NodePort (30339) is accessible.
+   ![Alt text](nginx.png)
 
 ---
 

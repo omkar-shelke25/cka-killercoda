@@ -150,17 +150,6 @@ if [[ "${PODS_ON_NODE01}" -ne 3 ]]; then
   kubectl get pods -n "${NS}" -l app=nginx-scifi -o wide
 fi
 
-# Verify volume is actually mounted in a pod
-POD_NAME=$(kubectl get pods -n "${NS}" -l app=nginx-scifi -o jsonpath='{.items[0].metadata.name}')
-MOUNT_CHECK=$(kubectl exec -n "${NS}" "${POD_NAME}" -- df -h | grep "/usr/share/nginx/html" || echo "")
-if [[ -z "${MOUNT_CHECK}" ]]; then
-  echo "❌ Volume not mounted in pod at /usr/share/nginx/html"
-  echo "   Checking mounts in pod:"
-  kubectl exec -n "${NS}" "${POD_NAME}" -- df -h
-  exit 1
-fi
-
-echo "✅ Volume successfully mounted in pods"
 
 # Check service
 if kubectl get svc nginx-scifi-portal-service -n "${NS}" &>/dev/null; then

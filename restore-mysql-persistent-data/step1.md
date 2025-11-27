@@ -182,7 +182,7 @@ Verify the volume is mounted:
 kubectl describe pod -n mysql -l app=mysql
 ```
 
-Look for the `Mounts:` section showing `/var/lib/mysql`.
+Look for the `Mounts:` section showing `/home/data`.
 
 Check that the PVC is bound:
 
@@ -193,13 +193,13 @@ kubectl get pvc -n mysql
 Verify the existing data is accessible from the Pod:
 
 ```bash
-kubectl exec -n mysql -it $(kubectl get pod -n mysql -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- ls -la /var/lib/mysql
+kubectl exec -n mysql -it $(kubectl get pod -n mysql -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- ls -la /home/data
 ```
 
 You should see the files including `IMPORTANT_DATA.txt`.
 
 ```bash
-kubectl exec -n mysql -it $(kubectl get pod -n mysql -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- cat /var/lib/mysql/IMPORTANT_DATA.txt
+kubectl exec -n mysql -it $(kubectl get pod -n mysql -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- cat /home/data/IMPORTANT_DATA.txt
 ```
 
 This confirms the existing data has been preserved!

@@ -34,7 +34,6 @@ The following resources are already configured:
    - The volume should be named `nginx-pv`
 
 3. **Deploy** the updated deployment to the `nginx-cyperpunk` namespace.Verify that the NodePort (30339) is accessible.
-   ![Alt text](nginx.png)
 
 ---
 

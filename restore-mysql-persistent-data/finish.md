@@ -51,7 +51,7 @@ PersistentVolume (mysql-pv-retain)
   └─ Data: Intact ✓
   └─ Bound to: mysql/mysql
 
-PersistentVolumeClaim (mysql)
+PersistentVolumeClaim (mysql-pvc)
   └─ Status: Bound ✓
   └─ Namespace: mysql
   └─ Bound to: mysql-pv-retain
@@ -59,8 +59,8 @@ PersistentVolumeClaim (mysql)
 MySQL Deployment
   └─ Status: Running ✓
   └─ Pod: mysql-xxx
-      └─ Volume Mount: /var/lib/mysql → PVC (mysql)
-          └─ Data: Customer database preserved ✓
+      └─ Volume Mount: /home/data → PVC (mysql-pvc)
+          └─ Data:  movie-booking database preserved ✓
 ```
 
 ---

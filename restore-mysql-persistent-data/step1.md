@@ -54,7 +54,7 @@ You should see a PV named `mysql-pv-retain` with status `Available` and `Reclaim
 kubectl describe pv mysql-pv-retain
 ```
 
-Note the `storageClassName: manual` and `capacity: 500Mi`.
+Note the `storageClassName: ""` and `capacity: 500Mi`.
 
 ```bash
 # 🔍 Verify the existing data in the PV (on the host)

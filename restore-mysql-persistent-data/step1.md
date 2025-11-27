@@ -27,7 +27,7 @@ Your task is to restore the MySQL Deployment and ensure that it continues to use
    ~/mysql-deploy.yaml
    ```
    
-   Modify the Deployment so that it mounts the PVC you created (`mysql-pvc`) at the MySQL data directory: **`/var/lib/mysql`**
+   Modify the Deployment so that it mounts the PVC you created (`mysql-pvc`) at the MySQL data directory: **`/home/data`**
 
 4. Apply the updated Deployment to the cluster.
 
@@ -145,7 +145,7 @@ spec:
               name: mysql
           volumeMounts:
             - name: mysql-persistent-storage
-              mountPath: /var/lib/mysql
+              mountPath: /home/data
       volumes:
         - name: mysql-persistent-storage
           persistentVolumeClaim:

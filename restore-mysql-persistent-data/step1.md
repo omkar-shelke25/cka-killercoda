@@ -42,6 +42,40 @@ Your task is to restore the MySQL Deployment and ensure that it continues to use
 
 <details><summary>✅ Solution (expand to view)</summary>
 
+
+```bash
+kubectl edit pv mysql-pv-retain
+```
+
+**Remove or comment out the entire `claimRef` block:**
+
+```yaml
+# Before editing - PV status: Released
+spec:
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: mysql-pvc          # Remove this entire block
+    namespace: mysql
+    resourceVersion: "12345"
+    uid: abc-123-def
+```
+
+**After removing claimRef:**
+
+```yaml
+# After editing - PV status: Available
+spec:
+  # claimRef block removed
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+```
+
+**Result**: The PV status changes from `Released` → `Available`, allowing a new PVC to bind to it and restore the data! ✅
+
+
 ```bash
 # 🔍 Check the existing PersistentVolume
 kubectl get pv

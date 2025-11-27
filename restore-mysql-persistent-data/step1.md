@@ -16,19 +16,18 @@ Your task is to restore the MySQL Deployment and ensure that it continues to use
 
 ### ❓ **Task**
 
-1. A **PersistentVolume** containing the MySQL data already exists and must be reused. (This is the only PV available.)
+1. A **PersistentVolume** containing the MySQL data already exists and must be reused.A directory must be created on node01 where the MySQL data is stored. (This is the only PV available.)
 
 2. Create a **PersistentVolumeClaim (PVC)** named **`mysql-pvc`** in the **`mysql`** namespace with:
    * **AccessMode**: `ReadWriteOnce`
    * **Storage Request**: `250Mi`
-   * **StorageClassName**: `manual`
 
 3. Update the MySQL Deployment manifest stored at:
    ```
    ~/mysql-deploy.yaml
    ```
    
-   Modify the Deployment so that it mounts the PVC you created (`mysql`) at the MySQL data directory: **`/var/lib/mysql`**
+   Modify the Deployment so that it mounts the PVC you created (`mysql-pvc`) at the MySQL data directory: **`/var/lib/mysql`**
 
 4. Apply the updated Deployment to the cluster.
 

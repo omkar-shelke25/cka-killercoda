@@ -59,7 +59,7 @@ Note the `storageClassName: manual` and `capacity: 500Mi`.
 
 ```bash
 # 🔍 Verify the existing data in the PV (on the host)
-cat /mnt/mysql-data/IMPORTANT_DATA.txt
+cat /mnt/mysql-data/movie-booking.sql
 ```
 
 This confirms the data exists and must not be lost.
@@ -78,7 +78,7 @@ metadata:
   name: mysql
   namespace: mysql
 spec:
-  storageClassName: manual
+  storageClassName: ""
   accessModes:
     - ReadWriteOnce
   resources:

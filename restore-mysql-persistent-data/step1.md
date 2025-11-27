@@ -18,7 +18,7 @@ Your task is to restore the MySQL Deployment and ensure that it continues to use
 
 1. A **PersistentVolume** containing the MySQL data already exists and must be reused. (This is the only PV available.)
 
-2. Create a **PersistentVolumeClaim (PVC)** named **`mysql`** in the **`mysql`** namespace with:
+2. Create a **PersistentVolumeClaim (PVC)** named **`mysql-pvc`** in the **`mysql`** namespace with:
    * **AccessMode**: `ReadWriteOnce`
    * **Storage Request**: `250Mi`
    * **StorageClassName**: `manual`

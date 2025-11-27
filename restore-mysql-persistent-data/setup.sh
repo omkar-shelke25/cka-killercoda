@@ -32,8 +32,8 @@ cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: dummy-pvc
-  namespace: default
+  name: mysql-pvc
+  namespace: mysql
 spec:
   storageClassName: ""
   volumeName: mysql-pv-retain
@@ -47,7 +47,7 @@ EOF
 
 sleep 5
 
-kubectl delete pvc dummy-pvc -n default
+kubectl delete pvc mysql-pvc -n mysql
 
 
 # Create some dummy data to simulate existing database files

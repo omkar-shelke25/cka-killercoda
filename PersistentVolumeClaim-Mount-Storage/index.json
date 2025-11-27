@@ -1,0 +1,23 @@
+{
+  "title": "CKA: PersistentVolumeClaim - Mount Storage to Nginx Deployment",
+  "description": "Create and mount a PersistentVolumeClaim to an Nginx deployment with NodePort service in a cyberpunk-themed namespace.",
+  "details": {
+    "steps": [
+      {
+        "title": "Create PVC and Mount to Nginx Deployment",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

@@ -5,7 +5,7 @@ set -euo pipefail
 kubectl create ns mysql
 
 # Create a directory for MySQL data on the node
-mkdir -p /mnt/mysql-data
+ssh node01 "mkdir -p /mnt/mysql-data"
 
 # Create a PersistentVolume with Retain policy (simulating existing data)
 cat <<EOF | kubectl apply -f -
@@ -16,7 +16,7 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: manual
+  storageClassName: ""
   capacity:
     storage: 500Mi
   accessModes:
@@ -24,8 +24,31 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: "/mnt/mysql-data"
-    type: 
+    type: "DirectoryOrCreate" 
 EOF
+
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dummy-pvc
+  namespace: default
+spec:
+  storageClassName: ""
+  volumeName: mysql-pv-retain
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+EOF
+
+
+sleep 5
+
+kubectl delete pvc dummy-pvc -n default
+
 
 # Create some dummy data to simulate existing database files
 cat <<EOF > /mnt/mysql-data/movie-booking.sql
@@ -242,6 +265,8 @@ echo "Existing database data preserved" > /mnt/mysql-data/.data_exists
 
 # Wait for PV to be available
 sleep 3
+
+
 
 # Create the MySQL Deployment manifest WITHOUT volume mount (student needs to add it)
 cat <<'EOF' > ~/mysql-deploy.yaml

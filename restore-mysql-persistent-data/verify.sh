@@ -95,7 +95,7 @@ fi
 echo "✅ Deployment manifest contains volume configuration"
 
 # Check if the Deployment has volume configured in the cluster
-VOLUME_CHECK=$(kubectl get deployment "${DEPLOYMENT}" -n "${NS}" -o jsonpath='{.spec.template.spec.volumes[?(@.persistentVolumeClaim.claimName=="mysql")].name}')
+VOLUME_CHECK=$(kubectl get deployment "${DEPLOYMENT}" -n "${NS}" -o jsonpath='{.spec.template.spec.volumes[?(@.persistentVolumeClaim.claimName=="mysql-pvc")].name}')
 if [[ -z "${VOLUME_CHECK}" ]]; then
   echo "❌ Deployment does not have PVC 'mysql' configured as a volume"
   echo "   Did you apply the updated manifest?"

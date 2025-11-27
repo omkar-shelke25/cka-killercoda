@@ -304,8 +304,8 @@ spec:
 EOF
 
 
-k apply -f ~/mysql-deploy.yaml
-
+kubectl apply -f ~/mysql-deploy.yaml
+ 
 echo "✅ Setup complete!"
 echo ""
 echo "📊 Current Status:"

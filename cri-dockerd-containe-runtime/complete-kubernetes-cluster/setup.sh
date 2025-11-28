@@ -12,6 +12,9 @@ mkdir -p /root/cluster-setup
 # Create a marker file to track progress
 touch /root/cluster-setup/.setup-initialized
 
+
+sudo reboot 
+
 # Display node information
 echo "✅ Environment prepared!"
 echo ""

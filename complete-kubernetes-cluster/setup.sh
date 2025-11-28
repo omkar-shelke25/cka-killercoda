@@ -13,7 +13,6 @@ mkdir -p /root/cluster-setup
 touch /root/cluster-setup/.setup-initialized
 
 
-sudo reboot 
 
 # Display node information
 echo "✅ Environment prepared!"

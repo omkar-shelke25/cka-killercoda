@@ -48,7 +48,7 @@
     }
   },
   "backend": {
-    "imageid": "ubuntu:2204"
+    "imageid": "ubuntu-4GB"
   },
   "interface": {
     "layout": "terminal-terminal"

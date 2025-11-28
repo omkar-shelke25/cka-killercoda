@@ -1,0 +1,56 @@
+{
+  "title": "CKA: Complete Kubernetes Cluster Setup from Scratch",
+  "description": "Step-by-step guide to set up a production-ready Kubernetes cluster with kubeadm, containerd, and CNI networking. Master all components required for CKA certification.",
+  "details": {
+    "steps": [
+      {
+        "title": "Step 1: System Preparation and Prerequisites",
+        "text": "step1.md",
+        "verify": "verify1.sh"
+      },
+      {
+        "title": "Step 2: Install and Configure Container Runtime (containerd)",
+        "text": "step2.md",
+        "verify": "verify2.sh"
+      },
+      {
+        "title": "Step 3: Install Kubernetes Components (kubeadm, kubelet, kubectl)",
+        "text": "step3.md",
+        "verify": "verify3.sh"
+      },
+      {
+        "title": "Step 4: Initialize Master Node and Configure kubectl",
+        "text": "step4.md",
+        "verify": "verify4.sh"
+      },
+      {
+        "title": "Step 5: Install Pod Network (CNI Plugin)",
+        "text": "step5.md",
+        "verify": "verify5.sh"
+      },
+      {
+        "title": "Step 6: Join Worker Nodes to Cluster",
+        "text": "step6.md",
+        "verify": "verify6.sh"
+      },
+      {
+        "title": "Step 7: Verify and Test Cluster",
+        "text": "step7.md",
+        "verify": "verify7.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu:2204"
+  },
+  "interface": {
+    "layout": "terminal-terminal"
+  }
+}

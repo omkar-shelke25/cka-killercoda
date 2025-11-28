@@ -1,17 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "🔧 Preparing environment for Kubernetes cluster setup..."
-
-# Set hostnames
-hostnamectl set-hostname controlplane
-
-# Create directory for storing cluster info
-mkdir -p /root/cluster-setup
-
-# Create a marker file to track progress
-touch /root/cluster-setup/.setup-initialized
-
 
 
 # Display node information

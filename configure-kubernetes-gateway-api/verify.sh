@@ -6,8 +6,8 @@ APP_NS="jp-bullet-train-app-prod"
 GATEWAY_NAME="bullet-train-gateway"
 HTTPROUTE_NAME="bullet-train-route"
 HOSTNAME="bullet.train.io"
-GATEWAY_IP_FILE="/bullet-train/gateway-ip.txt"
-TEST_SCRIPT="/bullet-train/test-endpoints.sh"
+GATEWAY_IP="192.168.1.240"
+
 
 echo "🔍 Verifying Gateway API configuration for Japan Bullet Train System..."
 echo ""
@@ -140,16 +140,15 @@ if [[ "${TRAVELLERS_PATH}" != "/travellers" ]] || [[ "${TRAVELLERS_SVC}" != "tra
 fi
 echo "✅ Route configured: /travellers → travellers (${APP_NS})"
 
-# Check if Gateway IP file exists
-if [[ ! -f "${GATEWAY_IP_FILE}" ]]; then
+# Check if Gateway IP is provided through environment variable
+if [[ -z "${GATEWAY_IP}" ]]; then
   echo ""
-  echo "⚠️  Warning: Gateway IP file not found at ${GATEWAY_IP_FILE}"
-  echo "💡 Hint: Save the LoadBalancer IP using:"
-  echo "   kubectl get svc -n nginx-gateway -l gateway.networking.k8s.io/gateway-name=${GATEWAY_NAME} -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' > ${GATEWAY_IP_FILE}"
+  echo "⚠️  Warning: GATEWAY_IP environment variable is not set"
+  echo "💡 Hint: Set it using:"
+  echo "   export GATEWAY_IP=<your-loadbalancer-ip>"
 else
-  GATEWAY_IP=$(cat "${GATEWAY_IP_FILE}")
   echo ""
-  echo "✅ Gateway IP file exists: ${GATEWAY_IP}"
+  echo "✅ Gateway IP detected from environment: ${GATEWAY_IP}"
   
   # Check if /etc/hosts contains the entry
   if grep -q "${HOSTNAME}" /etc/hosts; then
@@ -164,20 +163,9 @@ else
     fi
   else
     echo "⚠️  Warning: ${HOSTNAME} not found in /etc/hosts"
-    echo "💡 Hint: Add entry using: echo '${GATEWAY_IP} ${HOSTNAME}' | sudo tee -a /etc/hosts"
+    echo "💡 Hint: Add entry using:"
+    echo "   echo '${GATEWAY_IP} ${HOSTNAME}' | sudo tee -a /etc/hosts"
   fi
-fi
-
-# Check if test script exists and is executable
-if [[ -f "${TEST_SCRIPT}" ]]; then
-  echo "✅ Test script exists: ${TEST_SCRIPT}"
-  if [[ -x "${TEST_SCRIPT}" ]]; then
-    echo "✅ Test script is executable"
-  else
-    echo "⚠️  Warning: Test script is not executable. Run: chmod +x ${TEST_SCRIPT}"
-  fi
-else
-  echo "⚠️  Info: Test script not created (optional)"
 fi
 
 # Check Gateway status

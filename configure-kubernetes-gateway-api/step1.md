@@ -49,17 +49,7 @@ Create an **HTTPRoute** named `bullet-train-route` in namespace `jp-bullet-train
 
 ---
 
-#### Task 3: Verify Gateway and Get LoadBalancer IP
-
-After creating the Gateway and HTTPRoute:
-
-1. Check the Gateway status and verify it's **Programmed**
-2. Get the **LoadBalancer IP** assigned to the Gateway service
-3. Save the LoadBalancer IP to the file `/bullet-train/gateway-ip.txt`
-
----
-
-#### Task 4: Configure Local DNS
+#### Task 3: Configure Local DNS
 
 To access the services via the domain name `bullet.train.io`:
 
@@ -69,9 +59,9 @@ To access the services via the domain name `bullet.train.io`:
 
 ---
 
-#### Task 5: Validation Test
+#### Task 4: Validation Test
 
-Create a shell script at `/bullet-train/test-endpoints.sh` that tests all three endpoints:
+Tests all three endpoints:
 
 ```bash
 #!/bin/bash
@@ -85,8 +75,6 @@ echo -e "\nTesting Travellers:"
 curl -sk https://bullet.train.io/travellers | jq
 ```
 
-Make the script executable and run it to verify all services are accessible.
-
 ---
 
 ### 📊 Expected Results
@@ -99,66 +87,7 @@ After completion, you should be able to:
 
 ---
 
-### 💡 Hints
 
-<details><summary>Click to view hints</summary>
-
-**Hint 1 - Gateway Structure**:
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: <gateway-name>
-  namespace: <namespace>
-spec:
-  gatewayClassName: nginx
-  listeners:
-  - name: https
-    protocol: HTTPS
-    port: 443
-    hostname: <hostname>
-    tls:
-      mode: Terminate
-      certificateRefs:
-      - name: <secret-name>
-```
-
-**Hint 2 - HTTPRoute Structure**:
-```yaml
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: <route-name>
-  namespace: <namespace>
-spec:
-  parentRefs:
-  - name: <gateway-name>
-  hostnames:
-  - <hostname>
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /path
-    backendRefs:
-    - name: <service-name>
-      namespace: <service-namespace>
-      port: 80
-```
-
-**Hint 3 - Getting LoadBalancer IP**:
-```bash
-kubectl get gateway <gateway-name> -n <namespace> -o jsonpath='{.status.addresses[0].value}'
-```
-
-**Hint 4 - Editing /etc/hosts**:
-```bash
-echo "<IP-ADDRESS> bullet.train.io" | sudo tee -a /etc/hosts
-```
-
-</details>
-
----
 
 ### ✅ Solution (Try it yourself first!)
 
@@ -243,7 +172,7 @@ kubectl get gateway bullet-train-gateway -n jp-bullet-train-gtw
 kubectl describe gateway bullet-train-gateway -n jp-bullet-train-gtw
 
 # Get LoadBalancer IP
-GATEWAY_IP=$(kubectl get svc -n nginx-gateway -l gateway.networking.k8s.io/gateway-name=bullet-train-gateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}')
+GATEWAY_IP=$(kubectl get gateway bullet-train-gateway -n jp-bullet-train-gtw -o jsonpath='{.status.addresses[0].value}')
 
 # Save to file
 echo $GATEWAY_IP > /bullet-train/gateway-ip.txt
@@ -265,31 +194,9 @@ echo "$GATEWAY_IP bullet.train.io" | sudo tee -a /etc/hosts
 cat /etc/hosts | grep bullet.train.io
 ```
 
-#### Step 5: Create and Run Test Script
 
-```bash
-cat > /bullet-train/test-endpoints.sh <<'EOF'
-#!/bin/bash
-echo "🚄 Testing Available Trains Endpoint:"
-curl -sk https://bullet.train.io/available | jq
-echo ""
 
-echo "📕 Testing Bookings Endpoint:"
-curl -sk https://bullet.train.io/books | jq
-echo ""
-
-echo "🛂 Testing Travellers Endpoint:"
-curl -sk https://bullet.train.io/travellers | jq
-echo ""
-
-echo "✅ All endpoints tested!"
-EOF
-
-chmod +x /bullet-train/test-endpoints.sh
-/bullet-train/test-endpoints.sh
-```
-
-#### Alternative: Test Manually
+####  Test 
 
 ```bash
 # Test each endpoint

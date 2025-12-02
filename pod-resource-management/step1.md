@@ -23,7 +23,7 @@ Scale down the `python-webapp` deployment in the `python-ml-ns` namespace to **0
 - Add **20% overhead** to avoid node instability (reserve 20% for system processes)
 - **Both init containers and main containers** must have **identical** resource requests and limits.
 
-> Note: Round DOWN to nearest whole number for safety
+> Note: Only Round DOWN to nearest whole number for safety
  
 
 #### Task 3: Edit the Deployment
@@ -68,19 +68,19 @@ Given:
 Calculation:
 Step 1 - Overhead:
 CPU Overhead = 1000m × 0.20 = 200m
-Memory Overhead = 1803Mi × 0.20 = 360.6Mi → 361Mi
+Memory Overhead = 1803Mi × 0.20 = 360.6Mi → 360Mi (round-down)
 
 Step 2 - Available:
 Available CPU = 1000m - 200m = 800m
-Available Memory = 1803Mi - 361Mi = 1442Mi
+Available Memory = 1803Mi - 360Mi = 1443Mi
 
 Step 3 - Per Pod:
 CPU per Pod = 800m ÷ 3 = 266.67m → 266m (round down)
-Memory per Pod = 1442Mi ÷ 3 = 480.67Mi → 480Mi (round down)
+Memory per Pod = 1443Mi ÷ 3 = 481Mi (round down)
 
 Final Values:
 - CPU: 266m
-- Memory: 480Mi
+- Memory: 481Mi
 ```
 
 ---
@@ -130,10 +130,10 @@ spec:
         resources:
           requests:
             cpu: "266m"
-            memory: "480Mi"
+            memory: "481Mi"
           limits:
             cpu: "266m"
-            memory: "480Mi"
+            memory: "481Mi"
       containers:
       - name: python-app
         image: python:3.11-slim
@@ -153,10 +153,10 @@ spec:
         resources:
           requests:
             cpu: "266m"
-            memory: "480Mi"
+            memory: "481Mi"
           limits:
             cpu: "266m"
-            memory: "480Mi"
+            memory: "481Mi"
       volumes:
       - name: app-code
         configMap:
@@ -179,10 +179,10 @@ Expected output (should appear twice - once for init, once for main):
         resources:
           limits:
             cpu: 266m
-            memory: 480Mi
+            memory: 481Mi
           requests:
             cpu: 266m
-            memory: 480Mi
+            memory: 481Mi
 ```
 
 ---
@@ -209,7 +209,7 @@ kubectl describe pod -l app=python-webapp -n python-ml-ns | grep -A 8 "Limits:"
 # 3. Check node allocation
 kubectl describe node | grep -A 10 "Allocated resources:"
 
-# Expected: Around 798m CPU (266m × 3) and 1440Mi memory (480Mi × 3)
+# Expected: Around 798m CPU (266m × 3) and 1443Mi memory (481Mi × 3)
 
 # 4. Test the application
 kubectl run test-curl --image=curlimages/curl -i --rm --restart=Never -n python-ml-ns -- \
@@ -230,16 +230,16 @@ kubectl patch deployment python-webapp -n python-ml-ns --type='json' -p='[
     "op": "add",
     "path": "/spec/template/spec/initContainers/0/resources",
     "value": {
-      "requests": {"cpu": "266m", "memory": "480Mi"},
-      "limits": {"cpu": "266m", "memory": "480Mi"}
+      "requests": {"cpu": "266m", "memory": "481Mi"},
+      "limits": {"cpu": "266m", "memory": "481Mi"}
     }
   },
   {
     "op": "add",
     "path": "/spec/template/spec/containers/0/resources",
     "value": {
-      "requests": {"cpu": "266m", "memory": "480Mi"},
-      "limits": {"cpu": "266m", "memory": "480Mi"}
+      "requests": {"cpu": "266m", "memory": "481Mi"},
+      "limits": {"cpu": "266m", "memory": "481Mi"}
     }
   }
 ]'

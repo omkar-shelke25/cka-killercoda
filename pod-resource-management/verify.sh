@@ -5,7 +5,7 @@ NAMESPACE="python-ml-ns"
 DEPLOYMENT="python-webapp"
 EXPECTED_REPLICAS=3
 EXPECTED_CPU="266m"
-EXPECTED_MEMORY="480Mi"
+EXPECTED_MEMORY="481Mi"
 
 # Node allocatable resources (from setup)
 NODE_TOTAL_CPU=1000  # in millicores

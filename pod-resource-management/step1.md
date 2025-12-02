@@ -39,17 +39,19 @@ Verify that all 3 pods are in `Running` state and have the correct resource conf
 
 <details><summary>Click to view complete solution</summary>
 
+There is a taint on the control plane node, so we cannot use its resources. We use only node01 resources.
+
 #### Step 1: Check Node Resources
 
 ```bash
-kubectl describe node | grep -A 5 "Allocatable:"
+kubectl describe node node01 | grep -A 5 "Allocatable:"
 ```
 
 **Expected output:**
 ```
 Allocatable:
   cpu:                1
-  memory:             1803Mi
+  memory:             1846656Ki/1024Ki=1803.375Mi=1803Mi (round down)
 ```
 
 **Note:** `1` CPU = `1000m` (millicores)

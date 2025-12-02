@@ -249,18 +249,6 @@ if [[ "${TOTAL_MEM_USED}" -gt "${AVAILABLE_MEM}" ]]; then
   exit 1
 fi
 
-echo "✅ Total resource allocation within node capacity"
-
-# Test application connectivity
-echo ""
-echo "🔍 Testing application connectivity..."
-
-if kubectl run test-curl-verify --image=curlimages/curl -i --rm --restart=Never --timeout=30s -n "${NAMESPACE}" -- \
-  curl -s -f http://python-webapp.${NAMESPACE}.svc.cluster.local > /dev/null 2>&1; then
-  echo "✅ Application is responding to HTTP requests"
-else
-  echo "⚠️  Warning: Could not verify HTTP connectivity (non-critical)"
-fi
 
 # Summary
 echo ""

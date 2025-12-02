@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-NAMESPACE="default"
+NAMESPACE="python-ml-ns"
 DEPLOYMENT="python-webapp"
 EXPECTED_REPLICAS=3
 EXPECTED_CPU="266m"
@@ -12,7 +12,7 @@ NODE_TOTAL_CPU=1000  # in millicores
 NODE_TOTAL_MEMORY=1803  # in Mi
 OVERHEAD_PERCENT=20
 
-echo "🔍 Verifying Python Web Application Resource Configuration..."
+echo "🔍 Verifying Python ML Web Application Resource Configuration..."
 echo ""
 
 # Calculate expected values
@@ -29,6 +29,13 @@ echo "   Overhead (20%): ${OVERHEAD_CPU}m CPU, ${OVERHEAD_MEM}Mi Memory"
 echo "   Available: ${AVAILABLE_CPU}m CPU, ${AVAILABLE_MEM}Mi Memory"
 echo "   Expected per Pod: ${PER_POD_CPU}m CPU, ${PER_POD_MEM}Mi Memory"
 echo ""
+
+# Check if namespace exists
+if ! kubectl get namespace "${NAMESPACE}" &>/dev/null; then
+  echo "❌ Namespace '${NAMESPACE}' not found"
+  exit 1
+fi
+echo "✅ Namespace '${NAMESPACE}' exists"
 
 # Check if deployment exists
 if ! kubectl get deployment "${DEPLOYMENT}" -n "${NAMESPACE}" &>/dev/null; then
@@ -93,13 +100,13 @@ EXPECTED_MEMORY_NUM=$(echo "${EXPECTED_MEMORY}" | sed 's/Mi$//')
 
 if [[ -z "${INIT_CPU_REQUEST}" ]]; then
   echo "❌ Init container has no CPU request configured"
-  echo "💡 Hint: Add resources.requests.cpu to the init container"
+  echo "💡 Hint: Add resources.requests.cpu to the init container (init-setup)"
   exit 1
 fi
 
 if [[ -z "${INIT_MEM_REQUEST}" ]]; then
   echo "❌ Init container has no memory request configured"
-  echo "💡 Hint: Add resources.requests.memory to the init container"
+  echo "💡 Hint: Add resources.requests.memory to the init container (init-setup)"
   exit 1
 fi
 
@@ -126,7 +133,7 @@ if [[ "${INIT_MEM_LIMIT}" != "${EXPECTED_MEMORY_NUM}" ]]; then
   exit 1
 fi
 
-echo "✅ Init container resources configured correctly:"
+echo "✅ Init container (init-setup) resources configured correctly:"
 echo "   CPU: ${INIT_CPU_REQUEST}m (request) = ${INIT_CPU_LIMIT}m (limit)"
 echo "   Memory: ${INIT_MEM_REQUEST}Mi (request) = ${INIT_MEM_LIMIT}Mi (limit)"
 
@@ -147,13 +154,13 @@ MAIN_MEM_LIMIT=$(echo "${MAIN_MEM_LIMIT}" | sed 's/Mi$//')
 
 if [[ -z "${MAIN_CPU_REQUEST}" ]]; then
   echo "❌ Main container has no CPU request configured"
-  echo "💡 Hint: Add resources.requests.cpu to the main container"
+  echo "💡 Hint: Add resources.requests.cpu to the main container (python-app)"
   exit 1
 fi
 
 if [[ -z "${MAIN_MEM_REQUEST}" ]]; then
   echo "❌ Main container has no memory request configured"
-  echo "💡 Hint: Add resources.requests.memory to the main container"
+  echo "💡 Hint: Add resources.requests.memory to the main container (python-app)"
   exit 1
 fi
 
@@ -177,7 +184,7 @@ if [[ "${MAIN_MEM_LIMIT}" != "${EXPECTED_MEMORY_NUM}" ]]; then
   exit 1
 fi
 
-echo "✅ Main container resources configured correctly:"
+echo "✅ Main container (python-app) resources configured correctly:"
 echo "   CPU: ${MAIN_CPU_REQUEST}m (request) = ${MAIN_CPU_LIMIT}m (limit)"
 echo "   Memory: ${MAIN_MEM_REQUEST}Mi (request) = ${MAIN_MEM_LIMIT}Mi (limit)"
 
@@ -198,16 +205,28 @@ fi
 
 echo "✅ Init and main containers have identical resources"
 
-# Verify QoS class (should be Guaranteed when requests = limits)
+# Verify requests equal limits (Guaranteed QoS)
 echo ""
-echo "🔍 Verifying QoS Class..."
+echo "🔍 Verifying requests equal limits (Guaranteed QoS)..."
 
+if [[ "${INIT_CPU_REQUEST}" != "${INIT_CPU_LIMIT}" ]] || \
+   [[ "${INIT_MEM_REQUEST}" != "${INIT_MEM_LIMIT}" ]] || \
+   [[ "${MAIN_CPU_REQUEST}" != "${MAIN_CPU_LIMIT}" ]] || \
+   [[ "${MAIN_MEM_REQUEST}" != "${MAIN_MEM_LIMIT}" ]]; then
+  echo "❌ Requests and limits are not equal"
+  echo "💡 For Guaranteed QoS, requests must equal limits"
+  exit 1
+fi
+
+echo "✅ Requests equal limits (Guaranteed QoS)"
+
+# Verify QoS class
 QOS_CLASS=$(kubectl get pod "${POD_NAME}" -n "${NAMESPACE}" -o jsonpath='{.status.qosClass}')
 if [[ "${QOS_CLASS}" != "Guaranteed" ]]; then
   echo "⚠️  Warning: QoS class is '${QOS_CLASS}', expected 'Guaranteed'"
-  echo "   This happens when requests equal limits"
+  echo "   This should be 'Guaranteed' when requests equal limits"
 else
-  echo "✅ QoS Class: Guaranteed (requests = limits)"
+  echo "✅ QoS Class: Guaranteed"
 fi
 
 # Check total resource allocation
@@ -236,8 +255,8 @@ echo "✅ Total resource allocation within node capacity"
 echo ""
 echo "🔍 Testing application connectivity..."
 
-if kubectl run test-curl-verify --image=curlimages/curl -i --rm --restart=Never --timeout=30s -- \
-  curl -s -f http://python-webapp.default.svc.cluster.local > /dev/null 2>&1; then
+if kubectl run test-curl-verify --image=curlimages/curl -i --rm --restart=Never --timeout=30s -n "${NAMESPACE}" -- \
+  curl -s -f http://python-webapp.${NAMESPACE}.svc.cluster.local > /dev/null 2>&1; then
   echo "✅ Application is responding to HTTP requests"
 else
   echo "⚠️  Warning: Could not verify HTTP connectivity (non-critical)"
@@ -250,13 +269,15 @@ echo "🎉 Verification Complete! All checks passed!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "📊 Configuration Summary:"
+echo "   ✅ Namespace: ${NAMESPACE}"
 echo "   ✅ Deployment: ${DEPLOYMENT}"
 echo "   ✅ Replicas: ${EXPECTED_REPLICAS}/${EXPECTED_REPLICAS} running"
 echo "   ✅ CPU per Pod: ${EXPECTED_CPU}"
 echo "   ✅ Memory per Pod: ${EXPECTED_MEMORY}"
-echo "   ✅ Init container configured correctly"
-echo "   ✅ Main container configured correctly"
+echo "   ✅ Init container (init-setup) configured correctly"
+echo "   ✅ Main container (python-app) configured correctly"
 echo "   ✅ Resources identical in both containers"
+echo "   ✅ Requests equal limits (Guaranteed QoS)"
 echo "   ✅ QoS Class: ${QOS_CLASS}"
 echo "   ✅ Total allocation within node capacity"
 echo ""

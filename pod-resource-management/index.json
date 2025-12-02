@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Pod Resource Management - Calculate and Configure Resources",
+  "description": "Master Pod resource calculation by configuring requests and limits with system overhead for a Python web application.",
+  "details": {
+    "steps": [
+      {
+        "title": "Resource Management - Python Web Application",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

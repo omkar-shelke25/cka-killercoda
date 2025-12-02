@@ -124,7 +124,7 @@ fi
 
 if [[ "${INIT_MEM_REQUEST}" != "${EXPECTED_MEMORY_NUM}" ]]; then
   echo "❌ Init container memory request is ${INIT_MEM_REQUEST}Mi, expected ${EXPECTED_MEMORY}"
-  echo "💡 Calculation: (1803Mi - 361Mi) ÷ 3 = 480Mi per pod"
+  echo "💡 Calculation: (1803Mi - 360Mi) ÷ 3 = 481Mi per pod"
   exit 1
 fi
 
@@ -272,6 +272,6 @@ echo ""
 echo "🎯 Resource Calculation Verified:"
 echo "   Formula: (Total - 20% Overhead) ÷ 3 Pods"
 echo "   CPU: (1000m - 200m) ÷ 3 = 266m per pod ✅"
-echo "   Memory: (1803Mi - 361Mi) ÷ 3 = 480Mi per pod ✅"
+echo "   Memory: (1803Mi - 360Mi) ÷ 3 = 481Mi per pod ✅"
 echo ""
 exit 0

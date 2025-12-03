@@ -29,7 +29,9 @@ Create an **HTTPRoute** named `anime-api-httproute` in the `prod` namespace that
 7. **Path**: `/` (PathPrefix)
 8. Save your manifest to: `/root/api-route.yaml`
 
+> Check the logs of the deployment; both deployments need to receive traffic.
 
+> curl -s http://anime.streaming.io/ | jq
 ---
 
 ### 📝 Traffic Mirroring Concept

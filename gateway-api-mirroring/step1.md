@@ -1,9 +1,10 @@
 ## 🎬 Configure Gateway API Traffic Mirroring
 
 📚 **Official Kubernetes Documentation**: 
+- [Gateway API - HTTPRoute(https://gateway-api.sigs.k8s.io/guides/http-routing/)]
 - [Gateway API - HTTPRoute Filters](https://gateway-api.sigs.k8s.io/guides/http-request-mirroring/)
 - [NGINX Gateway Fabric Documentation](https://docs.nginx.com/nginx-gateway-fabric/)
-- [Traffic Mirroring Best Practices](https://gateway-api.sigs.k8s.io/guides/migrating-from-ingress/)
+
 
 Your anime streaming platform has two API versions deployed in the `prod` namespace:
 - `api-v1` - Stable production API serving anime recommendations

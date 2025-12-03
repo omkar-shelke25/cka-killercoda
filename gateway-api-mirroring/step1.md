@@ -25,7 +25,7 @@ Create an **HTTPRoute** named `anime-api-httproute` in the `prod` namespace that
 3. **Attach to Gateway**: `anime-app-gateway` in namespace `anime-gtw`
 4. **Hostname**: `anime.streaming.io`
 5. **Primary Backend**: `api-v1` (port 80) - Users receive responses from here
-6. **Mirror Target**: `api-v2` (port 80) - Receives 10% of mirrored traffic
+6. **Mirror Target**: `api-v2` (port 80) - Receives mirrored traffic
 7. **Path**: `/` (PathPrefix)
 8. Save your manifest to: `/root/api-route.yaml`
 
@@ -79,7 +79,6 @@ spec:
         backendRef:
           name: api-v2
           port: 80
-          weight: 10
 EOF
 
 # Apply the configuration
@@ -100,12 +99,6 @@ kubectl get gateway anime-app-gateway -n anime-gtw
 
 #### Test the Configuration
 ```bash
-# Test primary backend (users get api-v1 responses)
-echo "Testing API endpoint (users always see v1):"
-for i in {1..10}; do
-  curl -s http://anime.streaming.io/ | jq -r '.api_version + " " + .version_emoji'
-done
-
 # Check both API logs to verify mirroring
 echo -e "\nChecking api-v1 logs (handles all requests):"
 kubectl logs --tail=5 deployment/api-v1 -n prod
@@ -120,8 +113,6 @@ kubectl logs --tail=5 deployment/api-v2 -n prod
 echo "API v1 Response (what users see):"
 curl -s http://anime.streaming.io/ | jq
 
-# Note: You can't see api-v2 responses directly since they're discarded
-# But you can check api-v2 logs to confirm it's processing requests
 ```
 
 </details>

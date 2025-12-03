@@ -44,7 +44,7 @@ This demonstrates your mastery of **advanced Kubernetes Gateway API**, **traffic
 1. **User Request** → Gateway receives request for `anime.streaming.io`
 2. **HTTPRoute Matching** → Route matches hostname and path `/`
 3. **Primary Backend** → Request sent to `api-v1`
-4. **Traffic Mirroring** → 10% chance request is duplicated to `api-v2`
+4. **Traffic Mirroring** → Duplicate the request to `api-v2`
 5. **Response Handling**:
    - api-v1 response → Sent back to user ✅
    - api-v2 response → Discarded (not sent to user) 🗑️

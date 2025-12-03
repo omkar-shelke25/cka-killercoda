@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Gateway API Traffic Mirroring - Anime Streaming Platform",
+  "description": "Master Gateway API traffic mirroring by testing a new API version without impacting production users on an anime streaming platform.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure Traffic Mirroring with Gateway API",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

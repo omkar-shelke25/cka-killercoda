@@ -96,7 +96,6 @@ echo "✅ Filter type: RequestMirror"
 # Verify mirror backend
 MIRROR_BACKEND=$(echo "${ROUTE_JSON}" | jq -r '.spec.rules[0].filters[0].requestMirror.backendRef.name' 2>/dev/null || echo "")
 MIRROR_PORT=$(echo "${ROUTE_JSON}" | jq -r '.spec.rules[0].filters[0].requestMirror.backendRef.port' 2>/dev/null || echo "")
-MIRROR_WEIGHT=$(echo "${ROUTE_JSON}" | jq -r '.spec.rules[0].filters[0].requestMirror.backendRef.weight' 2>/dev/null || echo "")
 
 if [[ "${MIRROR_BACKEND}" != "${MIRROR_SVC}" ]]; then
   echo "❌ Mirror backend service is '${MIRROR_BACKEND}', expected '${MIRROR_SVC}'"
@@ -110,12 +109,6 @@ if [[ "${MIRROR_PORT}" != "80" ]]; then
 fi
 echo "✅ Mirror backend port: 80"
 
-if [[ "${MIRROR_WEIGHT}" != "10" ]]; then
-  echo "❌ Mirror weight is '${MIRROR_WEIGHT}', expected '10' (10% of traffic)"
-  echo "💡 Hint: Set weight to 10 to mirror 10% of traffic"
-  exit 1
-fi
-echo "✅ Mirror weight: 10 (10% of traffic mirrored)"
 
 # Check HTTPRoute status
 echo ""

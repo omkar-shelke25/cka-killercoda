@@ -25,13 +25,6 @@ Create an **HTTPRoute** named `anime-api-httproute` in the `prod` namespace that
 7. **Path**: `/` (PathPrefix)
 8. Save your manifest to: `/root/api-route.yaml`
 
-#### Important Notes:
-
-- Both services (`api-v1` and `api-v2`) are already deployed in the `prod` namespace
-- The Gateway `anime-app-gateway` exists in the `anime-gtw` namespace
-- Traffic mirroring means api-v2 processes requests but its responses are **discarded**
-- Users **only** receive responses from api-v1 (primary backend)
-
 
 ---
 
@@ -47,7 +40,7 @@ User Request → Gateway → HTTPRoute
                     ↓               ↓
             Response sent    Response discarded
             to user          (testing only)
-
+```
 
 ### ✅ Solution (Try it yourself first!)
 

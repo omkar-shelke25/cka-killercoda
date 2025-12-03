@@ -1,7 +1,7 @@
 ## 🎬 Configure Gateway API Traffic Mirroring
 
 📚 **Official Kubernetes Documentation**: 
-- [Gateway API - HTTPRoute (https://gateway-api.sigs.k8s.io/guides/http-routing/)]
+- [Gateway API - HTTPRoute](https://gateway-api.sigs.k8s.io/guides/http-routing/)
 - [Gateway API - HTTPRoute Filters](https://gateway-api.sigs.k8s.io/guides/http-request-mirroring/)
 - [NGINX Gateway Fabric Documentation](https://docs.nginx.com/nginx-gateway-fabric/)
 

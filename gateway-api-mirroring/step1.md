@@ -23,7 +23,7 @@ Create an **HTTPRoute** named `anime-api-httproute` in the `prod` namespace that
 1. **Name**: `anime-api-httproute`
 2. **Namespace**: `prod`
 3. **Attach to Gateway**: `anime-app-gateway` in namespace `anime-gtw`
-4. **Hostname**: `anime.streaming.io`
+4. **Hostname**: `anime.streaming.io` (DNS already set in /etc/hosts)
 5. **Primary Backend**: `api-v1` (port 80) - Users receive responses from here
 6. **Mirror Target**: `api-v2` (port 80) - Receives mirrored traffic
 7. **Path**: `/` (PathPrefix)

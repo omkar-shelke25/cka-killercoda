@@ -2,7 +2,7 @@
 set -euo pipefail
 
 echo "🎮 Setting up Kanto Research Cloud Platform..."
-
+echo "192.168.1.240 pokedex.kanto.lab" | sudo tee -a /etc/hosts
 # Install Gateway API CRDs
 echo "📦 Installing Kubernetes Gateway API CRDs..."
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1

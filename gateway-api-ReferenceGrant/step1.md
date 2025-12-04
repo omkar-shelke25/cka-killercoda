@@ -3,7 +3,7 @@
 ### Official Documentation
 - [Gateway API - ReferenceGrant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/)
 - [Gateway API Security Model](https://gateway-api.sigs.k8s.io/concepts/security-model/)
-- 
+
 ### 📖 Scenario
 
 The **Kanto Research Cloud Platform** runs workloads across multiple namespaces to isolate teams studying different Pokémon types.
@@ -36,12 +36,12 @@ The HTTPRoute in `pokedex-ui` is trying to reference Service `evolution-engine` 
 
 ### 🎯 Your Task
 
-Create a **ReferenceGrant** in the **pokedex-core** namespace. This ReferenceGrant must allow a cross-namespace reference **from an HTTPRoute** in the **pokedex-ui** namespace **to a Service** in the **pokedex-core** namespace.
+Create a **ReferenceGrant** in the **pokedex-core** namespace. This ReferenceGrant must allow a cross-namespace reference **from an HTTPRoute** in the **`pokedex-ui`** namespace **to a Service** in the **`pokedex-core`** namespace.
 
 In doing so, ensure the following conditions are met:
 
-* It must authorize only the **HTTPRoute** kind from the **gateway.networking.k8s.io** API group.
-* It must allow the reference only from the **pokedex-ui** namespace.
+* It must authorize only the **`HTTPRoute`** kind from the **`gateway.networking.k8s.io`** API group.
+* It must allow the reference only from the **`pokedex-ui`** namespace.
 * It must permit access **only to the `evolution-engine` Service**, and no other Service.
 * It must not authorize any additional resource types or namespaces beyond these requirements.
 

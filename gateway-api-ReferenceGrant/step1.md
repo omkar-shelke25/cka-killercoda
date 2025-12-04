@@ -32,30 +32,15 @@ The HTTPRoute in `pokedex-ui` is trying to reference Service `evolution-engine` 
 
 ### 🎯 Your Task
 
-Create a **ReferenceGrant** in the `pokedex-core` namespace that satisfies ALL of the following requirements:
+Create a **ReferenceGrant** in the **pokedex-core** namespace. This ReferenceGrant must allow a cross-namespace reference **from an HTTPRoute** in the **pokedex-ui** namespace **to a Service** in the **pokedex-core** namespace.
 
-#### 1. Allow Cross-Namespace Reference
+In doing so, ensure the following conditions are met:
 
-**From** (Source):
-```yaml
-group: gateway.networking.k8s.io
-kind: HTTPRoute
-namespace: pokedex-ui
-```
+* It must authorize only the **HTTPRoute** kind from the **gateway.networking.k8s.io** API group.
+* It must allow the reference only from the **pokedex-ui** namespace.
+* It must permit access **only to the `evolution-engine` Service**, and no other Service.
+* It must not authorize any additional resource types or namespaces beyond these requirements.
 
-**To** (Target):
-```yaml
-group: ""              # Core API group (for Services)
-kind: Service
-# No namespace specified here - ReferenceGrant is created in target namespace
-```
-
-#### 2. Security Constraints
-
-- ✅ Must allow ONLY `evolution-engine` Service (no wildcarding)
-- ✅ Must allow ONLY HTTPRoute kind (no other resource types)
-- ✅ Must allow ONLY from `pokedex-ui` namespace (no other namespaces)
-- ❌ Do NOT authorize other resources or namespaces
 
 #### 3. File Location
 
@@ -64,6 +49,7 @@ Save the complete manifest to:
 /root/poke-refgrant.yaml
 ```
 
+> curl http://pokedex.kanto.lab/api/evolution | jq
 
 
 ### ✅ Solution (Try yourself first!)
@@ -118,9 +104,6 @@ kubectl get svc evolution-engine -n pokedex-core
 #### Test the API
 
 ```bash
-# Configure DNS
-echo "192.168.1.240 pokedex.kanto.lab" | sudo tee -a /etc/hosts
-
 # Test endpoint
 curl http://pokedex.kanto.lab/api/evolution | jq
 

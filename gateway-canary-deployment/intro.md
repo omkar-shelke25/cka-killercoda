@@ -8,6 +8,7 @@ Hawkins Lab operates the **Stranger Things Streaming API**, serving episode and 
 
 The engineering team has developed an experimental **"Upside Down Mode"** feature that needs to be rolled out safely.
 
+> Please wait 1 minute for `MetalLoadBalancer` to set up the gateway.
 ---
 
 Click **▶️ Start Scenario** to begin your mission at Hawkins Lab! 💪🔬

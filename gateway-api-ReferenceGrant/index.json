@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Gateway API ReferenceGrant - Pokémon Research Cluster",
+  "description": "Master Gateway API cross-namespace security by fixing a missing ReferenceGrant that blocks HTTPRoute access to backend services in the Pokémon Research Platform.",
+  "details": {
+    "steps": [
+      {
+        "title": "Fix Cross-Namespace Access with ReferenceGrant",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

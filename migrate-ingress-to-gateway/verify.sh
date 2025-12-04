@@ -292,6 +292,19 @@ if grep -q "${HOSTNAME}" /etc/hosts 2>/dev/null && command -v curl &>/dev/null; 
   fi
 fi
 
+
+
+IP_TO_CHECK="192.168.1.240"
+FILE="/etc/hosts"
+
+if grep -q "$IP_TO_CHECK" "$FILE"; then
+    echo "ERROR: IP address $IP_TO_CHECK is still present in $FILE"
+    exit 1
+else
+    echo "OK: IP address $IP_TO_CHECK not found."
+fi
+
+
 # Final verdict
 echo ""
 echo "═══════════════════════════════════════════════════════════"

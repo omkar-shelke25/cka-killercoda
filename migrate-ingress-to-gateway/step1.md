@@ -55,6 +55,7 @@ Save the HTTPRoute manifest to:
 
 Delete the existing Ingress after the migration to the Gateway has been successfully completed.
 
+Ensure that only the Gateway IP is present in `/etc/hosts`, and remove any entries related to the Ingress controller
 
 ```
 # Test endpoints
@@ -149,8 +150,8 @@ echo $GATEWAY_IP
 echo "${GATEWAY_IP} gateway.web.k8s.local" | sudo tee -a /etc/hosts
 
 # Test endpoints
-curl -k https://gateway.web.k8s.local/games | jq '.service'
-curl -k https://gateway.web.k8s.local/players | jq '.service'
+curl -k https://gateway.web.k8s.local/games | jq 
+curl -k https://gateway.web.k8s.local/players | jq 
 ```
 
 </details>

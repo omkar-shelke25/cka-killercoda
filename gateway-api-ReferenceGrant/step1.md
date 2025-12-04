@@ -1,5 +1,9 @@
 ## 🔬 CKA: Fix Cross-Namespace Access with ReferenceGrant
 
+### Official Documentation
+- [Gateway API - ReferenceGrant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/)
+- [Gateway API Security Model](https://gateway-api.sigs.k8s.io/concepts/security-model/)
+- 
 ### 📖 Scenario
 
 The **Kanto Research Cloud Platform** runs workloads across multiple namespaces to isolate teams studying different Pokémon types.

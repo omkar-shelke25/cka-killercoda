@@ -1,5 +1,10 @@
 ## 🔬 CKA: Canary Deployment with Gateway API
 
+### 📚 Official Documentation
+- [Gateway API - Traffic Splitting](https://gateway-api.sigs.k8s.io/guides/traffic-splitting/)
+- [HTTPRoute Reference](https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1.HTTPRoute)
+- [Kubernetes Deployment Strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy)
+- [Gateway API Best Practices](https://gateway-api.sigs.k8s.io/guides/)
 
 ### 📖 Scenario
 

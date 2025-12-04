@@ -60,6 +60,7 @@ Save the complete manifest to:
 /root/st-canary.yaml
 ```
 
+> Send multiple requests using `curl -s http://api.stranger.things/recommendations | jq` and check both the curl output and the deployment logs.
 
 ---
 

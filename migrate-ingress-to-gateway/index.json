@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Migrate Ingress to Gateway API - Alice in Borderland",
+  "description": "Master Gateway API migration by converting an existing Ingress configuration to Gateway API resources while surviving the deadly games in the Borderland.",
+  "details": {
+    "steps": [
+      {
+        "title": "Migrate Ingress to Gateway API - Survive the Game",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

@@ -53,9 +53,9 @@ Save the HTTPRoute manifest to:
 
 #### Task 3: 
 
-Delete the existing Ingress after the migration to the Gateway has been successfully completed.
+Ensure that only the Gateway IP is present in /etc/hosts, and remove any entries related to the Ingress controller
 
-Ensure that only the Gateway IP is present in `/etc/hosts`, and remove any entries related to the Ingress controller
+Delete the existing Ingress after the migration to the Gateway has been successfully completed.
 
 ```
 # Test endpoints

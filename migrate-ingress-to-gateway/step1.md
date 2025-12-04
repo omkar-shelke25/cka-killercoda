@@ -1,5 +1,10 @@
 ## 🎴 CKA: The Migration Game - Survive or Die
 
+### 📚 Official Documentation
+ - [Gateway K8S](https://kubernetes.io/docs/concepts/services-networking/gateway/)
+ - [Gateway API - HTTPRoute](https://gateway-api.sigs.k8s.io/guides/http-routing/)
+ - [Gateway API - Migration Guide](https://gateway-api.sigs.k8s.io/guides/migrating-from-ingress/)
+ 
 ---
 
 ### 📖 Game Scenario

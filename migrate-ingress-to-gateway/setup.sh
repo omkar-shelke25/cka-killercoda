@@ -5,6 +5,10 @@ echo "🎴 Initializing Borderland Game Environment..."
 echo "⏱️  Timer started... Survive or die."
 echo ""
 
+echo "192.168.1.240 gateway.web.k8s.local" | sudo tee -a /etc/hosts
+
+echo "192.168.1.241 gateway.web.k8s.local" | sudo tee -a /etc/hosts
+
 # Install Gateway API CRDs
 echo "📦 Installing Kubernetes Gateway API CRDs..."
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
@@ -444,8 +448,6 @@ kind: Ingress
 metadata:
   name: web
   namespace: borderland
-  annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   tls:

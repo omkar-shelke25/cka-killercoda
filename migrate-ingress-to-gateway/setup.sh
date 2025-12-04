@@ -26,7 +26,7 @@ kubectl wait --namespace metallb-system \
   --selector=component=controller \
   --timeout=120s > /dev/null 2>&1 || echo "Waiting for MetalLB..."
 
-sleep 5
+sleep 3
 
 echo "🌐 Configuring MetalLB IP Address Pool..."
 cat <<'YAML' | kubectl apply -f - > /dev/null 2>&1
@@ -49,7 +49,7 @@ spec:
   - default-address-pool
 YAML
 
-sleep 5
+sleep 3
 
 # Create borderland namespace
 echo "🏗️ Creating borderland namespace..."
@@ -431,11 +431,14 @@ kubectl wait --namespace ingress-nginx \
   --selector=app.kubernetes.io/component=controller \
   --timeout=120s > /dev/null 2>&1 || echo "Ingress controller initializing..."
 
-sleep 5
+sleep 2
 
-# Create existing Ingress resource
-echo "📡 Creating existing Ingress resource (legacy system)..."
-cat <<'EOF' | kubectl apply -f - > /dev/null 2>&1
+
+# Ensure directory exists
+mkdir -p /borderland-ingress
+
+# Write ingress.yaml
+cat <<'EOF' > /borderland-ingress/ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -469,18 +472,13 @@ spec:
               number: 80
 EOF
 
-# Create GatewayClass
-echo "🎯 Creating GatewayClass..."
-cat <<'EOF' | kubectl apply -f - > /dev/null 2>&1
-apiVersion: gateway.networking.k8s.io/v1
-kind: GatewayClass
-metadata:
-  name: nginx
-spec:
-  controllerName: gateway.nginx.org/nginx-gateway-controller
-EOF
+echo "📄 Saved Ingress file to /borderland-ingress/ingress.yaml"
 
-sleep 3
+# Apply to Kubernetes
+kubectl apply -f /borderland-ingress/ingress.yaml
+
+echo "📡 Ingress applied."
+
 
 echo ""
 echo "✅ Borderland Game Environment Ready!"

@@ -233,6 +233,4 @@ You're one step closer to your **Certified Kubernetes Administrator** certificat
 
 **The Pokédex is functional! Evolution data flows freely! Mission accomplished! ⚡🔬🎮**
 
----
 
-*"Gotta secure 'em all! ReferenceGrant is your friend!"* - Professor Oak

@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Gateway API Canary Deployment - Stranger Things Streaming",
+  "description": "Master Gateway API canary deployments by implementing weighted traffic splitting for a Stranger Things streaming platform rolling out 'Upside Down Mode'.",
+  "details": {
+    "steps": [
+      {
+        "title": "Canary Deployment with Gateway API - Stranger Things Edition",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

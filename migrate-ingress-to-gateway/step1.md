@@ -1,4 +1,4 @@
-## 🎴 The Migration Game - Survive or Die
+## 🎴 CKA: The Migration Game - Survive or Die
 
 ---
 
@@ -16,44 +16,51 @@ The Game Master has declared that Ingress is obsolete. You must migrate to the n
 
 ### 🎯 Your Tasks
 
+An existing Ingress configuration is already present in the file:
+
+```
+/borderland-ingress/ingress.yaml
+```
+
+Review this Ingress and migrate it to the Gateway API.
+
 #### Task 1: Create Gateway Resource
 
-Create a **Gateway** named `web-gateway` in the `borderland` namespace.
+Create a Gateway named **`web-gateway`** in the **`borderland`** namespace using the **`nginx`** GatewayClass.
 
-**Requirements:**
+The Gateway must listen on HTTPS port **`443`**, terminate TLS using the same secret referenced by the Ingress, and serve the host **`gateway.web.k8s.local`**.
 
-| Element | Specification |
-|---------|--------------|
-| Name | `web-gateway` |
-| Namespace | `borderland` |
-| GatewayClassName | `nginx` |
-| Listener Protocol | `HTTPS` (TLS termination) |
-| Listener Port | `443` |
-| Hostname | `gateway.web.k8s.local` |
-| TLS Mode | `Terminate` |
-| TLS Secret | `web-tls` (same namespace) |
+TLS Secret`web-tls` has been present in same namespace.
 
-**Save to**: `/root/web-gateway.yaml`
+Save the Gateway manifest to:
+
+```
+/root/web-gateway.yaml
+```
 
 ---
 
 #### Task 2: Create HTTPRoute Resource
+Then create an HTTPRoute in the **borderland** namespace named **web-route** that reproduces the routing behavior of the Ingress.
 
-Create an **HTTPRoute** named `web-route` in the `borderland` namespace.
+The route should match the same host and forward requests from **`/games`** to **`games-service`** on port **`80`** and from **`/players`** to **`players-service`** on port **`80`**, using PathPrefix matching.
 
-**Requirements:**
+Save the HTTPRoute manifest to:
 
-| Element | Specification |
-|---------|--------------|
-| Name | `web-route` |
-| Namespace | `borderland` |
-| Parent Gateway | `web-gateway` |
-| Hostname | `gateway.web.k8s.local` |
-| Route 1 | `/games` → `games-service` port 80 |
-| Route 2 | `/players` → `players-service` port 80 |
-| Path Type | `PathPrefix` |
+```
+/root/web-route.yaml
+```
 
-**Save to**: `/root/web-route.yaml`
+#### Task 3: 
+
+Delete the existing Ingress after the migration to the Gateway has been successfully completed.
+
+
+```
+# Test endpoints
+curl -k https://gateway.web.k8s.local/games | jq 
+curl -k https://gateway.web.k8s.local/players | jq 
+```
 
 ---
 

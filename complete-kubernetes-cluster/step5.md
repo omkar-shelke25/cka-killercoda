@@ -124,7 +124,7 @@ kubectl get nodes
 Expected output:
 ```
 NAME          STATUS   ROLES           AGE   VERSION
-controlplane  Ready    control-plane   10m   v1.31.0
+controlplane  Ready    control-plane   10m   v1.34.0
 ```
 
 ✅ **Status should now be `Ready`!**

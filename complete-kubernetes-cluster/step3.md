@@ -147,13 +147,4 @@ Before proceeding, ensure:
 
 ---
 
-## 📝 What You Learned
-
-- Kubernetes component architecture
-- Package repository management for Kubernetes
-- Version pinning for cluster stability
-- Role of kubeadm, kubelet, and kubectl
-
----
-
 **Ready?** Click **Continue** to proceed to Step 4! ➡️

@@ -130,14 +130,6 @@ Before proceeding to the next step, ensure:
 **Problem**: Swap shows non-zero values
 - **Solution**: Ensure you ran `swapoff -a` and modified `/etc/fstab`
 
----
-
-## 📝 What You Learned
-
-- System prerequisites for Kubernetes installation
-- Importance of disabling swap for kubelet
-- Kernel modules required for container networking
-- Network bridge and IP forwarding configuration
 
 ---
 

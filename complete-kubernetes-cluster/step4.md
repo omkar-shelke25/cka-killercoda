@@ -38,12 +38,12 @@ hostname -I | awk '{print $1}'
 
 Replace `<YOUR_NODE_IP>` with the IP from above:
 
-```bash
 sudo kubeadm init \
   --pod-network-cidr=192.168.0.0/16 \
   --apiserver-advertise-address=<YOUR_NODE_IP> \
-  --kubernetes-version=v1.34.0
-```
+  --kubernetes-version=v1.34.0 \
+  --ignore-preflight-errors=NumCPU
+
 
 **Parameters explained:**
 - `--pod-network-cidr`: IP range for pod network (required for Calico CNI)

@@ -4,6 +4,8 @@ set -e
 echo "🔍 Verifying Step 1: System Preparation..."
 echo ""
 
+mkdir  /root/cluster-setup/
+
 # Check if swap is disabled
 echo "Checking swap status..."
 SWAP_STATUS=$(free -m | grep Swap | awk '{print $2}')

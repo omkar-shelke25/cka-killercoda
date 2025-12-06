@@ -76,17 +76,6 @@ curl -sk https://bullet.train.io/books | jq
 echo -e "\nTesting Travellers:"
 curl -sk https://bullet.train.io/travellers | jq
 ```
-
----
-
-### 📊 Expected Results
-
-After completion, you should be able to:
-- Access `https://bullet.train.io/available` and see train availability data
-- Access `https://bullet.train.io/books` and see booking information
-- Access `https://bullet.train.io/travellers` and see passenger data
-- All traffic should be encrypted via HTTPS (TLS termination at the Gateway)
-
 ---
 
 

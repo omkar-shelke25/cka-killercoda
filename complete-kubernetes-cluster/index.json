@@ -32,11 +32,6 @@
         "title": "Step 6: Join Worker Nodes to Cluster",
         "text": "step6.md",
         "verify": "verify6.sh"
-      },
-      {
-        "title": "Step 7: Verify and Test Cluster",
-        "text": "step7.md",
-        "verify": "verify7.sh"
       }
     ],
     "intro": {

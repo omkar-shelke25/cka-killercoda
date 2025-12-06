@@ -38,17 +38,20 @@ hostname -I | awk '{print $1}'
 
 Replace `<YOUR_NODE_IP>` with the IP from above:
 
+```bash
 sudo kubeadm init \
   --pod-network-cidr=192.168.0.0/16 \
   --apiserver-advertise-address=<YOUR_NODE_IP> \
   --kubernetes-version=v1.34.0 \
   --ignore-preflight-errors=NumCPU
+```
 
 
 **Parameters explained:**
 - `--pod-network-cidr`: IP range for pod network (required for Calico CNI)
 - `--apiserver-advertise-address`: IP address the API server will advertise
 - `--kubernetes-version`: Explicit version specification
+- `--ignore-preflight-errors=NumCPU`: It tells kubeadm to ignore the CPU requirement check and continue even if you have too few CPUs.
 
 ⏱️ **Wait time**: 2-5 minutes for initialization to complete.
 
@@ -74,17 +77,6 @@ Then you can join any number of worker nodes by running the following on each as
 
 kubeadm join 192.168.1.100:6443 --token abc123.xyz789 \
 	--discovery-token-ca-cert-hash sha256:abcd1234...
-```
-
-🔴 **SAVE THIS OUTPUT** - You'll need the join command for Step 6!
-
-You can save it to a file:
-```bash
-sudo kubeadm init \
-  --pod-network-cidr=192.168.0.0/16 \
-  --apiserver-advertise-address=<YOUR_NODE_IP> \
-  --kubernetes-version=v1.34.0 \
-  | tee /root/cluster-setup/init-output.txt
 ```
 
 ---

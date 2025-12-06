@@ -1,6 +1,8 @@
 ## 🚄 Configure Kubernetes Gateway API for Bullet Train Services
 
-📚 **Official Kubernetes Documentation**: [Gateway API](https://gateway-api.sigs.k8s.io/)
+📚 **Official Kubernetes Documentation**: 
+- [Gateway API](https://gateway-api.sigs.k8s.io/)
+- [Gateway API http-routing](https://gateway-api.sigs.k8s.io/guides/http-routing/)
 
 The Japan Railway (JR) has deployed three microservices in the `jp-bullet-train-app-prod` namespace:
 - `available` - Real-time train availability

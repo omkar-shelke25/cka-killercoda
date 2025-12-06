@@ -70,7 +70,7 @@ sudo apt-get install -y containerd.io
 ```
 
 ```bash
-*** config.toml (Y/I/N/O/D/Z) [default=N] N
+*** config.toml (Y/I/N/O/D/Z) [default=N] ? N
 Choose the default option
 ```
 

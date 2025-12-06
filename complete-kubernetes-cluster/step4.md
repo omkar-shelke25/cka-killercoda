@@ -178,14 +178,4 @@ Before proceeding, ensure:
 
 ---
 
-## 📝 What You Learned
-
-- Control plane initialization process
-- kubeadm init parameters and their purposes
-- kubectl configuration setup
-- Cluster authentication and authorization
-- Understanding node readiness states
-
----
-
 **Ready?** Click **Continue** to proceed to Step 5! ➡️

@@ -1,0 +1,23 @@
+{
+  "title": "CKA: PriorityClass Configuration - AcmeRetail Holiday Flash Sale",
+  "description": "Master Kubernetes PriorityClass by ensuring critical log forwarding services maintain priority during high-traffic holiday sales events.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure PriorityClass for Critical Workloads",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

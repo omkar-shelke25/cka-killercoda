@@ -42,7 +42,7 @@ Replace `<YOUR_NODE_IP>` with the IP from above:
 sudo kubeadm init \
   --pod-network-cidr=192.168.0.0/16 \
   --apiserver-advertise-address=<YOUR_NODE_IP> \
-  --kubernetes-version=v1.31.0
+  --kubernetes-version=v1.34.0
 ```
 
 **Parameters explained:**
@@ -83,7 +83,7 @@ You can save it to a file:
 sudo kubeadm init \
   --pod-network-cidr=192.168.0.0/16 \
   --apiserver-advertise-address=<YOUR_NODE_IP> \
-  --kubernetes-version=v1.31.0 \
+  --kubernetes-version=v1.34.0 \
   | tee /root/cluster-setup/init-output.txt
 ```
 
@@ -135,7 +135,7 @@ kubectl get nodes
 Expected output:
 ```
 NAME          STATUS     ROLES           AGE   VERSION
-controlplane  NotReady   control-plane   1m    v1.31.0
+controlplane  NotReady   control-plane   1m    v1.34.0
 ```
 
 ⚠️ **Note**: Status shows `NotReady` because CNI (pod network) is not yet installed. This is expected!

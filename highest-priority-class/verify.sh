@@ -11,13 +11,17 @@ echo ""
 
 ERRORS=0
 
+########################################
 # Task 1: Verify PriorityClass exists
-echo "📊 Task 1: Checking PriorityClass 'high-priority'..."
+########################################
+echo "📊 Task 1: Checking PriorityClass '${PRIORITYCLASS_NAME}'..."
 
 if ! kubectl get priorityclass "${PRIORITYCLASS_NAME}" &>/dev/null; then
   echo "❌ PriorityClass '${PRIORITYCLASS_NAME}' not found"
   echo "💡 Hint: Create it with: kubectl apply -f <priorityclass.yaml>"
   ((ERRORS++))
+  echo ""
+  echo "❌ CONFIGURATION INCOMPLETE — ${ERRORS} error(s) detected"
   exit 1
 else
   echo "✅ PriorityClass '${PRIORITYCLASS_NAME}' exists"
@@ -38,18 +42,23 @@ else
   echo "✅ PriorityClass value: ${EXPECTED_VALUE}"
 fi
 
-# Verify globalDefault
-PC_GLOBAL=$(echo "${PC_JSON}" | jq -r '.globalDefault // "notset"')
-if [[ "${PC_GLOBAL}" != "false" ]]; then
-  echo "❌ PriorityClass globalDefault is '${PC_GLOBAL}', expected 'false'"
-  echo "💡 Hint: Set globalDefault: false in your PriorityClass"
+# Verify globalDefault (must NOT be true)
+# NOTE: When globalDefault is false, the field may be omitted in JSON.
+#       So we treat 'missing' as false/ok and only fail if it is explicitly true.
+PC_GLOBAL_RAW=$(echo "${PC_JSON}" | jq -r '.globalDefault // "false"')
+
+if [[ "${PC_GLOBAL_RAW}" == "true" ]]; then
+  echo "❌ PriorityClass globalDefault is 'true' — it must NOT be global default"
+  echo "💡 Hint: Set globalDefault: false or remove it from your PriorityClass YAML"
   ((ERRORS++))
 else
-  echo "✅ PriorityClass globalDefault: false"
+  echo "✅ PriorityClass is NOT global default (globalDefault is false or unset)"
 fi
 
 # Verify preemptionPolicy
-PC_PREEMPTION=$(echo "${PC_JSON}" | jq -r '.preemptionPolicy // "notset"')
+# Default preemptionPolicy is PreemptLowerPriority if not set.
+PC_PREEMPTION=$(echo "${PC_JSON}" | jq -r '.preemptionPolicy // "PreemptLowerPriority"')
+
 if [[ "${PC_PREEMPTION}" != "PreemptLowerPriority" ]]; then
   echo "❌ PriorityClass preemptionPolicy is '${PC_PREEMPTION}', expected 'PreemptLowerPriority'"
   echo "💡 Hint: Set preemptionPolicy: PreemptLowerPriority in your PriorityClass"
@@ -58,13 +67,17 @@ else
   echo "✅ PriorityClass preemptionPolicy: PreemptLowerPriority"
 fi
 
+########################################
 # Task 2: Verify Deployment uses PriorityClass
+########################################
 echo ""
-echo "🔧 Task 2: Checking Deployment '${DEPLOYMENT_NAME}'..."
+echo "🔧 Task 2: Checking Deployment '${DEPLOYMENT_NAME}' in namespace '${NAMESPACE}'..."
 
 if ! kubectl get deployment "${DEPLOYMENT_NAME}" -n "${NAMESPACE}" &>/dev/null; then
   echo "❌ Deployment '${DEPLOYMENT_NAME}' not found in namespace '${NAMESPACE}'"
   ((ERRORS++))
+  echo ""
+  echo "❌ CONFIGURATION INCOMPLETE — ${ERRORS} error(s) detected"
   exit 1
 fi
 
@@ -84,18 +97,19 @@ else
   echo "✅ Deployment uses priorityClassName: ${PRIORITYCLASS_NAME}"
 fi
 
-# Verify pods are using the PriorityClass
+########################################
+# Task 3: Verify Pods are using PriorityClass
+########################################
 echo ""
 echo "🔍 Task 3: Verifying Pods are using PriorityClass..."
 
-POD_COUNT=$(kubectl get pods -n "${NAMESPACE}" -l app=log-forwarder --no-headers 2>/dev/null | wc -l)
+POD_COUNT=$(kubectl get pods -n "${NAMESPACE}" -l app=log-forwarder --no-headers 2>/dev/null | wc -l || echo 0)
 if [[ ${POD_COUNT} -eq 0 ]]; then
   echo "⚠️  No pods found for deployment"
   echo "   Pods may still be starting..."
 else
   echo "   Found ${POD_COUNT} pod(s)"
   
-  # Check each pod
   PODS_WITH_PRIORITY=0
   while IFS= read -r POD_NAME; do
     POD_PC=$(kubectl get pod "${POD_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.priorityClassName}' 2>/dev/null || echo "")
@@ -120,7 +134,9 @@ else
   fi
 fi
 
-# Verify no system PriorityClasses were used
+########################################
+# Security Check: PriorityClass range
+########################################
 echo ""
 echo "🔒 Security Check: Verifying system PriorityClasses were not used..."
 
@@ -133,13 +149,18 @@ else
   echo "✅ PriorityClass value is in valid user-defined range"
 fi
 
-# Show priority hierarchy
+########################################
+# Priority hierarchy view
+########################################
 echo ""
 echo "📊 Priority Hierarchy After Configuration:"
 echo ""
-kubectl get priorityclasses --sort-by=.value 2>/dev/null | grep -E "NAME|payment-critical|high-priority|inventory-high|frontend-medium|analytics-low" || true
+kubectl get priorityclasses --sort-by=.value 2>/dev/null | \
+  grep -E "NAME|payment-critical|high-priority|inventory-high|frontend-medium|analytics-low" || true
 
+########################################
 # Final summary
+########################################
 echo ""
 echo "═══════════════════════════════════════════════════════════"
 
@@ -152,7 +173,7 @@ if [[ ${ERRORS} -eq 0 ]]; then
   echo "📊 Configuration Summary:"
   echo "   • PriorityClass: ${PRIORITYCLASS_NAME}"
   echo "   • Value: ${EXPECTED_VALUE}"
-  echo "   • globalDefault: false"
+  echo "   • globalDefault: false (or unset → treated as false)"
   echo "   • preemptionPolicy: PreemptLowerPriority"
   echo "   • Deployment: ${DEPLOYMENT_NAME} (${NAMESPACE})"
   echo "   • Pods: Using priority ${EXPECTED_VALUE}"
@@ -164,25 +185,16 @@ if [[ ${ERRORS} -eq 0 ]]; then
   echo "   ✅ Frontend: Priority 500,000"
   echo "   ✅ Analytics: Priority 100,000"
   echo ""
-  echo "🎁 The log forwarder will now maintain high priority during"
-  echo "   the Holiday Flash Sale, ensuring transaction logs are"
-  echo "   preserved for compliance and fraud detection!"
-  echo ""
   echo "💡 During resource pressure:"
   echo "   • Payment services scheduled first"
   echo "   • Log forwarder scheduled second ← Protected!"
   echo "   • Lower priority services may be evicted"
   echo ""
-  echo "🏆 AcmeRetail Operations Team: 'Excellent work!'"
-  echo "   Your configuration ensures log continuity during peak traffic."
-  echo ""
   echo "═══════════════════════════════════════════════════════════"
   exit 0
 else
   echo ""
-  echo "❌ CONFIGURATION INCOMPLETE"
-  echo ""
-  echo "Found ${ERRORS} error(s) in configuration"
+  echo "❌ CONFIGURATION INCOMPLETE — ${ERRORS} error(s) detected"
   echo ""
   echo "⚠️  The Holiday Flash Sale is approaching!"
   echo "   Without proper PriorityClass configuration:"
@@ -191,11 +203,9 @@ else
   echo "   • Compliance violations possible"
   echo "   • Fraud detection compromised"
   echo ""
-  echo "💡 Review the errors above and fix the configuration."
-  echo ""
-  echo "📚 Quick fixes:"
+  echo "💡 Quick fixes:"
   echo "   • Ensure PriorityClass value is 999999"
-  echo "   • Set globalDefault: false"
+  echo "   • Ensure globalDefault is NOT true"
   echo "   • Set preemptionPolicy: PreemptLowerPriority"
   echo "   • Update deployment: kubectl edit deployment ${DEPLOYMENT_NAME} -n ${NAMESPACE}"
   echo "   • Add: priorityClassName: ${PRIORITYCLASS_NAME}"

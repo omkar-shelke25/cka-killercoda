@@ -1,5 +1,12 @@
 ## 🛒 CKA Exam Question - PriorityClass Configuration
 
+### 📚 Additional Resources
+
+- [Kubernetes Pod Priority](https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/)
+- [PriorityClass API Reference](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/priority-class-v1/)
+- [Scheduling Best Practices](https://kubernetes.io/docs/concepts/scheduling-eviction/)
+
+
 ### 📖 Real-Life Context
 
 Your organization, **AcmeRetail**, is preparing for its annual **Holiday Flash Sale**, a period when customer traffic increases sharply across all services. 

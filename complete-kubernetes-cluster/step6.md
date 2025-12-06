@@ -20,7 +20,9 @@ Worker nodes:
 
 ## 📝 Note About This Environment
 
-⚠️ **Important**: This Killercoda environment provides a single node setup. You won't actually join worker nodes here, but you'll learn the complete process for multi-node production clusters.
+> ⚠️ **Important**: This Killercoda environment provides a single node setup. You won't actually join worker nodes here, but you'll learn the complete process for multi-node production clusters.
+
+> You can deploy any pod to verify that it is running correctly
 
 In a real multi-node setup, you would:
 1. Complete Steps 1-3 on each worker node

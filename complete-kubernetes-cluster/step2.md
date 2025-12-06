@@ -158,14 +158,6 @@ Before proceeding, ensure:
   Find `[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]`
   Set `SystemdCgroup = true`
 
----
-
-## 📝 What You Learned
-
-- Container runtime installation process
-- Importance of cgroup driver configuration
-- Service management with systemd
-- containerd as Kubernetes CRI implementation
 
 ---
 

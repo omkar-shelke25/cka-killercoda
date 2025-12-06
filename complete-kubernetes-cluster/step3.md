@@ -27,10 +27,10 @@ These components work together:
 Download and add the Kubernetes GPG key for package verification:
 
 ```bash
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 ```
 
-💡 **Note**: We're using v1.31 (latest stable Kubernetes version)
+💡 **Note**: We're using v1.34 (latest stable Kubernetes version)
 
 ---
 
@@ -39,7 +39,7 @@ curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --
 Add the Kubernetes package repository:
 
 ```bash
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 ```
 
 Update the package list:
@@ -113,7 +113,7 @@ kubectl version --client
 kubelet --version
 ```
 
-Expected output: All should show version `v1.31.x`
+Expected output: All should show version `v1.34.x`
 
 ---
 
@@ -126,7 +126,7 @@ Before proceeding, ensure:
 - [ ] kubeadm, kubelet, and kubectl are installed
 - [ ] Packages are held at current version
 - [ ] kubelet service is enabled
-- [ ] All three components show v1.31.x version
+- [ ] All three components show v1.34.x version
 
 ---
 

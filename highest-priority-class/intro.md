@@ -2,13 +2,10 @@
 
 Welcome to AcmeRetail's Operations Center! 🎁
 
-## 📖 The Situation
+## 🎯 Your Mission
 
-**AcmeRetail** is preparing for the **Holiday Flash Sale** - the biggest shopping event of the year. During this period, customer traffic increases by **500%**, putting extreme pressure on the Kubernetes cluster.
+Configure PriorityClass to ensure the log forwarder maintains high priority during the Flash Sale, protecting it from eviction while keeping payment services as the highest priority.
 
-Multiple engineering teams have already configured custom **PriorityClasses** to ensure their mission-critical services get scheduled first during heavy load. 
+---
 
-However, the **Log Forwarding Service** - responsible for collecting transaction logs for compliance and fraud detection - hasn't been properly configured yet.
-
-
-Click **▶️ Start Scenario** to begin your mission! The Flash Sale countdown has begun... ⏰🛒
+Click **▶️ Start Scenario** to begin! ⏰🛒

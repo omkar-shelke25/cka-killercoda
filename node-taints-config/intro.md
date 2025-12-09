@@ -1,13 +1,10 @@
-# 🔒 CKA: Node Taints and Pod Tolerations Configuration
+# 🧠 CKA: Node Taints and Pod Tolerations
 
-Welcome to the Node Security Challenge! 🛡️
+Welcome to this Kubernetes taints and tolerations challenge! 🚀  
 
-## 📖 The Situation
+In this scenario, you'll learn how to control pod scheduling using node taints and pod tolerations. Taints allow nodes to repel pods, while tolerations allow pods to schedule onto nodes with matching taints.
 
-A worker node `node01` needs to be reserved for secure workloads only. Regular pods should not be scheduled on this node unless they have explicit permission through tolerations.
-
-You need to taint the node to prevent unauthorized scheduling, then create a pod that can tolerate this taint and run on the secured node.
 
 ---
 
-Click **▶️ Start Scenario** to begin! ⏰🔒
+Click **▶️ Start Scenario** to begin your mission, Kubernetes Engineer! 💪🐳

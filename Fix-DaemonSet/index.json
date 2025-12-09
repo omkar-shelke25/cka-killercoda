@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Fix DaemonSet Scheduling on Control-Plane Node",
+  "description": "Master Kubernetes DaemonSet scheduling by fixing tolerations to ensure pods run on all nodes including the control-plane.",
+  "details": {
+    "steps": [
+      {
+        "title": "Fix DaemonSet to Schedule on Control-Plane",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

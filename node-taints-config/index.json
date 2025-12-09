@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Node Taints and Pod Tolerations Configuration",
+  "description": "Master Kubernetes taints and tolerations by securing a node and scheduling pods with proper tolerations and node selection.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure Node Taints and Pod Tolerations",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

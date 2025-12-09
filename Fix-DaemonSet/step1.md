@@ -1,10 +1,10 @@
 ## 🔧 CKA Exam Question - Fix DaemonSet Scheduling
+###  📚 Official Documentation
 
-**Time Limit**: 6-8 minutes  
-**Difficulty**: Medium  
-**Points**: 6/100
+- [Kubernetes Taints and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+- [DaemonSet Documentation](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/)
+- [Pod Scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/)
 
----
 
 ### 📖 Problem Statement
 

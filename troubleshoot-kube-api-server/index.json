@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Troubleshoot kube-apiserver Static Pod CPU Resources",
+  "description": "Fix kube-apiserver static Pod manifest with incorrect CPU resource requests that exceed node capacity.",
+  "details": {
+    "steps": [
+      {
+        "title": "Troubleshoot and Fix kube-apiserver CPU Resources",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

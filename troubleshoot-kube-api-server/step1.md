@@ -54,8 +54,6 @@ You'll see the incorrect CPU request and limit of 4000m in both places:
     resources:
       requests:
         cpu: 4000m
-      limits:
-        cpu: 4000m
 ```
 
 **Step 4: Calculate the correct CPU value**
@@ -63,15 +61,8 @@ You'll see the incorrect CPU request and limit of 4000m in both places:
 Node total CPU: 1000m  
 20% of 1000m = 200m
 
-**Step 5: Fix the manifest**
 
-**Method 1: Using sed (Quick fix)**
-
-```bash
-sudo sed -i 's/cpu: 4000m/cpu: 200m/g' /etc/kubernetes/manifests/kube-apiserver.yaml
-```
-
-**Method 2: Manual editing with complete YAML structure**
+**Method: Manual editing with complete YAML structure**
 
 ```bash
 sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
@@ -157,71 +148,6 @@ kubectl get cs
 kubectl get nodes
 ```
 
-**Step 9: Verify resource configuration**
 
-```bash
-kubectl get pod -n kube-system kube-apiserver-controlplane -o yaml | grep -A 10 resources
-```
-
-You should see both requests and limits set to 200m:
-```yaml
-    resources:
-      limits:
-        cpu: 200m
-      requests:
-        cpu: 200m
-```
-
-**Verification checklist:**
-- ✅ CPU request changed from 4000m to 200m (20% of node capacity)
-- ✅ CPU limit changed from 4000m to 200m (20% of node capacity)
-- ✅ Both requests and limits are equal (Guaranteed QoS class)
-- ✅ kube-apiserver Pod is running in kube-system namespace
-- ✅ Pod status shows Ready 1/1
-- ✅ No resource-related errors in kubelet logs
-- ✅ Cluster API is accessible via kubectl
-
-**Understanding the issue:**
-
-**Why did the Pod fail?**
-- Node capacity: 1000m (1 CPU core)
-- kube-apiserver request: 4000m (4 CPU cores)
-- kube-apiserver limit: 4000m (4 CPU cores)
-- Result: Impossible to schedule (4000m > 1000m)
-
-**What is the correct configuration?**
-- Calculate 20% of node capacity: 1000m × 0.20 = 200m
-- Set both requests and limits to 200m
-- This creates a Guaranteed QoS class (requests = limits)
-
-**Complete corrected YAML structure:**
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: kube-apiserver-controlplane
-  namespace: kube-system
-spec:
-  containers:
-  - name: kube-apiserver
-    image: registry.k8s.io/kube-apiserver:v1.28.0
-    resources:
-      requests:
-        cpu: 200m
-      limits:
-        cpu: 200m
-```
-
-**What happens with static Pods?**
-- Kubelet monitors `/etc/kubernetes/manifests/`
-- When a manifest changes, kubelet recreates the Pod
-- If resource requests exceed node capacity, Pod remains unschedulable
-- Kubelet logs show "Insufficient cpu" errors
-
-**Best practices:**
-- Control plane components typically need 100-500m CPU
-- Always verify node capacity before setting resource requests
-- Use `kubectl top node` to monitor actual usage
-- Static Pod manifests require direct file editing (no kubectl apply)
 
 </details>

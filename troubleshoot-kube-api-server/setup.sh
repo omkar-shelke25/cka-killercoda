@@ -13,7 +13,7 @@ cp /etc/kubernetes/manifests/kube-apiserver.yaml /root/kube-apiserver.yaml.backu
 # This will cause the kubelet to fail to schedule the Pod
 sudo sed -i 's/cpu: 50m/cpu: 4000m/' /etc/kubernetes/manifests/kube-apiserver.yaml
 
- sudo systemctl restart kubelet.service 
+sudo systemctl restart kubelet.service 
 
 # Wait a bit for kubelet to detect the change
 sleep 5

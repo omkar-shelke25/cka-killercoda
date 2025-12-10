@@ -46,46 +46,87 @@ You should see errors indicating insufficient CPU.
 **Step 3: Examine the current manifest**
 
 ```bash
-cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep -A 3 resources
+cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep -A 10 resources
 ```
 
-You'll see the incorrect CPU request of 4000m.
+You'll see the incorrect CPU request and limit of 4000m in both places:
+```yaml
+    resources:
+      requests:
+        cpu: 4000m
+      limits:
+        cpu: 4000m
+```
 
 **Step 4: Calculate the correct CPU value**
 
 Node total CPU: 1000m  
 20% of 1000m = 200m
 
-**Step 5: Fix the manifest using sed**
+**Step 5: Fix the manifest**
+
+**Method 1: Using sed (Quick fix)**
 
 ```bash
 sudo sed -i 's/cpu: 4000m/cpu: 200m/g' /etc/kubernetes/manifests/kube-apiserver.yaml
 ```
 
-**Alternative: Manual editing**
+**Method 2: Manual editing with complete YAML structure**
 
 ```bash
 sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml
 ```
 
-Find the resources section and change:
+Find the resources section and update it to match this structure:
+
+**BEFORE (Incorrect - 4000m exceeds node capacity):**
 ```yaml
-resources:
-  requests:
-    cpu: 4000m    # Change this to 200m
+spec:
+  containers:
+  - name: kube-apiserver
+    image: registry.k8s.io/kube-apiserver:v1.28.0
+    resources:
+      requests:
+        cpu: 4000m
+      limits:
+        cpu: 4000m
 ```
 
-To:
+**AFTER (Correct - 200m is 20% of 1000m node capacity):**
 ```yaml
-resources:
-  requests:
-    cpu: 200m
+spec:
+  containers:
+  - name: kube-apiserver
+    image: registry.k8s.io/kube-apiserver:v1.28.0
+    resources:
+      requests:
+        cpu: 200m
+      limits:
+        cpu: 200m
+```
+
+**Complete resources section should look like:**
+```yaml
+    resources:
+      requests:
+        cpu: 200m
+      limits:
+        cpu: 200m
 ```
 
 **Step 6: Verify the change**
 
 ```bash
-cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep -A 3 resources
+cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep -A 10 resources
+```
+
+You should now see:
+```yaml
+    resources:
+      requests:
+        cpu: 200m
+      limits:
+        cpu: 200m
 ```
 
 **Step 7: Wait for kubelet to recreate the Pod**
@@ -119,18 +160,22 @@ kubectl get nodes
 **Step 9: Verify resource configuration**
 
 ```bash
-kubectl get pod -n kube-system kube-apiserver-controlplane -o yaml | grep -A 5 resources
+kubectl get pod -n kube-system kube-apiserver-controlplane -o yaml | grep -A 10 resources
 ```
 
-You should see:
+You should see both requests and limits set to 200m:
 ```yaml
-resources:
-  requests:
-    cpu: 200m
+    resources:
+      limits:
+        cpu: 200m
+      requests:
+        cpu: 200m
 ```
 
 **Verification checklist:**
 - ✅ CPU request changed from 4000m to 200m (20% of node capacity)
+- ✅ CPU limit changed from 4000m to 200m (20% of node capacity)
+- ✅ Both requests and limits are equal (Guaranteed QoS class)
 - ✅ kube-apiserver Pod is running in kube-system namespace
 - ✅ Pod status shows Ready 1/1
 - ✅ No resource-related errors in kubelet logs
@@ -141,7 +186,31 @@ resources:
 **Why did the Pod fail?**
 - Node capacity: 1000m (1 CPU core)
 - kube-apiserver request: 4000m (4 CPU cores)
+- kube-apiserver limit: 4000m (4 CPU cores)
 - Result: Impossible to schedule (4000m > 1000m)
+
+**What is the correct configuration?**
+- Calculate 20% of node capacity: 1000m × 0.20 = 200m
+- Set both requests and limits to 200m
+- This creates a Guaranteed QoS class (requests = limits)
+
+**Complete corrected YAML structure:**
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-apiserver-controlplane
+  namespace: kube-system
+spec:
+  containers:
+  - name: kube-apiserver
+    image: registry.k8s.io/kube-apiserver:v1.28.0
+    resources:
+      requests:
+        cpu: 200m
+      limits:
+        cpu: 200m
+```
 
 **What happens with static Pods?**
 - Kubelet monitors `/etc/kubernetes/manifests/`

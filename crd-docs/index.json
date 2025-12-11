@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Explore Custom Resource Definitions (CRDs) and Extract Documentation",
+  "description": "Learn to list, filter, and document Custom Resource Definitions using kubectl commands with cert-manager CRDs.",
+  "details": {
+    "steps": [
+      {
+        "title": "Explore and Document CRDs",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

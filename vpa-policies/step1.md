@@ -19,7 +19,7 @@ Create a **VerticalPodAutoscaler** resource named `app-vpa` in the `vpa-demo` na
 
 1. **Target the deployment**: `app-deployment` in namespace `vpa-demo`
 
-2. **Update mode**: Set to `Recreate` (automatically apply recommendations by recreating pods)
+2. **Update mode**: Set to `Recreate`
 
 3. **Resource policy** for the container named `application`:
    - Update both **CPU and memory** requests **AND** limits

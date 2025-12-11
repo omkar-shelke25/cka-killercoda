@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Configure Vertical Pod Autoscaler with Resource Policies",
+  "description": "Create and configure a Vertical Pod Autoscaler (VPA) with resource policies, min/max limits, and automatic update modes.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure Vertical Pod Autoscaler",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

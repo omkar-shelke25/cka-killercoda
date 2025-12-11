@@ -13,13 +13,13 @@ As a Kubernetes administrator, you need to understand what CRDs are available in
 
 ### ❓ **Task**
 
-**Task 1:** Create a list of all cert-manager CRDs and save it to `/root/resources.yaml`
+**Task 1:** Create a list of all cert-manager CRDs and save it to `/root/resources.txt`
 - List all CRDs in the cluster that contain the keyword `cert-manager`
 - Save the complete YAML output of these CRDs to the file
 
 **Task 2:** Extract documentation for the Certificate CRD's subject specification field
 - Using `kubectl explain`, extract the documentation for the `spec.subject` field of the Certificate Custom Resource
-- Save this documentation to `/root/subject.yaml`
+- Save this documentation to `/root/subject.txt`
 
 ---
 
@@ -58,7 +58,7 @@ kubectl describe crd certificates.cert-manager.io
 
 **Method 1: Using grep filter**
 ```bash
-kubectl get crd -o yaml | grep -A 10000 cert-manager > /root/resources.yaml
+kubectl get crd -o yaml | grep -A 10000 cert-manager > /root/resources.txt
 ```
 
 **Method 2: Using custom-columns to get names, then fetch YAML (More precise)**
@@ -67,39 +67,39 @@ kubectl get crd -o yaml | grep -A 10000 cert-manager > /root/resources.yaml
 kubectl get crd -o name | grep cert-manager > /tmp/crd-list.txt
 
 # Create empty file
-echo "---" > /root/resources.yaml
+echo "---" > /root/resources.txt
 
 # Loop through and append each CRD YAML
 for crd in $(kubectl get crd -o name | grep cert-manager); do
-  kubectl get $crd -o yaml >> /root/resources.yaml
-  echo "---" >> /root/resources.yaml
+  kubectl get $crd -o yaml >> /root/resources.txt
+  echo "---" >> /root/resources.txt
 done
 ```
 
 **Method 3: Most efficient - using label selector (if available)**
 ```bash
-kubectl get crd -l app.kubernetes.io/name=cert-manager -o yaml > /root/resources.yaml
+kubectl get crd -l app.kubernetes.io/name=cert-manager -o yaml > /root/resources.txt
 ```
 
 **Recommended Method: Direct approach**
 ```bash
-kubectl get crd -o yaml | grep -B 5 -A 10000 cert-manager.io > /root/resources.yaml
+kubectl get crd -o yaml | grep -B 5 -A 10000 cert-manager.io > /root/resources.txt
 ```
 
 **Simplest and most reliable method:**
 ```bash
-kubectl get crd -o name | grep cert-manager | xargs kubectl get -o yaml > /root/resources.yaml
+kubectl get crd -o name | grep cert-manager | xargs kubectl get -o yaml > /root/resources.txt
 ```
 
 **Step 4: Verify the file was created**
 
 ```bash
-cat /root/resources.yaml | head -50
+cat /root/resources.txt | head -50
 ```
 
 Check how many CRDs were saved:
 ```bash
-grep "kind: CustomResourceDefinition" /root/resources.yaml | wc -l
+grep "kind: CustomResourceDefinition" /root/resources.txt | wc -l
 ```
 
 **Step 5: Explore the Certificate CRD structure**
@@ -121,13 +121,13 @@ kubectl explain certificate.spec --recursive
 **Step 6: Complete Task 2 - Extract documentation for spec.subject**
 
 ```bash
-kubectl explain certificate.spec.subject > /root/subject.yaml
+kubectl explain certificate.spec.subject > /root/subject.txt
 ```
 
 **Step 7: Verify the subject documentation file**
 
 ```bash
-cat /root/subject.yaml
+cat /root/subject.txt
 ```
 
 The output should contain documentation about the subject field, including:
@@ -151,10 +151,10 @@ kubectl explain certificate.spec.subject --recursive
 ```
 
 **Verification checklist:**
-- ✅ File `/root/resources.yaml` exists
+- ✅ File `/root/resources.txt` exists
 - ✅ Contains multiple CRD definitions with "cert-manager" in their names
 - ✅ File is valid YAML format
-- ✅ File `/root/subject.yaml` exists
+- ✅ File `/root/subject.txt` exists
 - ✅ Contains documentation for certificate.spec.subject field
 - ✅ Includes field description and structure
 

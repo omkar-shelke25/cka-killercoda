@@ -67,6 +67,7 @@ kubectl create secret tls ua-heroes-tls \
   --key=/tmp/tls.key \
   -n class-1a > /dev/null 2>&1 || true
 
+sleep 1
 
 cat <<'EOF' | kubectl apply -f -
 apiVersion: v1
@@ -103,7 +104,8 @@ kind: Deployment
 metadata:
   name: register-service
   namespace: class-1a
-  labels:
+  # annotation may contain emoji text; labels must be ASCII-safe
+  annotations:
     icon: "📝"
 spec:
   replicas: 2
@@ -114,7 +116,8 @@ spec:
     metadata:
       labels:
         app: register
-        icon: "📝"
+        # keep a safe ASCII label if you need an 'icon' label for selectors, metrics, etc.
+        icon: "memo"
     spec:
       containers:
       - name: register-python
@@ -136,8 +139,11 @@ kind: Service
 metadata:
   name: register-service
   namespace: class-1a
-  labels:
+  annotations:
     icon: "📝"
+  labels:
+    app: register
+    icon: "memo"
 spec:
   type: ClusterIP
   selector:
@@ -181,7 +187,7 @@ kind: Deployment
 metadata:
   name: verify-service
   namespace: class-1a
-  labels:
+  annotations:
     icon: "🔍"
 spec:
   replicas: 2
@@ -192,7 +198,7 @@ spec:
     metadata:
       labels:
         app: verify
-        icon: "🔍"
+        icon: "search"
     spec:
       containers:
       - name: verify-python
@@ -214,8 +220,11 @@ kind: Service
 metadata:
   name: verify-service
   namespace: class-1a
-  labels:
+  annotations:
     icon: "🔍"
+  labels:
+    app: verify
+    icon: "search"
 spec:
   type: ClusterIP
   selector:
@@ -224,6 +233,7 @@ spec:
   - port: 80
     targetPort: 80
 EOF
+
 
 # Wait for deployments
 echo "⏳ Waiting for services to be ready..."

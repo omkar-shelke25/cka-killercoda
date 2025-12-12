@@ -1,5 +1,7 @@
 ## 🦸 CKA - Configure Ingress with TLS
 
+> Wait a 2 minutes for MetalLB to set up.
+
 ### 📖 Problem Statement
 
 U.A. High School is deploying a public Hero Registration Portal with two backend services:
@@ -19,6 +21,9 @@ Create an Ingress named `hero-reg-ingress` in namespace `class-1a` that:
    - `heroes.ua-academy.com/verify` → `verify-service`
 3. Configure the DNS entry in `/etc/hosts` based on the Ingress LoadBalancer IP
 
+>  curl -k -v https://heroes.ua-academy.com/register | jq
+
+> curl -k -v https://heroes.ua-academy.com/verify | jq
 ---
 
 ### ✅ Solution

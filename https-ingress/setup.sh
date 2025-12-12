@@ -97,7 +97,6 @@ data:
         print("🚀 Register Service running on port 80")
         server = HTTPServer(("", 80), Handler)
         server.serve_forever()
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -132,7 +131,6 @@ spec:
       - name: register-code
         configMap:
           name: register-app
-
 ---
 apiVersion: v1
 kind: Service
@@ -151,7 +149,6 @@ spec:
   ports:
   - port: 80
     targetPort: 80
-
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -180,7 +177,6 @@ data:
         print("🔍 Verify Service running on port 80")
         server = HTTPServer(("", 80), Handler)
         server.serve_forever()
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -213,7 +209,6 @@ spec:
       - name: verify-code
         configMap:
           name: verify-app
-
 ---
 apiVersion: v1
 kind: Service

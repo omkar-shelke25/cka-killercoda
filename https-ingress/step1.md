@@ -17,6 +17,7 @@ Create an Ingress named `hero-reg-ingress` in namespace `class-1a` that:
 2. Routes:
    - `heroes.ua-academy.com/register` → `register-service`
    - `heroes.ua-academy.com/verify` → `verify-service`
+3. Configure the DNS entry in `/etc/hosts` based on the Ingress LoadBalancer IP
 
 ---
 

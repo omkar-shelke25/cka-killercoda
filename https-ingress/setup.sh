@@ -67,14 +67,44 @@ kubectl create secret tls ua-heroes-tls \
   --key=/tmp/tls.key \
   -n class-1a > /dev/null 2>&1 || true
 
-# Create register-service
-echo "🚀 Creating register-service..."
-cat <<'EOF' | kubectl apply -f - > /dev/null 2>&1
+
+cat <<'EOF' | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: register-app
+  namespace: class-1a
+data:
+  app.py: |
+    import json
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            response = {
+                "service": "register-service 📝",
+                "status": "online ✅",
+                "message": "Register hero quirks here! ✨",
+                "school": "U.A. High School 🏫"
+            }
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(response).encode())
+
+    if __name__ == "__main__":
+        print("🚀 Register Service running on port 80")
+        server = HTTPServer(("", 80), Handler)
+        server.serve_forever()
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: register-service
   namespace: class-1a
+  labels:
+    icon: "📝"
 spec:
   replicas: 2
   selector:
@@ -84,45 +114,30 @@ spec:
     metadata:
       labels:
         app: register
+        icon: "📝"
     spec:
       containers:
-      - name: nginx
-        image: nginx:alpine
+      - name: register-python
+        image: python:3.11-alpine
+        command: ["python", "/app/app.py"]
+        volumeMounts:
+        - name: register-code
+          mountPath: /app
         ports:
         - containerPort: 80
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
       volumes:
-      - name: html
+      - name: register-code
         configMap:
-          name: register-html
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: register-html
-  namespace: class-1a
-data:
-  index.html: |
-    <!DOCTYPE html>
-    <html>
-    <head><title>Hero Registration</title></head>
-    <body style="font-family: Arial; text-align: center; padding: 50px;">
-      <h1>🦸 U.A. High School</h1>
-      <h2>Hero Registration Portal</h2>
-      <p>Service: <strong>register-service</strong></p>
-      <p>Status: <strong>✅ Online</strong></p>
-      <p>Register your hero quirk and abilities here!</p>
-      <p style="color: green;">Plus Ultra! 💪</p>
-    </body>
-    </html>
+          name: register-app
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: register-service
   namespace: class-1a
+  labels:
+    icon: "📝"
 spec:
   type: ClusterIP
   selector:
@@ -130,16 +145,44 @@ spec:
   ports:
   - port: 80
     targetPort: 80
-EOF
 
-# Create verify-service
-echo "🚀 Creating verify-service..."
-cat <<'EOF' | kubectl apply -f - > /dev/null 2>&1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: verify-app
+  namespace: class-1a
+data:
+  app.py: |
+    import json
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            response = {
+                "service": "verify-service 🔍",
+                "status": "online ✅",
+                "message": "Verify hero licenses here! 🛡️",
+                "school": "U.A. High School 🏫"
+            }
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(response).encode())
+
+    if __name__ == "__main__":
+        print("🔍 Verify Service running on port 80")
+        server = HTTPServer(("", 80), Handler)
+        server.serve_forever()
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: verify-service
   namespace: class-1a
+  labels:
+    icon: "🔍"
 spec:
   replicas: 2
   selector:
@@ -149,45 +192,30 @@ spec:
     metadata:
       labels:
         app: verify
+        icon: "🔍"
     spec:
       containers:
-      - name: nginx
-        image: nginx:alpine
+      - name: verify-python
+        image: python:3.11-alpine
+        command: ["python", "/app/app.py"]
+        volumeMounts:
+        - name: verify-code
+          mountPath: /app
         ports:
         - containerPort: 80
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
       volumes:
-      - name: html
+      - name: verify-code
         configMap:
-          name: verify-html
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: verify-html
-  namespace: class-1a
-data:
-  index.html: |
-    <!DOCTYPE html>
-    <html>
-    <head><title>Hero Verification</title></head>
-    <body style="font-family: Arial; text-align: center; padding: 50px;">
-      <h1>🦸 U.A. High School</h1>
-      <h2>Hero Verification Portal</h2>
-      <p>Service: <strong>verify-service</strong></p>
-      <p>Status: <strong>✅ Online</strong></p>
-      <p>Verify your hero license and credentials here!</p>
-      <p style="color: blue;">Plus Ultra! 💪</p>
-    </body>
-    </html>
+          name: verify-app
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: verify-service
   namespace: class-1a
+  labels:
+    icon: "🔍"
 spec:
   type: ClusterIP
   selector:

@@ -8,9 +8,9 @@
 
 ### 🎯 **Context**
 
-You are tasked with installing Argo CD, a popular GitOps continuous delivery tool for Kubernetes, using Helm. However, your organization has a policy that requires CRDs to be installed and managed separately from application installations for better version control and auditing purposes.
+You are tasked with installing Argo CD, a popular GitOps continuous delivery tool for Kubernetes, using Helm. However, your organization has a policy that CRDs should NOT be installed by Helm. 
 
-You need to generate the Kubernetes manifests for Argo CD without including the CRDs, and save them to a file for review before deployment.
+You need to generate the Kubernetes manifests for Argo CD while excluding CRDs, and save them to a file for review before deployment.
 
 ### ❓ **Question: Install Argo CD Without CRDs**
 
@@ -28,7 +28,7 @@ Install Argo CD in the Kubernetes cluster using Helm.
    * Version: `7.7.3`
    * Namespace: `argocd`
 
-3. Ensure that CRDs are **not installed** during the installation.
+3. **Do NOT include CRDs** in the generated manifests.
 
 4. Save the generated manifests to:
    ```
@@ -92,9 +92,9 @@ helm search repo argo-cd --versions | head -20
 
 Verify that version 7.7.3 is available.
 
-**Step 7: Generate manifests without CRDs**
+**Step 7: Generate manifests WITHOUT CRDs**
 
-Use `helm template` to generate manifests without installing them:
+Use `helm template` to generate manifests, excluding CRDs:
 
 ```bash
 helm template argocd argo/argo-cd \
@@ -110,7 +110,7 @@ helm template argocd argo/argo-cd \
 - `argo/argo-cd` - Chart repository/name
 - `--version 7.7.3` - Specific chart version
 - `--namespace argocd` - Target namespace
-- `--skip-crds` - Exclude CRD installation
+- `--skip-crds` - **EXCLUDE CRDs from the output**
 - `> /root/argo-helm.yaml` - Redirect output to file
 
 **Alternative: Using helm install with --dry-run**
@@ -182,12 +182,11 @@ grep -A 1 "kind: Deployment" /root/argo-helm.yaml | grep "name:"
 grep -A 1 "kind: Service" /root/argo-helm.yaml | grep "name:"
 ```
 
+**Step 13: Apply the manifests (if needed)**
+
 If you wanted to actually install Argo CD:
 
 ```bash
 kubectl apply -f /root/argo-helm.yaml
 ```
-
-
-
 </details>

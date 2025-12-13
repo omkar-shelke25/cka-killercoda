@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Troubleshoot kube-apiserver etcd Connection After Disaster Recovery",
+  "description": "Fix kube-apiserver connection to etcd after a disaster recovery restore that misconfigured the etcd client port.",
+  "details": {
+    "steps": [
+      {
+        "title": "Troubleshoot and Fix kube-apiserver etcd Connection",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

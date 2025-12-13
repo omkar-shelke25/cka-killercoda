@@ -44,12 +44,9 @@ echo "✅ kube-apiserver configured to use correct client port ${CORRECT_PORT}"
 # Display the current configuration
 echo "   Current etcd-servers: $(echo ${ETCD_SERVERS} | awk '{print $2}')"
 
-# Wait for kube-apiserver to be ready
-echo ""
-echo "⏳ Waiting for kube-apiserver to restart and become ready..."
-sleep 15
-
 # Check if kube-apiserver container is running
+echo ""
+echo "🔍 Checking kube-apiserver container status..."
 MAX_RETRIES=12
 RETRY_COUNT=0
 APISERVER_RUNNING=false
@@ -62,8 +59,8 @@ while [[ ${RETRY_COUNT} -lt ${MAX_RETRIES} ]]; do
   
   RETRY_COUNT=$((RETRY_COUNT + 1))
   if [[ ${RETRY_COUNT} -lt ${MAX_RETRIES} ]]; then
-    echo "   Waiting for kube-apiserver container... (attempt ${RETRY_COUNT}/${MAX_RETRIES})"
-    sleep 5
+    echo "   Attempt ${RETRY_COUNT}/${MAX_RETRIES}: Container not running yet"
+    sleep 3
   fi
 done
 
@@ -97,8 +94,8 @@ while [[ ${RETRY_COUNT} -lt ${MAX_RETRIES} ]]; do
   
   RETRY_COUNT=$((RETRY_COUNT + 1))
   if [[ ${RETRY_COUNT} -lt ${MAX_RETRIES} ]]; then
-    echo "   Waiting for API server to respond... (attempt ${RETRY_COUNT}/${MAX_RETRIES})"
-    sleep 3
+    echo "   Attempt ${RETRY_COUNT}/${MAX_RETRIES}: API not responding yet"
+    sleep 2
   fi
 done
 

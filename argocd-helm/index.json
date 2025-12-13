@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Install Argo CD with Helm Without CRDs",
+  "description": "Learn to install Argo CD using Helm charts while excluding CRDs and generating Kubernetes manifests.",
+  "details": {
+    "steps": [
+      {
+        "title": "Install Argo CD with Helm Without CRDs",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

@@ -1,10 +1,10 @@
 {
-  "title": "CKA: Install Argo CD with Helm Without CRDs",
-  "description": "Learn to install Argo CD using Helm charts while excluding CRDs and generating Kubernetes manifests.",
+  "title": "CKA: Install Argo CD Using Helm Without CRDs",
+  "description": "Install Argo CD using Helm template command while skipping CRD installation since they are already pre-installed in the cluster.",
   "details": {
     "steps": [
       {
-        "title": "Install Argo CD with Helm Without CRDs",
+        "title": "Install Argo CD with Helm Template Without CRDs",
         "text": "step1.md",
         "verify": "verify.sh"
       }

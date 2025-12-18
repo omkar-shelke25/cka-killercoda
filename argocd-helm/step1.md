@@ -114,92 +114,84 @@ helm search repo argocd/argo-cd --versions | grep 9.1.4
 ```
 
 Verify version 9.1.4 is available.
+Understood 👍 — we will **use chart version `9.1.4`**, and we will **NOT use `--skip-crds`**.
+Everything below is corrected and consistent with **Argo CD Helm chart 9.1.4** and **`crds.install=false`**.
 
-**Step 9: Generate Helm template without CRDs**
+---
 
-**SOLUTION COMMAND:**
+## Step 9: Generate Helm template **without installing CRDs**
+
 
 ```bash
 helm template argocd argocd/argo-cd \
   --version 9.1.4 \
   --namespace argocd \
-  --skip-crds \
-  > /root/argo-helm.yaml
+  --set crds.install=false \
+  > argo-helm.yaml
 ```
 
-**Breaking down the command:**
-- `helm template` - Generate manifests without installing
-- `argocd` - Release name (first positional argument)
-- `argocd/argo-cd` - Repository/Chart (repo-name/chart-name)
-- `--version 9.1.4` - Specific chart version required
-- `--namespace argocd` - Target namespace
-- `--skip-crds` - **Skip CRD installation (critical requirement)**
-- `> /root/argo-helm.yaml` - Save output to file
+### 🔍 Explanation
 
-**Step 10: Verify the file was created**
+* `helm template` → render manifests only
+* `argocd` → Helm release name
+* `argocd/argo-cd` → correct repo/chart
+* `--version 9.1.4` → **required chart version**
+* `--namespace argocd` → target namespace
+* `--set crds.install=false` → disables CRD rendering (correct approach)
+* Output redirected to `argo-helm.yaml`
+
+---
+
+## Step 10: Verify the file was created
 
 ```bash
-ls -lh /root/argo-helm.yaml
+ls -lh argo-helm.yaml
 ```
+---
 
-Check file exists and has content (should be 50KB+ typically).
-
-**Step 11: View the beginning of the file**
+## Step 12: Confirm CRDs are NOT present
 
 ```bash
-head -30 /root/argo-helm.yaml
+grep "kind: CustomResourceDefinition" argo-helm.yaml || echo "✅ No CRDs found - Correct!"
 ```
 
-You should see YAML manifests with Kubernetes resources.
+Expected result:
 
-**Step 12: Verify CRDs are NOT in the file**
+```
+✅ No CRDs found - Correct!
+```
+
+---
+
+## Step 13: List generated Kubernetes resource kinds
 
 ```bash
-grep -i "CustomResourceDefinition" /root/argo-helm.yaml
+grep "^kind:" argo-helm.yaml | sort | uniq -c
 ```
 
-This should return nothing (no output = correct).
+Expected kinds include:
 
-Alternative verification:
-```bash
-grep "kind: CustomResourceDefinition" /root/argo-helm.yaml || echo "✅ No CRDs found - Correct!"
-```
+* Deployment
+* StatefulSet
+* Service
+* ConfigMap
+* Secret
+* ServiceAccount
+* Role / ClusterRole
+* RoleBinding / ClusterRoleBinding
+* NetworkPolicy
 
-**Step 13: Check what resource types were generated**
+❌ No `CustomResourceDefinition`
 
-```bash
-grep "^kind:" /root/argo-helm.yaml | sort | uniq -c
-```
+---
 
-You should see resources like:
-- ServiceAccount
-- ConfigMap
-- Secret
-- Service
-- Deployment
-- NetworkPolicy
-- Role/ClusterRole
-- RoleBinding/ClusterRoleBinding
-
-**Step 14: Count total YAML documents**
+## Step 14: Install Argo CD (CRD-safe)
 
 ```bash
-grep -c "^---" /root/argo-helm.yaml
+helm install argocd argocd/argo-cd \
+  --version 9.1.4 \
+  --set crds.install=false \
+  -n argocd
 ```
 
-Should show 30+ documents (manifests).
-
-**Step 15: Verify namespace references**
-
-```bash
-grep "namespace: argocd" /root/argo-helm.yaml | head -5
-```
-
-Should show resources configured for argocd namespace.
-
-**Step 16: Optional - Check for Argo CD components**
-
-```bash
-grep -E "argocd-server|argocd-repo-server|argocd-application-controller" /root/argo-helm.yaml | grep "name:" | head -10
-```
 </details>

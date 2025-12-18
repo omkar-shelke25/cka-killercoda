@@ -1,36 +1,32 @@
-# 🧠 **CKA: Install Argo CD with Helm Without CRDs**
+# 🧠 **CKA Question: Install Argo CD Using Helm Without CRDs**
 
-📚 **Official Documentation**: 
+📚 **Official Kubernetes Documentation**: 
 - [Helm Documentation](https://helm.sh/docs/)
 - [Helm Template Command](https://helm.sh/docs/helm/helm_template/)
 - [Argo CD Installation](https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/)
-- [Helm Repository Management](https://helm.sh/docs/helm/helm_repo/)
 
-### 🎯 **Context**
+### 🎯 **Scenario**
 
-You are tasked with installing Argo CD, a popular GitOps continuous delivery tool for Kubernetes, using Helm. However, your organization has a policy that CRDs should NOT be installed by Helm. 
+The `argocd` namespace is already created in the Kubernetes cluster. Argo CD CRDs have been pre-installed by the platform team.
 
-You need to generate the Kubernetes manifests for Argo CD while excluding CRDs, and save them to a file for review before deployment.
+You need to install Argo CD in the cluster using Helm, ensuring that CRDs are not installed because they are already present.
 
-### ❓ **Question: Install Argo CD Without CRDs**
+### ❓ **Question**
 
-Install Argo CD in the Kubernetes cluster using Helm.
+Install Argo CD in the cluster using Helm, ensuring that CRDs are not installed because they are already pre-installed.
 
-**Task:**
+**Perform the following tasks:**
 
-1. Add the official Argo CD Helm repository:
+1. Add the official Argo CD Helm repository with the name `argocd`:
    ```
    https://argoproj.github.io/argo-helm
    ```
 
-2. Generate the Kubernetes manifests for Argo CD using:
-   * Chart: `argo-cd`
-   * Version: `7.7.3`
-   * Namespace: `argocd`
+2. Generate a Helm template from the Argo CD chart **version 9.1.4** for the `argocd` namespace
 
-3. **Do NOT include CRDs** in the generated manifests.
+3. Ensure that CRDs are **not installed** by configuring the chart accordingly
 
-4. Save the generated manifests to:
+4. Save the generated YAML manifest to:
    ```
    /root/argo-helm.yaml
    ```
@@ -41,152 +37,169 @@ Install Argo CD in the Kubernetes cluster using Helm.
 
 <details><summary>✅ Solution (expand to view)</summary>
 
-**Step 1: Verify Helm is installed**
+**Step 1: Verify the argocd namespace exists**
+
+```bash
+kubectl get namespace argocd
+```
+
+You should see the namespace already created.
+
+**Step 2: Verify that Argo CD CRDs are already installed**
+
+```bash
+kubectl get crd | grep argoproj
+```
+
+Expected output showing CRDs like:
+- applications.argoproj.io
+- applicationsets.argoproj.io
+- appprojects.argoproj.io
+
+```bash
+kubectl get crd applications.argoproj.io
+```
+
+This confirms CRDs are pre-installed.
+
+**Step 3: Verify Helm is installed**
 
 ```bash
 helm version
 ```
 
-You should see Helm version 3.x installed.
+You should see Helm 3.x installed.
 
-**Step 2: Add the Argo CD Helm repository**
+**Step 4: Add the Argo CD Helm repository with name 'argocd'**
 
 ```bash
-helm repo add argo https://argoproj.github.io/argo-helm
+helm repo add argocd https://argoproj.github.io/argo-helm
 ```
 
 Expected output:
 ```
-"argo" has been added to your repositories
+"argocd" has been added to your repositories
 ```
 
-**Step 3: Update Helm repositories**
+**Step 5: Update Helm repositories**
 
 ```bash
 helm repo update
 ```
 
-This ensures you have the latest chart versions available.
+This fetches the latest chart information.
 
-**Step 4: Verify the repository was added**
+**Step 6: Verify the repository was added correctly**
 
 ```bash
 helm repo list
 ```
 
-You should see the `argo` repository in the list.
-
-**Step 5: Search for the argo-cd chart**
-
-```bash
-helm search repo argo-cd
+You should see:
+```
+NAME     URL
+argocd   https://argoproj.github.io/argo-helm
 ```
 
-This shows available Argo CD charts and versions.
-
-**Step 6: View available versions of argo-cd chart**
+**Step 7: Search for the argo-cd chart to verify availability**
 
 ```bash
-helm search repo argo-cd --versions | head -20
+helm search repo argocd/argo-cd
 ```
 
-Verify that version 7.7.3 is available.
-
-**Step 7: Generate manifests WITHOUT CRDs**
-
-Use `helm template` to generate manifests, excluding CRDs:
+**Step 8: View available versions (optional)**
 
 ```bash
-helm template argocd argo/argo-cd \
-  --version 7.7.3 \
+helm search repo argocd/argo-cd --versions | grep 9.1.4
+```
+
+Verify version 9.1.4 is available.
+
+**Step 9: Generate Helm template without CRDs**
+
+**SOLUTION COMMAND:**
+
+```bash
+helm template argocd argocd/argo-cd \
+  --version 9.1.4 \
   --namespace argocd \
   --skip-crds \
   > /root/argo-helm.yaml
 ```
 
-**Understanding the command:**
-- `helm template` - Generates manifests without installing
-- `argocd` - Release name
-- `argo/argo-cd` - Chart repository/name
-- `--version 7.7.3` - Specific chart version
+**Breaking down the command:**
+- `helm template` - Generate manifests without installing
+- `argocd` - Release name (first positional argument)
+- `argocd/argo-cd` - Repository/Chart (repo-name/chart-name)
+- `--version 9.1.4` - Specific chart version required
 - `--namespace argocd` - Target namespace
-- `--skip-crds` - **EXCLUDE CRDs from the output**
-- `> /root/argo-helm.yaml` - Redirect output to file
+- `--skip-crds` - **Skip CRD installation (critical requirement)**
+- `> /root/argo-helm.yaml` - Save output to file
 
-**Alternative: Using helm install with --dry-run**
-
-```bash
-helm install argocd argo/argo-cd \
-  --version 7.7.3 \
-  --namespace argocd \
-  --skip-crds \
-  --dry-run \
-  --client \
-  > /root/argo-helm.yaml
-```
-
-Note: `helm template` is preferred for generating manifests.
-
-**Step 8: Verify the generated file**
+**Step 10: Verify the file was created**
 
 ```bash
 ls -lh /root/argo-helm.yaml
 ```
 
-Check file size (should be substantial, typically 50KB+).
+Check file exists and has content (should be 50KB+ typically).
+
+**Step 11: View the beginning of the file**
 
 ```bash
-head -50 /root/argo-helm.yaml
+head -30 /root/argo-helm.yaml
 ```
 
-View the first 50 lines to see the generated manifests.
+You should see YAML manifests with Kubernetes resources.
 
-**Step 9: Check what resources were generated**
-
-```bash
-grep "^kind:" /root/argo-helm.yaml | sort | uniq -c
-```
-
-This shows all resource types in the generated manifests.
-
-**Step 10: Verify CRDs are not included**
+**Step 12: Verify CRDs are NOT in the file**
 
 ```bash
 grep -i "CustomResourceDefinition" /root/argo-helm.yaml
 ```
 
-This should return nothing, confirming CRDs were skipped.
+This should return nothing (no output = correct).
 
+Alternative verification:
 ```bash
-grep "kind: CustomResourceDefinition" /root/argo-helm.yaml || echo "No CRDs found - Correct!"
+grep "kind: CustomResourceDefinition" /root/argo-helm.yaml || echo "✅ No CRDs found - Correct!"
 ```
 
-**Step 11: Count the number of resources**
+**Step 13: Check what resource types were generated**
+
+```bash
+grep "^kind:" /root/argo-helm.yaml | sort | uniq -c
+```
+
+You should see resources like:
+- ServiceAccount
+- ConfigMap
+- Secret
+- Service
+- Deployment
+- NetworkPolicy
+- Role/ClusterRole
+- RoleBinding/ClusterRoleBinding
+
+**Step 14: Count total YAML documents**
 
 ```bash
 grep -c "^---" /root/argo-helm.yaml
 ```
 
-This shows how many YAML documents (resources) are in the file.
+Should show 30+ documents (manifests).
 
-**Step 12: Optional - Review specific resources**
+**Step 15: Verify namespace references**
 
 ```bash
-# List all ServiceAccount names
-grep -A 1 "kind: ServiceAccount" /root/argo-helm.yaml | grep "name:"
-
-# List all Deployment names
-grep -A 1 "kind: Deployment" /root/argo-helm.yaml | grep "name:"
-
-# List all Service names
-grep -A 1 "kind: Service" /root/argo-helm.yaml | grep "name:"
+grep "namespace: argocd" /root/argo-helm.yaml | head -5
 ```
 
-**Step 13: Apply the manifests (if needed)**
+Should show resources configured for argocd namespace.
 
-If you wanted to actually install Argo CD:
+**Step 16: Optional - Check for Argo CD components**
 
 ```bash
-kubectl apply -f /root/argo-helm.yaml
+grep -E "argocd-server|argocd-repo-server|argocd-application-controller" /root/argo-helm.yaml | grep "name:" | head -10
 ```
 </details>

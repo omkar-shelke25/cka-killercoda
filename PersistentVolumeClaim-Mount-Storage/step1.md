@@ -162,14 +162,3 @@ curl http://localhost:30339
 ```
 
 </details>
-
----
-
-### 💡 **Key Concepts**
-
-- **PersistentVolume (PV)**: Cluster-wide storage resource provisioned by an administrator
-- **PersistentVolumeClaim (PVC)**: Request for storage by a user/pod
-- **volumeName**: Explicitly binds a PVC to a specific PV
-- **storageClassName**: Must match between PV and PVC for binding
-- **Local volumes**: Require node affinity; pods using them must schedule on the same node
-- **volumeMounts**: Specifies where in the container filesystem to mount the volume

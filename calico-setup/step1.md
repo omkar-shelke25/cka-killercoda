@@ -15,10 +15,10 @@ The cluster has already been initialized successfully using `kubeadm.`
 A background automation script provisions the control-plane node only (no worker nodes).
 
 > Wait for 2 minutes for the Kubernetes cluster setup. Use the command below to verify whether the cluster is ready.
->
-> `crictl ps`   
-> `kubectl get no`
->
+
+- `crictl ps`   
+- `kubectl get no`
+
 > Make Sure Commponents is running 
 
 

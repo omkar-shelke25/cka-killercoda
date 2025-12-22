@@ -225,12 +225,110 @@ EOF
 echo "⏳ Waiting for pods to be ready..."
 kubectl wait --for=condition=ready pod --all -n isolated --timeout=120s
 
-# Display pod information
+# Create ClusterIP Services to expose the pods
+echo ""
+echo "🌐 Creating ClusterIP services..."
+
+# Service for api-pod (port 7000)
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-pod
+  namespace: isolated
+spec:
+  selector:
+    app: api
+  ports:
+  - name: api-port
+    protocol: TCP
+    port: 7000
+    targetPort: 7000
+  type: ClusterIP
+EOF
+
+# Service for api-pod-alt (port 8080)
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-pod-alt
+  namespace: isolated
+spec:
+  selector:
+    app: api
+  ports:
+  - name: alt-port
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+EOF
+
+# Service for frontend-proxy-pod
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-proxy-pod
+  namespace: isolated
+spec:
+  selector:
+    app: frontend
+    role: proxy
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+EOF
+
+# Service for frontend-only-pod
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-only-pod
+  namespace: isolated
+spec:
+  selector:
+    app: frontend
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+EOF
+
+# Service for database-pod
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-pod
+  namespace: isolated
+spec:
+  selector:
+    app: database
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+EOF
+
+# Display pod and service information
 echo ""
 echo "✅ Setup complete!"
 echo ""
 echo "📋 Created pods in 'isolated' namespace:"
 kubectl get pods -n isolated -o wide --show-labels
+echo ""
+echo "🌐 Created services in 'isolated' namespace:"
+kubectl get svc -n isolated
 echo ""
 echo "🎯 Your task: Create NetworkPolicy 'allow-multi-pod-ingress' that allows traffic to app=api pods"
 echo "   Only from pods with BOTH labels: app=frontend AND role=proxy"

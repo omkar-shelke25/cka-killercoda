@@ -7,8 +7,8 @@ Create a new NetworkPolicy named `allow-port-from-namespace` in the existing nam
 
 The NetworkPolicy should allow incoming traffic to Pods in namespace `fubar` only if all of the following conditions are met:
 - Traffic originates from Pods in the namespace `internal`
-- Traffic is directed to TCP port 9000
-- Pods that do not listen on port 9000 must not be accessible
+- Traffic is directed to TCP port `9000`
+- Pods that do not listen on port `9000` must not be accessible
 - Pods from namespaces other than `internal` must not be allowed access
 
 ---

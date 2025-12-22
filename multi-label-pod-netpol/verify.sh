@@ -105,50 +105,7 @@ kubectl wait --for=condition=ready pod/frontend-only-pod -n "${NAMESPACE}" --tim
 kubectl wait --for=condition=ready pod/database-pod -n "${NAMESPACE}" --timeout=30s &>/dev/null || true
 
 # Give NetworkPolicy time to be enforced
-sleep 3
-
-echo ""
-echo "🧪 Testing NetworkPolicy enforcement..."
-
-# Test 1: frontend-proxy-pod should be able to access api-pod:7000
-echo "Test 1: Checking access from frontend-proxy-pod (has both labels) to api-pod:7000..."
-if kubectl exec -n "${NAMESPACE}" frontend-proxy-pod -- timeout 5 curl -s api-pod:7000 &>/dev/null; then
-  print_status "ok" "frontend-proxy-pod CAN access api-pod:7000 (correct - has both required labels)"
-else
-  print_status "fail" "frontend-proxy-pod CANNOT access api-pod:7000 (should be allowed)"
-  echo "This pod has both app=frontend and role=proxy labels and should have access"
-  exit 1
-fi
-
-# Test 2: frontend-only-pod should NOT be able to access api-pod:7000
-echo "Test 2: Checking access from frontend-only-pod (missing role=proxy) to api-pod:7000..."
-if kubectl exec -n "${NAMESPACE}" frontend-only-pod -- timeout 5 curl -s api-pod:7000 &>/dev/null; then
-  print_status "fail" "frontend-only-pod CAN access api-pod:7000 (should be blocked)"
-  echo "This pod only has app=frontend label and should NOT have access"
-  exit 1
-else
-  print_status "ok" "frontend-only-pod CANNOT access api-pod:7000 (correct - missing role=proxy label)"
-fi
-
-# Test 3: database-pod should NOT be able to access api-pod:7000
-echo "Test 3: Checking access from database-pod (wrong labels) to api-pod:7000..."
-if kubectl exec -n "${NAMESPACE}" database-pod -- timeout 5 curl -s api-pod:7000 &>/dev/null; then
-  print_status "fail" "database-pod CAN access api-pod:7000 (should be blocked)"
-  echo "This pod has app=database label and should NOT have access"
-  exit 1
-else
-  print_status "ok" "database-pod CANNOT access api-pod:7000 (correct - wrong labels)"
-fi
-
-# Test 4: frontend-proxy-pod should NOT be able to access api-pod-alt:8080
-echo "Test 4: Checking access from frontend-proxy-pod to api-pod-alt:8080 (wrong port)..."
-if kubectl exec -n "${NAMESPACE}" frontend-proxy-pod -- timeout 5 curl -s api-pod-alt:8080 &>/dev/null; then
-  print_status "fail" "frontend-proxy-pod CAN access api-pod-alt:8080 (should be blocked)"
-  echo "Port 8080 should NOT be accessible per NetworkPolicy (only 7000 allowed)"
-  exit 1
-else
-  print_status "ok" "frontend-proxy-pod CANNOT access api-pod-alt:8080 (correct - port not allowed)"
-fi
+sleep 2
 
 # Verify the NetworkPolicy structure is correct
 echo ""

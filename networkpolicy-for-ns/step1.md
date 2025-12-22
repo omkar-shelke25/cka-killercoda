@@ -1,5 +1,7 @@
 ## 🔒 CKA - Configure NetworkPolicy
 
+## 📘 Official Kubernetes Documentation — NetworkPolicy
+[NetworkPolicy Concept](https://kubernetes.io/docs/concepts/services-networking/network-policies/) 
 
 ### 📖 Problem Statement
 

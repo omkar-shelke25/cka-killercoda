@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Configure NetworkPolicy for Namespace Isolation",
+  "description": "Master Kubernetes NetworkPolicy by implementing namespace-based access control with port restrictions.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure NetworkPolicy",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

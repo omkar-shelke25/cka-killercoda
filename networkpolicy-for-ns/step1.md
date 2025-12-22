@@ -1,4 +1,4 @@
-## 🔒 CKA Exam Question - Configure NetworkPolicy
+## 🔒 CKA - Configure NetworkPolicy
 
 
 ### 📖 Problem Statement

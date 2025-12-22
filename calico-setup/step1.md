@@ -88,6 +88,7 @@ kubectl get pods -A
 ```
 
 You should see the control plane node, but it will be in `NotReady` state until the CNI is installed.
+> In this task, we used v1.34, status of node is ready and coredns also in running status.
 
 ---
 

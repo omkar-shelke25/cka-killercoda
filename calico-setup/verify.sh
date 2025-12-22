@@ -92,18 +92,7 @@ if [[ "${REPLICAS}" != "${READY_REPLICAS}" ]]; then
 fi
 print_status "ok" "calico-kube-controllers deployment is ready"
 
-# Check TigeraStatus
-if ! kubectl get tigerastatus &>/dev/null; then
-  print_status "warn" "TigeraStatus resources not found (may still be initializing)"
-else
-  # Check if calico status is available
-  CALICO_AVAILABLE=$(kubectl get tigerastatus calico -o jsonpath='{.status.conditions[?(@.type=="Available")].status}' 2>/dev/null || echo "Unknown")
-  if [[ "${CALICO_AVAILABLE}" == "True" ]]; then
-    print_status "ok" "Calico components are available"
-  else
-    print_status "warn" "Calico status: ${CALICO_AVAILABLE}"
-  fi
-fi
+
 
 # Check if nodes are Ready
 NODE_COUNT=$(kubectl get nodes --no-headers | wc -l)

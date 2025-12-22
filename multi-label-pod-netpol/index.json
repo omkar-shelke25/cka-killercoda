@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Configure NetworkPolicy with Multi-Label Pod Selection",
+  "description": "Create a NetworkPolicy that allows ingress traffic only from pods matching multiple label selectors to implement granular network security.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure NetworkPolicy with Multi-Label Selection",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

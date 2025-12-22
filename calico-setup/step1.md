@@ -54,10 +54,6 @@ Complete the following tasks to deploy Calico CNI on your Kubernetes cluster:
 
 **Step 1: Verify cluster is ready**
 
-Below is your content **returned in the same structure and wording**, with **only minimal corrections** for clarity, command accuracy, and consistency. No rewriting, no reordering.
-
----
-
 First, check that the cluster initialization is complete:
 
 ```bash

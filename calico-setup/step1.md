@@ -53,12 +53,9 @@ Complete the following tasks to deploy Calico CNI on your Kubernetes cluster:
 
 <details><summary>✅ Solution (expand to view)</summary>
 
-It sounds like you’re describing a **behavior change after upgrading to Kubernetes v1.34** and want to clarify what’s happening compared to the old version. Here’s a clean, corrected explanation you can use, plus what it likely means.
-
----
 
 
-> We are now using **Kubernetes v1.34**. The cluster eventually reaches a **Ready** state, and there is no prolonged **NotReady** status.
+> In this task, we are now using **Kubernetes v1.34**. The cluster eventually reaches a **Ready** state, and there is no prolonged **NotReady** status.
 > **CoreDNS** is also in a **Running** state.
 >
 > In the older version, **CoreDNS remained in Pending**, and the **node status stayed NotReady**.

@@ -24,18 +24,34 @@ cat > allow-port-from-namespace.yaml <<'EOF'
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  # Name of the NetworkPolicy object
   name: allow-port-from-namespace
+
+  # Namespace where this policy is applied
   namespace: fubar
+
 spec:
+  # Selects which pods this policy applies to.
+  # An empty selector {} means "all pods in the namespace"
   podSelector: {}
+
+  # Specifies the type of traffic this policy controls.
+  # Ingress means incoming traffic to the selected pods
   policyTypes:
   - Ingress
+
   ingress:
   - from:
+      # Allow traffic only from pods in namespaces
+      # that match this label selector
     - namespaceSelector:
         matchLabels:
+          # This matches namespaces labeled with:
+          # kubernetes.io/metadata.name=internal
           kubernetes.io/metadata.name: internal
+
     ports:
+      # Only allow traffic on TCP port 9000
     - protocol: TCP
       port: 9000
 EOF

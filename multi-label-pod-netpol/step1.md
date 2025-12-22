@@ -9,17 +9,6 @@
 
 You are the security engineer for a microservices platform running in Kubernetes. The security team has identified that the API service in the `isolated` namespace requires strict access controls.
 
-The API service (labeled `app=api`) handles sensitive data and must only be accessible from the frontend proxy pods that have been properly authenticated and authorized. These pods must have BOTH the `app=frontend` AND `role=proxy` labels to ensure they're legitimate proxy instances.
-
-### Constraints
-
-Several test pods have been deployed to verify your NetworkPolicy configuration:
-- `api-pod` - API service on port 7000 (should be protected)
-- `api-pod-alt` - API service on port 8080 (should be blocked)
-- `frontend-proxy-pod` - Has both required labels (should have access)
-- `frontend-only-pod` - Missing `role=proxy` label (should NOT have access)
-- `database-pod` - Different application (should NOT have access)
-
 ### ❓ **Problem Statement**
 
 Create a new NetworkPolicy named `allow-multi-pod-ingress` in the existing namespace `isolated`.

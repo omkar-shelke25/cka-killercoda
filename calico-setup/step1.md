@@ -8,18 +8,20 @@
 
 ### 🏢 **Context**
 
-Your organization is preparing a development-ready, single-node Kubernetes cluster.
+Your organization is preparing a dev enviroment cluster, single-node Kubernetes cluster.
 
 The cluster has already been initialized successfully using `kubeadm.`
 
 A background automation script provisions the control-plane node only (no worker nodes).
 
-⚠️ You must wait at least 2 minutes after the script completes before applying any CNI configuration.
+> Wait for 2 minutes for the Kubernetes cluster setup. Use the command below to verify whether the cluster is ready.
+>
+> `crictl ps`   
+> `kubectl get no`
+> Make Sure Commponents is running 
 
-You can use to verify that all Kubernetes components are running:
-- `sudo systemctl status containerd` && `containerd --version`
-- `crictl ps` 
 
+### ❓ **Tasks**
 
 Due to security, compliance, and tenant isolation requirements, your task is to install Project Calico as the Container Network Interface (CNI) plugin because it supports Kubernetes NetworkPolicy enforcement.
 
@@ -28,8 +30,6 @@ You are provided with the official Tigera Operator manifest:
 ```
 https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
 ```
-
-### ❓ **Tasks**
 
 Complete the following tasks to deploy Calico CNI on your Kubernetes cluster:
 

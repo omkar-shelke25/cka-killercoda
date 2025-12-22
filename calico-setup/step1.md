@@ -8,11 +8,19 @@
 
 ### 🏢 **Context**
 
-Your organization is preparing a production Kubernetes cluster for a multi-tenant application platform. The cluster has already been initialized successfully using `kubeadm`.
+Your organization is preparing a development-ready, single-node Kubernetes cluster.
 
-A background automation script provisions the cluster control plane and worker nodes. **⚠️ Wait at least 2 minutes after the script completes** before applying any CNI configuration.
+The cluster has already been initialized successfully using `kubeadm.`
 
-Due to security, compliance, and tenant isolation requirements, the platform engineering team has selected **Project Calico** as the CNI plugin because it supports Kubernetes `NetworkPolicy` enforcement.
+A background automation script provisions the control-plane node only (no worker nodes).
+
+⚠️ You must wait at least 2 minutes after the script completes before applying any CNI configuration.
+
+You can use to verify that Kubernetes components are running:
+- `crictl status`
+- `crictl ps`
+
+Due to security, compliance, and tenant isolation requirements, the platform engineering team has selected Project Calico as the Container Network Interface (CNI) plugin because it supports Kubernetes NetworkPolicy enforcement.
 
 You are provided with the official Tigera Operator manifest:
 
@@ -30,17 +38,13 @@ Complete the following tasks to deploy Calico CNI on your Kubernetes cluster:
 
 2. **Configure Calico to use the existing Pod CIDR of the cluster**
    - Create an Installation custom resource to configure Calico
-   - The cluster's Pod CIDR is `10.244.0.0/16`
+   - 
    - Ensure Calico uses this CIDR for pod networking
 
 3. **Verify that:**
    - Calico system components are running successfully
    - All nodes are in `Ready` state
-   - The cluster can enforce Kubernetes `NetworkPolicy` objects
-
-4. **Test NetworkPolicy enforcement (Optional)**
-   - Deploy test pods to verify network connectivity
-   - Create a NetworkPolicy to demonstrate enforcement
+   - The cluster can enforce Kubernetes `NetworkPolicy` objects.
 
 ---
 
@@ -50,6 +54,10 @@ Complete the following tasks to deploy Calico CNI on your Kubernetes cluster:
 
 **Step 1: Verify cluster is ready**
 
+Below is your content **returned in the same structure and wording**, with **only minimal corrections** for clarity, command accuracy, and consistency. No rewriting, no reordering.
+
+---
+
 First, check that the cluster initialization is complete:
 
 ```bash
@@ -57,7 +65,9 @@ kubectl get nodes
 kubectl get pods -A
 ```
 
-You should see the control plane node, but it will be in `NotReady` state until CNI is installed.
+You should see the control plane node, but it will be in `NotReady` state until the CNI is installed.
+
+---
 
 **Step 2: Install the Tigera Operator**
 
@@ -79,7 +89,31 @@ Verify the operator is running:
 kubectl get pods -n tigera-operator
 ```
 
+---
+
 **Step 3: Create the Installation custom resource**
+
+Find podCIDR for node:
+
+```bash
+kubectl describe node | grep -i podcidr
+```
+
+Alternative:
+
+```bash
+kubectl -n kube-system get cm kubeadm-config | grep -i podsubnet
+```
+
+Copy the tigera-operator URL mentioned in the question and remove `tigera-operator.yaml`, then use `custom-resources.yaml`
+
+```bash
+https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
+```
+
+```bash
+wget https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/custom-resources.yaml
+```
 
 The Installation CR configures Calico. Create it with the correct Pod CIDR:
 
@@ -101,10 +135,13 @@ EOF
 ```
 
 **Explanation of the configuration:**
-- `cidr: 10.244.0.0/16` - Matches the cluster's Pod CIDR
-- `blockSize: 26` - Each node gets a /26 subnet (64 IPs)
-- `encapsulation: VXLANCrossSubnet` - Uses VXLAN for cross-subnet traffic
-- `natOutgoing: Enabled` - NAT for traffic leaving the cluster
+
+* `cidr: 10.244.0.0/16` - Matches the cluster's Pod CIDR
+* `blockSize: 26` - Each node gets a /26 subnet (64 IPs)
+* `encapsulation: VXLANCrossSubnet` - Uses VXLAN for cross-subnet traffic
+* `natOutgoing: Enabled` - NAT for traffic leaving the cluster
+
+---
 
 **Step 4: Wait for Calico to be deployed**
 
@@ -122,6 +159,8 @@ Alternatively, check with:
 kubectl get tigerastatus -w
 ```
 
+---
+
 **Step 5: Verify Calico system components**
 
 Check that all Calico pods are running:
@@ -131,15 +170,18 @@ kubectl get pods -n calico-system
 ```
 
 You should see pods like:
-- `calico-kube-controllers`
-- `calico-node`
-- `calico-typha` (if present)
+
+* `calico-kube-controllers`
+* `calico-node`
+* `calico-typha` (if present)
 
 Check the API server pods:
 
 ```bash
 kubectl get pods -n calico-apiserver
 ```
+
+---
 
 **Step 6: Verify nodes are Ready**
 
@@ -154,6 +196,9 @@ Check node details:
 ```bash
 kubectl describe node | grep -A 5 "Conditions:"
 ```
+
+
+*Below Steps are optinal* 
 
 **Step 7: Test NetworkPolicy enforcement**
 

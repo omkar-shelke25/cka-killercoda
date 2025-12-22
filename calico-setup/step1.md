@@ -16,11 +16,12 @@ A background automation script provisions the control-plane node only (no worker
 
 ⚠️ You must wait at least 2 minutes after the script completes before applying any CNI configuration.
 
-You can use to verify that Kubernetes components are running:
-- `crictl status`
-- `crictl ps`
+You can use to verify that all Kubernetes components are running:
+- `sudo systemctl status containerd` && `containerd --version`
+- `crictl ps` 
 
-Due to security, compliance, and tenant isolation requirements, the platform engineering team has selected Project Calico as the Container Network Interface (CNI) plugin because it supports Kubernetes NetworkPolicy enforcement.
+
+Due to security, compliance, and tenant isolation requirements, your task is to install Project Calico as the Container Network Interface (CNI) plugin because it supports Kubernetes NetworkPolicy enforcement.
 
 You are provided with the official Tigera Operator manifest:
 
@@ -301,14 +302,6 @@ echo ""
 echo "=== NetworkPolicy Test ==="
 kubectl get networkpolicy -n policy-test
 ```
-
-**Verification checklist:**
-- ✅ Tigera Operator installed and running
-- ✅ Installation CR created with correct Pod CIDR (10.244.0.0/16)
-- ✅ All Calico system components running
-- ✅ Node status is `Ready`
-- ✅ NetworkPolicy enforcement verified
-- ✅ Test pods can communicate according to policies
 
 </details>
 

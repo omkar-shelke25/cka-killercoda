@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Installing Calico CNI with Tigera Operator for Multi-Tenant Platform",
+  "description": "Install and configure Project Calico CNI using the Tigera Operator, configure Pod CIDR, and verify NetworkPolicy enforcement capabilities.",
+  "details": {
+    "steps": [
+      {
+        "title": "Install and Configure Calico CNI",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

@@ -15,8 +15,7 @@ Create a new NetworkPolicy named `allow-multi-pod-ingress` in the existing names
 
 The NetworkPolicy should allow incoming traffic to Pods with label `app=api` in namespace `isolated` only if **ALL** of the following conditions are met:
 
-* Traffic originates from Pods with label `app=frontend`
-* Traffic originates from Pods with label `role=proxy`
+* Traffic originates from Pods with label `app=frontend` & `role=proxy`
 * Traffic is directed to TCP port 7000
 * Pods that do not listen on port 7000 must not be accessible
 * Pods other than those with label `app=api` must not be allowed access

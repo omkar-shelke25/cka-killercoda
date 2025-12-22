@@ -11,7 +11,7 @@
     ],
     "intro": {
       "text": "intro.md",
-      "foreground": "forge.sh"
+      "foreground": "forge.sh",
       "background": "setup.sh"
     },
     "finish": {

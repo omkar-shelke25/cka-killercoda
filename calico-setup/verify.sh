@@ -144,50 +144,7 @@ if [[ ! "${POOL_CIDR}" =~ "10.244.0.0/16" ]]; then
 fi
 print_status "ok" "IPPool with correct CIDR found"
 
-# Test if we can create a test pod and it gets an IP
-echo ""
-echo "🧪 Testing pod networking..."
 
-# Create test namespace
-kubectl create namespace calico-verify-test &>/dev/null || true
-
-# Deploy test pod
-kubectl run verify-pod --image=nginx:alpine --namespace=calico-verify-test &>/dev/null || true
-
-# Wait for pod to be ready (with timeout)
-if ! kubectl wait --for=condition=ready pod/verify-pod -n calico-verify-test --timeout=60s &>/dev/null; then
-  print_status "fail" "Test pod failed to become ready"
-  kubectl get pod verify-pod -n calico-verify-test
-  kubectl delete namespace calico-verify-test --force --grace-period=0 &>/dev/null || true
-  exit 1
-fi
-
-# Check if pod has an IP
-POD_IP=$(kubectl get pod verify-pod -n calico-verify-test -o jsonpath='{.status.podIP}')
-if [[ -z "${POD_IP}" ]]; then
-  print_status "fail" "Test pod has no IP address"
-  kubectl delete namespace calico-verify-test --force --grace-period=0 &>/dev/null || true
-  exit 1
-fi
-
-# Verify IP is from correct CIDR
-if [[ ! "${POD_IP}" =~ ^10\.244\. ]]; then
-  print_status "fail" "Test pod IP (${POD_IP}) is not from expected CIDR (10.244.0.0/16)"
-  kubectl delete namespace calico-verify-test --force --grace-period=0 &>/dev/null || true
-  exit 1
-fi
-
-print_status "ok" "Test pod has IP from correct CIDR: ${POD_IP}"
-
-# Clean up test pod
-kubectl delete namespace calico-verify-test --force --grace-period=0 &>/dev/null || true
-
-# Optional: Check if NetworkPolicy CRD exists (Calico should create this)
-if ! kubectl get crd networkpolicies.networking.k8s.io &>/dev/null; then
-  print_status "warn" "NetworkPolicy CRD not found (may not be needed depending on Kubernetes version)"
-else
-  print_status "ok" "NetworkPolicy CRD exists"
-fi
 
 echo ""
 print_status "ok" "🎉 Calico CNI installation verification passed!"

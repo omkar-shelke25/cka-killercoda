@@ -11,13 +11,13 @@
     ],
     "intro": {
       "text": "intro.md",
-      "courseData": "setup.sh"
+      "background": "setup.sh"
     },
     "finish": {
       "text": "finish.md"
     }
   },
   "backend": {
-    "imageid": "kubernetes-kubeadm-1node"
+    "imageid": "ubuntu-4GB"
   }
 }

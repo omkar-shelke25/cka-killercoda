@@ -11,6 +11,7 @@
     ],
     "intro": {
       "text": "intro.md",
+      "foreground": "setup.sh"
       "background": "setup.sh"
     },
     "finish": {

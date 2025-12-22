@@ -18,6 +18,7 @@ A background automation script provisions the control-plane node only (no worker
 >
 > `crictl ps`   
 > `kubectl get no`
+>
 > Make Sure Commponents is running 
 
 

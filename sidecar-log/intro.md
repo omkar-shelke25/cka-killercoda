@@ -1,12 +1,7 @@
-# 🧪 **CKAD: Sidecar Container for Logging** 📄📤
+#  **CKAD: Sidecar Container for Logging** 📄📤
 
-You will add a **🧩 sidecar container** to an existing **🚀 Deployment** to:
+You will add a **sidecar container** to an existing Deployment to capture log files and stream them to stdout. 
 
-* 📁 **Capture application log files**
-* 🔁 **Stream logs to stdout**
-* 👀 Make logs accessible using **`kubectl logs`**
-
-This is a **⭐ common CKAD exam pattern** for handling logs in Kubernetes Pods.
+This is a common pattern for making application logs accessible via `kubectl logs`.
 
 ▶️ **Click *Start Scenario* to begin** 🟢
-

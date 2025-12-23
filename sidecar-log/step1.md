@@ -1,4 +1,4 @@
-# CKAD: Create Sidecar Container for Logging
+# CKA: Create Sidecar Container for Logging
 
 ## 📚 **Official Kubernetes Documentation**:
 
@@ -50,7 +50,8 @@ In **CKA** and **CKAD** exams, you may be asked to:
 - If the question does not mentioned co-located container, then use **restartable sidecar init containers**.
 - If the question says co-located containers → ❌ Do NOT use **restartable sidecar container**. 
   - ✅ Use normal sidecar containers under spec.containers
-
+  
+---
 ```bash
 # First, examine the existing deployment
 cat /opt/course/16/cleaner.yaml

@@ -22,15 +22,6 @@ The NetworkPolicy should allow outgoing (egress) traffic from Pods in namespace 
 * Pods must not be able to send traffic to any other Pods, namespaces, or external destinations
 * Pods that do not send traffic on port 5432 must not be allowed egress access
 
-**Requirements Summary:**
-- NetworkPolicy name: `allow-egress-or-logic`
-- Namespace: `restricted`
-- Policy type: Egress
-- Allowed destinations:
-  - Database pods (`app=database` in `data` namespace) on port 5432, OR
-  - Cache pods (`role=cache` in `cache` namespace) on port 5432
-  - DNS pods (`k8s-app=kube-dns` in `kube-system` namespace) on port 53 UDP/TCP
-- All other egress traffic: Denied
 
 ---
 

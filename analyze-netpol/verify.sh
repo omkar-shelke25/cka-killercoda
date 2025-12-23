@@ -64,15 +64,32 @@ if [[ -z "${INGRESS_RULES}" || "${INGRESS_RULES}" == "null" ]]; then
 fi
 print_status "ok" "NetworkPolicy has ingress rules defined"
 
-# Critical check: Must use namespaceSelector (not just podSelector)
+# CRITICAL: Check if BOTH namespaceSelector AND podSelector are present in the same from item
 NAMESPACE_SELECTOR=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o jsonpath='{.spec.ingress[0].from[0].namespaceSelector}')
+POD_SELECTOR_IN_FROM=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o jsonpath='{.spec.ingress[0].from[0].podSelector}')
+
 if [[ -z "${NAMESPACE_SELECTOR}" || "${NAMESPACE_SELECTOR}" == "null" ]]; then
   print_status "fail" "NetworkPolicy does not use namespaceSelector"
-  echo "The policy must use namespaceSelector to allow cross-namespace traffic"
-  echo "Using only podSelector will not work for frontend→backend communication"
+  echo "For cross-namespace communication, namespaceSelector is required"
   exit 1
 fi
 print_status "ok" "NetworkPolicy uses namespaceSelector"
+
+if [[ -z "${POD_SELECTOR_IN_FROM}" || "${POD_SELECTOR_IN_FROM}" == "null" ]]; then
+  print_status "fail" "NetworkPolicy does not use podSelector in the from clause"
+  echo "For least permissive access, BOTH namespaceSelector AND podSelector are required"
+  exit 1
+fi
+print_status "ok" "NetworkPolicy uses podSelector in from clause"
+
+# Verify both are in the SAME from item (AND logic)
+FULL_FROM=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o json | jq '.spec.ingress[0].from[0]')
+if ! echo "${FULL_FROM}" | grep -q "namespaceSelector" || ! echo "${FULL_FROM}" | grep -q "podSelector"; then
+  print_status "fail" "namespaceSelector and podSelector must be in the SAME from item (AND logic)"
+  echo "Current from clause: ${FULL_FROM}"
+  exit 1
+fi
+print_status "ok" "namespaceSelector and podSelector are combined (AND logic)"
 
 # Check if namespaceSelector targets frontend namespace
 NAMESPACE_LABEL=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o jsonpath='{.spec.ingress[0].from[0].namespaceSelector.matchLabels}')
@@ -82,6 +99,15 @@ if ! echo "${NAMESPACE_LABEL}" | grep -q '"name":"frontend"'; then
   exit 1
 fi
 print_status "ok" "NetworkPolicy selects frontend namespace"
+
+# Check if podSelector targets app=frontend
+POD_LABEL=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o jsonpath='{.spec.ingress[0].from[0].podSelector.matchLabels}')
+if ! echo "${POD_LABEL}" | grep -q '"app":"frontend"'; then
+  print_status "fail" "NetworkPolicy does not select app=frontend pods"
+  echo "Found podSelector labels: ${POD_LABEL}"
+  exit 1
+fi
+print_status "ok" "NetworkPolicy selects app=frontend pods"
 
 # Check if port 8080 is allowed
 PORT=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o jsonpath='{.spec.ingress[0].ports[0].port}')
@@ -108,21 +134,39 @@ if [[ "${PORT_COUNT}" -gt 1 ]]; then
 fi
 print_status "ok" "NetworkPolicy allows only one port (least permissive)"
 
-# Check that podSelector is not empty (security issue)
-POD_SELECTOR_CHECK=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o jsonpath='{.spec.ingress[0].from[0].podSelector}')
-if [[ "${POD_SELECTOR_CHECK}" == "{}" ]]; then
-  print_status "fail" "NetworkPolicy uses empty podSelector (too permissive)"
-  echo "Empty podSelector {} allows all pods in the backend namespace"
+# Check that there's no ipBlock (security issue for this scenario)
+IP_BLOCK=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o json | jq '.spec.ingress[0].from[1].ipBlock // empty')
+if [[ -n "${IP_BLOCK}" ]]; then
+  print_status "fail" "NetworkPolicy contains ipBlock which is not required and too permissive"
+  echo "For least permissive access, do not include ipBlock"
   exit 1
 fi
+print_status "ok" "NetworkPolicy does not contain unnecessary ipBlock"
 
-# Check that from clause exists (not missing)
+# Check that podSelector is not empty (would be security issue)
+if echo "${POD_SELECTOR_IN_FROM}" | grep -q "^{}$"; then
+  print_status "fail" "NetworkPolicy uses empty podSelector (too permissive)"
+  echo "Empty podSelector {} allows all pods, which is not least permissive"
+  exit 1
+fi
+print_status "ok" "NetworkPolicy does not use empty podSelector"
+
+# Check that from clause exists and is not empty
 FROM_CLAUSE=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o jsonpath='{.spec.ingress[0].from}')
 if [[ -z "${FROM_CLAUSE}" || "${FROM_CLAUSE}" == "null" || "${FROM_CLAUSE}" == "[]" ]]; then
   print_status "fail" "NetworkPolicy is missing 'from' clause (allows traffic from any source)"
   exit 1
 fi
 print_status "ok" "NetworkPolicy has proper 'from' clause"
+
+# Verify there's only ONE from item (most restrictive)
+FROM_COUNT=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o json | jq '.spec.ingress[0].from | length')
+if [[ "${FROM_COUNT}" -gt 1 ]]; then
+  print_status "fail" "NetworkPolicy has ${FROM_COUNT} from items (should be 1 for least permissive)"
+  echo "Multiple from items create OR logic, which is more permissive"
+  exit 1
+fi
+print_status "ok" "NetworkPolicy has single from item (most restrictive)"
 
 # Wait for pods to be ready
 echo ""
@@ -157,7 +201,7 @@ if kubectl exec -n frontend "${FRONTEND_POD}" -- timeout 2 curl -s backend.backe
   print_status "ok" "Frontend can access backend (correct)"
 else
   print_status "fail" "Frontend CANNOT access backend (should be allowed)"
-  echo "The frontend namespace should have access to backend:8080"
+  echo "The frontend namespace with app=frontend pods should have access to backend:8080"
   exit 1
 fi
 
@@ -171,47 +215,24 @@ else
   print_status "ok" "Other namespace cannot access backend (correct)"
 fi
 
-# Additional validation: Check that the correct policy file was used
+# Display deployed policy summary
 echo ""
-echo "🔎 Validating policy correctness..."
-
-# Get the full policy YAML
-POLICY_YAML=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o yaml)
-
-# Check for common issues
-if echo "${POLICY_YAML}" | grep -q "podSelector: {}"; then
-  if ! echo "${POLICY_YAML}" | grep -q "namespaceSelector:"; then
-    print_status "warn" "Policy contains empty podSelector without namespaceSelector (potential issue)"
-  fi
-fi
-
-# Verify this is the least permissive policy
-echo ""
-echo "Verifying least permissive requirements:"
-
-# Should have exactly one from clause with namespaceSelector
-FROM_COUNT=$(kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o json | jq '.spec.ingress[0].from | length')
-if [[ "${FROM_COUNT}" -ne 1 ]]; then
-  print_status "warn" "Policy has ${FROM_COUNT} 'from' clauses (expected 1 for least permissive)"
-fi
-
-print_status "ok" "Policy appears to be least permissive"
-
-# Display deployed policy
-echo ""
-echo "📋 Deployed NetworkPolicy configuration:"
-kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o yaml | grep -A 15 "spec:"
+echo "📋 Deployed NetworkPolicy summary:"
+echo "---"
+kubectl get networkpolicy "${NETPOL_NAME}" -n backend -o jsonpath='{.spec.ingress[0]}' | jq
 
 echo ""
 print_status "ok" "🎉 NetworkPolicy verification passed!"
 echo ""
 echo "📊 Summary:"
 echo "   ✅ Correct NetworkPolicy deployed (policy2.yaml)"
-echo "   ✅ Uses namespaceSelector for cross-namespace traffic"
-echo "   ✅ Allows only frontend namespace"
+echo "   ✅ Uses BOTH namespaceSelector AND podSelector (AND logic)"
+echo "   ✅ Selects frontend namespace with app=frontend pods"
 echo "   ✅ Allows only port 8080 (least permissive)"
+echo "   ✅ No ipBlock or external access"
 echo "   ✅ Frontend pods can access backend"
 echo "   ✅ Other namespace pods are blocked"
+echo "   ✅ Most restrictive policy correctly identified"
 echo ""
 
 exit 0

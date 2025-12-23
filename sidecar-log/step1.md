@@ -1,4 +1,4 @@
-# CKAD: Create Sidecar Container for Logging (Weightage: 6%)
+# CKAD: Create Sidecar Container for Logging
 
 ## 📚 **Official Kubernetes Documentation**:
 

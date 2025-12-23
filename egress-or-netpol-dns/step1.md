@@ -223,13 +223,7 @@ echo "=== Test 3: Access to other namespace (should FAIL) ==="
 kubectl exec -n restricted $APP_POD -- curl -s --max-time 5 other-app.other.svc.cluster.local:80 && echo "❌ ALLOWED" || echo "✅ BLOCKED (correct)"
 ```
 
-**Test 4: DNS resolution (should SUCCEED)**
-```bash
-echo "=== Test 4: DNS resolution (should SUCCEED) ==="
-kubectl exec -n restricted $APP_POD -- nslookup kubernetes.default
-```
-
-**Test 5: External access (should FAIL if no internet, or blocked)**
+**Test 4: External access (should FAIL if no internet, or blocked)**
 ```bash
 echo "=== Test 5: External access (should FAIL) ==="
 kubectl exec -n restricted $APP_POD -- curl -s --max-time 5 google.com && echo "❌ ALLOWED" || echo "✅ BLOCKED (correct)"

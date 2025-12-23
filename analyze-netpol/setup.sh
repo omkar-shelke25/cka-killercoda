@@ -242,7 +242,7 @@ spec:
       port: 8080
 EOF
 
-# Create NetworkPolicy option 2 (CORRECT - least permissive, namespace selector)
+# Create NetworkPolicy option 2 (CORRECT - namespace + pod selector)
 cat > /root/network-policies/policy2.yaml <<'EOF'
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -260,13 +260,46 @@ spec:
     - namespaceSelector:
         matchLabels:
           name: frontend
+      podSelector:
+        matchLabels:
+          app: frontend
     ports:
     - protocol: TCP
       port: 8080
 EOF
 
-# Create NetworkPolicy option 3 (TOO PERMISSIVE - allows multiple ports)
+# Create NetworkPolicy option 3 (TOO PERMISSIVE - includes ipBlock with multiple ports)
 cat > /root/network-policies/policy3.yaml <<'EOF'
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-network-policy
+  namespace: backend
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: frontend
+      podSelector:
+        matchLabels:
+          app: frontend
+    - ipBlock:
+        cidr: 172.16.0.0/16
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 443
+EOF
+
+# Create NetworkPolicy option 4 (INCOMPLETE - only namespace selector, no pod selector)
+cat > /root/network-policies/policy4.yaml <<'EOF'
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -286,14 +319,10 @@ spec:
     ports:
     - protocol: TCP
       port: 8080
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 3000
 EOF
 
-# Create NetworkPolicy option 4 (WRONG - uses pod selector without namespace, too restrictive)
-cat > /root/network-policies/policy4.yaml <<'EOF'
+# Create NetworkPolicy option 5 (WRONG - only pod selector without namespace selector)
+cat > /root/network-policies/policy5.yaml <<'EOF'
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -311,25 +340,6 @@ spec:
         matchLabels:
           app: frontend
     ports:
-    - protocol: TCP
-      port: 8080
-EOF
-
-# Create NetworkPolicy option 5 (TOO PERMISSIVE - allows all ingress to port 8080)
-cat > /root/network-policies/policy5.yaml <<'EOF'
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: backend-network-policy
-  namespace: backend
-spec:
-  podSelector:
-    matchLabels:
-      app: backend
-  policyTypes:
-  - Ingress
-  ingress:
-  - ports:
     - protocol: TCP
       port: 8080
 EOF
@@ -357,7 +367,7 @@ echo ""
 echo "🎯 Your task: Analyze the NetworkPolicy files and deploy the correct one!"
 echo "   Requirements:"
 echo "   - Frontend pods must access backend pods"
-echo "   - Only frontend namespace should have access"
+echo "   - Only frontend namespace AND app=frontend pods should have access"
 echo "   - Only port 8080 should be allowed"
 echo "   - Choose the LEAST PERMISSIVE policy"
 echo ""

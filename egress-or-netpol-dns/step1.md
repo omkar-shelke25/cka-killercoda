@@ -15,8 +15,7 @@ Create a new NetworkPolicy named `allow-egress-or-logic` in the existing namespa
 
 The NetworkPolicy should allow outgoing (egress) traffic from Pods in namespace `restricted` only if **all** of the following conditions are met:
 
-* Traffic is destined to Pods with label `app=database` in namespace `data`
-* **OR** traffic is destined to Pods with label `role=cache` in namespace `cache`
+* Traffic is destined to Pods with label `app=database` in namespace `data` **OR** traffic is destined to Pods with label `role=cache` in namespace `cache`
 * Traffic is directed to TCP port 5432
 * DNS must be allowed, but only to `kube-dns` Pods in the `kube-system` namespace, and only on UDP/TCP port 53
 * Pods must not be able to send traffic to any other Pods, namespaces, or external destinations

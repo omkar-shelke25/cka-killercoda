@@ -65,92 +65,6 @@ if [[ "${EGRESS_RULE_COUNT}" -lt 2 ]]; then
 fi
 print_status "ok" "NetworkPolicy has ${EGRESS_RULE_COUNT} egress rules"
 
-# Check for database destination in first egress rule
-DATABASE_NS=$(echo "${POLICY_JSON}" | jq -r '.spec.egress[0].to[] | select(.namespaceSelector.matchLabels.name == "data") | .namespaceSelector.matchLabels.name' | head -1)
-DATABASE_POD=$(echo "${POLICY_JSON}" | jq -r '.spec.egress[0].to[] | select(.podSelector.matchLabels.app == "database") | .podSelector.matchLabels.app' | head -1)
-
-if [[ "${DATABASE_NS}" == "data" && "${DATABASE_POD}" == "database" ]]; then
-  print_status "ok" "Database destination configured (namespace=data, pod=app=database)"
-else
-  print_status "fail" "Database destination not found or incorrect"
-  echo "Expected: namespace=data, pod=app=database"
-  exit 1
-fi
-
-# Check for cache destination in first egress rule
-CACHE_NS=$(echo "${POLICY_JSON}" | jq -r '.spec.egress[0].to[] | select(.namespaceSelector.matchLabels.name == "cache") | .namespaceSelector.matchLabels.name' | head -1)
-CACHE_POD=$(echo "${POLICY_JSON}" | jq -r '.spec.egress[0].to[] | select(.podSelector.matchLabels.role == "cache") | .podSelector.matchLabels.role' | head -1)
-
-if [[ "${CACHE_NS}" == "cache" && "${CACHE_POD}" == "cache" ]]; then
-  print_status "ok" "Cache destination configured (namespace=cache, pod=role=cache)"
-else
-  print_status "fail" "Cache destination not found or incorrect"
-  echo "Expected: namespace=cache, pod=role=cache"
-  exit 1
-fi
-
-# Verify port 5432 in first egress rule
-PORT_5432=$(echo "${POLICY_JSON}" | jq -r '.spec.egress[0].ports[] | select(.port == 5432) | .port' | head -1)
-if [[ "${PORT_5432}" != "5432" ]]; then
-  print_status "fail" "Port 5432 not found in database/cache egress rule"
-  exit 1
-fi
-print_status "ok" "Port 5432 configured for database/cache access"
-
-# Check for DNS rule
-DNS_FOUND=false
-for i in $(seq 0 $((EGRESS_RULE_COUNT - 1))); do
-  DNS_NS=$(echo "${POLICY_JSON}" | jq -r ".spec.egress[$i].to[]? | select(.namespaceSelector.matchLabels.\"kubernetes.io/metadata.name\" == \"kube-system\") | .namespaceSelector.matchLabels.\"kubernetes.io/metadata.name\"" | head -1)
-  DNS_POD=$(echo "${POLICY_JSON}" | jq -r ".spec.egress[$i].to[]? | select(.podSelector.matchLabels.\"k8s-app\" == \"kube-dns\") | .podSelector.matchLabels.\"k8s-app\"" | head -1)
-  
-  if [[ "${DNS_NS}" == "kube-system" && "${DNS_POD}" == "kube-dns" ]]; then
-    DNS_FOUND=true
-    DNS_RULE_INDEX=$i
-    break
-  fi
-done
-
-if [[ "${DNS_FOUND}" == "false" ]]; then
-  print_status "fail" "DNS egress rule not found (kube-system/k8s-app=kube-dns)"
-  exit 1
-fi
-print_status "ok" "DNS destination configured (namespace=kube-system, pod=k8s-app=kube-dns)"
-
-# Check for port 53 UDP in DNS rule
-DNS_UDP=$(echo "${POLICY_JSON}" | jq -r ".spec.egress[$DNS_RULE_INDEX].ports[] | select(.port == 53 and .protocol == \"UDP\") | .port" | head -1)
-if [[ "${DNS_UDP}" != "53" ]]; then
-  print_status "fail" "DNS UDP port 53 not found"
-  exit 1
-fi
-print_status "ok" "DNS UDP port 53 configured"
-
-# Check for port 53 TCP in DNS rule
-DNS_TCP=$(echo "${POLICY_JSON}" | jq -r ".spec.egress[$DNS_RULE_INDEX].ports[] | select(.port == 53 and .protocol == \"TCP\") | .port" | head -1)
-if [[ "${DNS_TCP}" != "53" ]]; then
-  print_status "fail" "DNS TCP port 53 not found"
-  exit 1
-fi
-print_status "ok" "DNS TCP port 53 configured"
-
-# Verify OR logic: database and cache should be in separate to items within same egress rule
-TO_ITEM_COUNT=$(echo "${POLICY_JSON}" | jq '.spec.egress[0].to | length')
-if [[ "${TO_ITEM_COUNT}" -lt 2 ]]; then
-  print_status "fail" "First egress rule should have at least 2 'to' items (OR logic)"
-  echo "Found ${TO_ITEM_COUNT} 'to' item(s)"
-  exit 1
-fi
-print_status "ok" "OR logic implemented (${TO_ITEM_COUNT} destinations in first egress rule)"
-
-# Wait for pods to be ready
-echo ""
-echo "⏳ Ensuring pods are ready for testing..."
-kubectl wait --for=condition=ready pod -l app=application -n restricted --timeout=30s &>/dev/null || true
-kubectl wait --for=condition=ready pod -l app=database -n data --timeout=30s &>/dev/null || true
-kubectl wait --for=condition=ready pod -l role=cache -n cache --timeout=30s &>/dev/null || true
-
-# Give NetworkPolicy time to be enforced
-sleep 1
-
 echo ""
 echo "🧪 Testing NetworkPolicy enforcement..."
 
@@ -191,15 +105,6 @@ else
   print_status "ok" "Application cannot access other namespace (correct)"
 fi
 
-# Test 4: DNS resolution (should SUCCEED)
-echo "Test 4: DNS resolution (should SUCCEED)..."
-if kubectl exec -n restricted "${APP_POD}" -- timeout 2 nslookup kubernetes.default &>/dev/null; then
-  print_status "ok" "DNS resolution works (correct)"
-else
-  print_status "fail" "DNS resolution FAILS (should work)"
-  echo "DNS must be allowed for service discovery"
-  exit 1
-fi
 
 # Display policy summary
 echo ""

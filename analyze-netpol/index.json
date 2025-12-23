@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Analyze and Deploy the Correct NetworkPolicy",
+  "description": "Analyze multiple NetworkPolicy YAML files, identify the least permissive policy that meets requirements, and deploy it to secure frontend-backend communication.",
+  "details": {
+    "steps": [
+      {
+        "title": "Analyze and Deploy NetworkPolicy",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

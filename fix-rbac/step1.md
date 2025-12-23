@@ -1,4 +1,4 @@
-### 🧩 **CKAD: Fix RBAC Access for Deployment Using a Predefined Role**
+### 🧩 **CKA: Fix RBAC Access for Deployment Using a Predefined Role**
 
 
 ### 📚 **Official Kubernetes Documentation**: 

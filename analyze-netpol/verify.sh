@@ -176,7 +176,7 @@ kubectl wait --for=condition=ready pod -l app=backend -n backend --timeout=30s &
 kubectl wait --for=condition=ready pod -l app=other -n other --timeout=30s &>/dev/null || true
 
 # Give NetworkPolicy time to be enforced
-sleep 5
+sleep 2
 
 echo ""
 echo "🧪 Testing NetworkPolicy enforcement..."

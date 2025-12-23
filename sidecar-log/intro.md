@@ -1,4 +1,4 @@
-#  **CKAD: Sidecar Container for Logging** 📄📤
+#  **CKA: Sidecar Container for Logging** 📄📤
 
 You will add a **sidecar container** to an existing Deployment to capture log files and stream them to stdout. 
 

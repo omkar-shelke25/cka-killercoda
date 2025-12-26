@@ -1,5 +1,5 @@
 {
-  "title": "CKAD: Deploy Nginx with ConfigMap and InitContainer - One Piece Edition",
+  "title": "CKA: Deploy Nginx with ConfigMap and InitContainer - One Piece Edition",
   "description": "Deploy an Nginx application serving custom One Piece Strawhat crew HTML using ConfigMap and InitContainer",
   "details": {
     "steps": [

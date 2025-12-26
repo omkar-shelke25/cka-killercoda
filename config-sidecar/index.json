@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Configure Pod with Sidecar Container for Log Aggregation",
+  "description": "Add a Fluentd sidecar container to an existing deployment for log collection and forwarding using shared volumes.",
+  "details": {
+    "steps": [
+      {
+        "title": "Configure Sidecar Container",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

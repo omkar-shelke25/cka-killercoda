@@ -25,7 +25,7 @@ kubectl wait --namespace metallb-system \
   --selector=component=controller \
   --timeout=120s > /dev/null 2>&1 || echo "Waiting for MetalLB..."
 
-sleep 5
+sleep 2
 
 echo "🌐 Configuring MetalLB IP Address Pool..."
 cat <<'YAML' | kubectl apply -f - > /dev/null 2>&1
@@ -48,7 +48,9 @@ spec:
   - default-address-pool
 YAML
 
-sleep 5
+sleep 2
+
+
 
 # Create hawkins namespace
 echo "🏗️ Creating hawkins namespace..."

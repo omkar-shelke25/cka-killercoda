@@ -1,22 +1,30 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "📦 Installing Gateway API CRDs (NGINX Gateway Fabric v2.3.0)..."
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.3.0" | kubectl apply -f -
+# Install Gateway API CRDs
+echo "📦 Installing Kubernetes Gateway API CRDs..."
+kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.3.0" | kubectl apply -f - > /dev/null 2>&1
 
-sleep 3
+# Install NGINX Gateway Fabric
+echo "⚡ Installing NGINX Gateway Fabric..."
+helm repo add nginx-stable https://helm.nginx.com/stable > /dev/null 2>&1 || true
+helm repo update > /dev/null 2>&1
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway --wait > /dev/null 2>&1
 
-
-
-echo "🔧 Installing MetalLB v0.15.3..."
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml
+# Install MetalLB for LoadBalancer support
+echo "🔧 Installing MetalLB for LoadBalancer support..."
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml > /dev/null 2>&1
 
 echo "⏳ Waiting for MetalLB to be ready..."
-kubectl rollout status deployment/controller -n metallb-system
-kubectl rollout status daemonset/speaker -n metallb-system
+kubectl wait --namespace metallb-system \
+  --for=condition=ready pod \
+  --selector=component=controller \
+  --timeout=120s > /dev/null 2>&1 || echo "Waiting for MetalLB..."
+
+sleep 2
 
 echo "🌐 Configuring MetalLB IP Address Pool..."
-cat <<EOF | kubectl apply -f -
+cat <<'YAML' | kubectl apply -f - > /dev/null 2>&1
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -34,14 +42,9 @@ metadata:
 spec:
   ipAddressPools:
   - default-address-pool
-EOF
-
+YAML
 
 sleep 2
-
-helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway
-
-echo "✅ Installation completed successfully"
 
 
 

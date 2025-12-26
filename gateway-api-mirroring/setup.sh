@@ -47,8 +47,6 @@ YAML
 sleep 2
 
 
-
-
 # Create prod namespace
 echo "🏗️ Creating prod namespace..."
 kubectl create namespace prod > /dev/null 2>&1 || true

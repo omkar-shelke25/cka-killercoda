@@ -40,13 +40,12 @@ Complete the following tasks to deploy Calico CNI on your Kubernetes cluster:
 
 2. **Configure Calico to use the existing Pod CIDR of the cluster**
    - Create an Installation custom resource to configure Calico
-   - Ensure Calico uses this CIDR for pod networking.
+   - Ensure the Calico Installation configuration uses a Pod CIDR that contains /16.
 
 3. **Verify that:**
    - Calico system components are running successfully
    - All nodes are in `Ready` state
-   - The cluster can enforce Kubernetes `NetworkPolicy` objects.
-
+   - Deploy two pods, check that their assigned IPs belong to the /16 Pod CIDR, and validate pod-to-pod connectivity.
 ---
 
 ### Try it yourself first!

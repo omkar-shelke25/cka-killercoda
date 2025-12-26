@@ -1,21 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+echo "🔧 Installing MetalLB v0.15.3..."
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml
 
-# Install MetalLB for LoadBalancer support
-echo "🔧 Installing MetalLB for LoadBalancer support..."
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml > /dev/null 2>&1
+echo "⏳ Waiting for MetalLB controller..."
+kubectl rollout status deployment/controller -n metallb-system
 
-echo "⏳ Waiting for MetalLB to be ready..."
-kubectl wait --namespace metallb-system \
-  --for=condition=ready pod \
-  --selector=component=controller \
-  --timeout=120s > /dev/null 2>&1 || echo "Waiting for MetalLB..."
-
-sleep 5
+echo "⏳ Waiting for MetalLB speaker..."
+kubectl rollout status daemonset/speaker -n metallb-system
 
 echo "🌐 Configuring MetalLB IP Address Pool..."
-cat <<'YAML' | kubectl apply -f - > /dev/null 2>&1
+cat <<'YAML' | kubectl apply -f -
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -35,25 +31,23 @@ spec:
   - default-address-pool
 YAML
 
-sleep 5
-
-echo "🎌 Setting up Anime Streaming Platform..."
-
-echo "192.168.1.240 anime.streaming.io" | sudo tee -a /etc/hosts
-
-# Install Gateway API CRDs
-echo "📦 Installing Kubernetes Gateway API CRDs..."
+echo "📦 Installing Gateway API CRDs (NGF v2.3.0)..."
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.3.0" | kubectl apply -f -
+
 sleep 2
 
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v2.3.0" | kubectl apply -f -
 
-# Install NGINX Gateway Fabric
-echo "🔌 Installing NGINX Gateway Fabric..."
-helm repo add nginx-stable https://helm.nginx.com/stable
-helm repo update
-helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway 
+echo "🔍 Verifying BackendTLSPolicy CRD..."
+kubectl get crd backendtlspolicies.gateway.networking.k8s.io
 
+echo "🔌 Installing NGINX Gateway Fabric..."
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \
+  --namespace gateway \
+  --create-namespace \
+  --wait
+
+echo "✅ Installation complete"
 
 
 # Create prod namespace

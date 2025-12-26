@@ -37,7 +37,7 @@ spec:
 EOF
 
 
-sleep 10
+sleep 2
 
 helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway
 

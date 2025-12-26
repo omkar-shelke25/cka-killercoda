@@ -1,20 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "🎌 Setting up Anime Streaming Platform..."
-
-echo "192.168.1.240 anime.streaming.io" | sudo tee -a /etc/hosts
-
-# Install Gateway API CRDs
-echo "📦 Installing Kubernetes Gateway API CRDs..."
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
-
-# Install NGINX Gateway Fabric
-echo "🔌 Installing NGINX Gateway Fabric..."
-helm repo add nginx-stable https://helm.nginx.com/stable > /dev/null 2>&1 || true
-helm repo update > /dev/null 2>&1
-helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway --wait > /dev/null 2>&1
 
 # Install MetalLB for LoadBalancer support
 echo "🔧 Installing MetalLB for LoadBalancer support..."
@@ -50,6 +36,23 @@ spec:
 YAML
 
 sleep 5
+
+echo "🎌 Setting up Anime Streaming Platform..."
+
+echo "192.168.1.240 anime.streaming.io" | sudo tee -a /etc/hosts
+
+# Install Gateway API CRDs
+echo "📦 Installing Kubernetes Gateway API CRDs..."
+kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
+kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
+
+# Install NGINX Gateway Fabric
+echo "🔌 Installing NGINX Gateway Fabric..."
+helm repo add nginx-stable https://helm.nginx.com/stable > /dev/null 2>&1 || true
+helm repo update > /dev/null 2>&1
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway --wait > /dev/null 2>&1
+
+
 
 # Create prod namespace
 echo "🏗️ Creating prod namespace..."

@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Install MetalLB for LoadBalancer support
 echo "🔧 Installing MetalLB for LoadBalancer support..."
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml > /dev/null 2>&1
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml > /dev/null 2>&1
 
 echo "⏳ Waiting for MetalLB to be ready..."
 kubectl wait --namespace metallb-system \

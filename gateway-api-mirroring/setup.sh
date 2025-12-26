@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway
+
 echo "🔧 Installing MetalLB v0.15.3..."
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml
 
@@ -39,11 +41,6 @@ sleep 2
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v2.3.0" | kubectl apply -f -
 
 
-echo "🔌 Installing NGINX Gateway Fabric..."
-helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \
-  --namespace gateway \
-  --create-namespace \
-  --wait
 
 echo "✅ Installation completed successfully"
 

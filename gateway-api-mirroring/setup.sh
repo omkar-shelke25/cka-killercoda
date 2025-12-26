@@ -50,9 +50,9 @@ kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gate
 
 # Install NGINX Gateway Fabric
 echo "🔌 Installing NGINX Gateway Fabric..."
-helm repo add nginx-stable https://helm.nginx.com/stable > /dev/null 2>&1 || true
-helm repo update > /dev/null 2>&1
-helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway --wait > /dev/null 2>&1
+helm repo add nginx-stable https://helm.nginx.com/stable
+helm repo update
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway 
 
 
 

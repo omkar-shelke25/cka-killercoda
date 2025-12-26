@@ -2,7 +2,7 @@
 set -euo pipefail
 
 
-echo "192.168.1.240 gateway.web.k8s.local" | sudo tee -a /etc/hosts
+echo "anime.streaming.io" | sudo tee -a /etc/hosts
 
 # Install Gateway API CRDs
 echo "📦 Installing Kubernetes Gateway API CRDs..."

@@ -7,8 +7,8 @@ echo "192.168.1.240 api.stranger.things" | sudo tee -a /etc/hosts
 
 # Install Gateway API CRDs
 echo "📦 Installing Kubernetes Gateway API CRDs..."
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
+kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.3.0" | kubectl apply -f - > /dev/null 2>&1
+kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v2.3.0" | kubectl apply -f - > /dev/null 2>&1
 
 # Install NGINX Gateway Fabric
 echo "⚡ Installing NGINX Gateway Fabric..."

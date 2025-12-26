@@ -38,15 +38,6 @@ sleep 2
 
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v2.3.0" | kubectl apply -f -
 
-echo "🔍 Verifying Gateway API CRDs..."
-kubectl get crd | grep gateway.networking.k8s.io
-
-echo "📦 Adding Helm repositories..."
-helm repo add nginx-stable https://helm.nginx.com/stable || true
-helm repo update
-
-echo "📋 Helm repo list:"
-helm repo list
 
 echo "🔌 Installing NGINX Gateway Fabric..."
 helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \

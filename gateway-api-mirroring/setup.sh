@@ -6,9 +6,6 @@ kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gate
 
 sleep 3
 
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v2.3.0" | kubectl apply -f -
-
-sleep 3
 
 
 echo "🔧 Installing MetalLB v0.15.3..."

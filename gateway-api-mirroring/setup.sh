@@ -4,14 +4,12 @@ set -euo pipefail
 echo "🔧 Installing MetalLB v0.15.3..."
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml
 
-echo "⏳ Waiting for MetalLB controller..."
+echo "⏳ Waiting for MetalLB to be ready..."
 kubectl rollout status deployment/controller -n metallb-system
-
-echo "⏳ Waiting for MetalLB speaker..."
 kubectl rollout status daemonset/speaker -n metallb-system
 
 echo "🌐 Configuring MetalLB IP Address Pool..."
-cat <<'YAML' | kubectl apply -f -
+cat <<EOF | kubectl apply -f -
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
@@ -29,17 +27,26 @@ metadata:
 spec:
   ipAddressPools:
   - default-address-pool
-YAML
+EOF
 
-echo "📦 Installing Gateway API CRDs (NGF v2.3.0)..."
+sleep 5
+
+echo "📦 Installing Gateway API CRDs (NGINX Gateway Fabric v2.3.0)..."
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.3.0" | kubectl apply -f -
 
 sleep 2
 
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v2.3.0" | kubectl apply -f -
 
-echo "🔍 Verifying BackendTLSPolicy CRD..."
-kubectl get crd backendtlspolicies.gateway.networking.k8s.io
+echo "🔍 Verifying Gateway API CRDs..."
+kubectl get crd | grep gateway.networking.k8s.io
+
+echo "📦 Adding Helm repositories..."
+helm repo add nginx-stable https://helm.nginx.com/stable || true
+helm repo update
+
+echo "📋 Helm repo list:"
+helm repo list
 
 echo "🔌 Installing NGINX Gateway Fabric..."
 helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \
@@ -47,7 +54,9 @@ helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \
   --create-namespace \
   --wait
 
-echo "✅ Installation complete"
+echo "✅ Installation completed successfully"
+
+
 
 
 # Create prod namespace

@@ -31,7 +31,7 @@ Create an **HTTPRoute** named `anime-api-httproute` in the `prod` namespace that
 
 > Check the logs of the deployment; both deployments need to receive traffic.
 
-> curl -s http://anime.streaming.io/ | jq
+> curl -s http://anime.streaming.io/ 
 ---
 
 ### 📝 Traffic Mirroring Concept

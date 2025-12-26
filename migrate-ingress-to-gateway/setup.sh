@@ -11,18 +11,17 @@ echo "192.168.1.241 gateway.web.k8s.local" | sudo tee -a /etc/hosts
 
 # Install Gateway API CRDs
 echo "📦 Installing Kubernetes Gateway API CRDs..."
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v1.6.2" | kubectl apply -f - > /dev/null 2>&1
+kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.3.0" | kubectl apply -f - > /dev/null 2>&1
 
 # Install NGINX Gateway Fabric
-echo "🔌 Installing NGINX Gateway Fabric..."
+echo "⚡ Installing NGINX Gateway Fabric..."
 helm repo add nginx-stable https://helm.nginx.com/stable > /dev/null 2>&1 || true
 helm repo update > /dev/null 2>&1
-helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway-system --wait > /dev/null 2>&1
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway --wait > /dev/null 2>&1
 
 # Install MetalLB for LoadBalancer support
 echo "🔧 Installing MetalLB for LoadBalancer support..."
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml > /dev/null 2>&1
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml > /dev/null 2>&1
 
 echo "⏳ Waiting for MetalLB to be ready..."
 kubectl wait --namespace metallb-system \
@@ -30,7 +29,7 @@ kubectl wait --namespace metallb-system \
   --selector=component=controller \
   --timeout=120s > /dev/null 2>&1 || echo "Waiting for MetalLB..."
 
-sleep 3
+sleep 2
 
 echo "🌐 Configuring MetalLB IP Address Pool..."
 cat <<'YAML' | kubectl apply -f - > /dev/null 2>&1
@@ -53,7 +52,8 @@ spec:
   - default-address-pool
 YAML
 
-sleep 3
+sleep 2
+
 
 # Create borderland namespace
 echo "🏗️ Creating borderland namespace..."

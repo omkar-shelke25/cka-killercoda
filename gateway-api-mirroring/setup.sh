@@ -1,6 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
+echo "📦 Installing Gateway API CRDs (NGINX Gateway Fabric v2.3.0)..."
+kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.3.0" | kubectl apply -f -
+
+sleep 3
+
+kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v2.3.0" | kubectl apply -f -
+
+sleep 3
 
 
 echo "🔧 Installing MetalLB v0.15.3..."
@@ -32,15 +40,7 @@ spec:
 EOF
 
 
-echo "📦 Installing Gateway API CRDs (NGINX Gateway Fabric v2.3.0)..."
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.3.0" | kubectl apply -f -
-
-sleep 3
-
-kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v2.3.0" | kubectl apply -f -
-
-sleep 3
-
+sleep 10
 
 helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --create-namespace -n gateway
 

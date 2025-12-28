@@ -35,220 +35,95 @@ After successfully editing the deployment, scale it back to **3 replicas**.
 Verify that all 3 pods are in `Running` state and have the correct resource configuration:
 
 
-### ✅ Solution (Try it yourself first!)
+### Try it yourself first!
 
-<details><summary>Click to view complete solution</summary>
+<details><summary>✅ Solution (expand to view)</summary>
 
-There is a taint on the control plane node, so we cannot use its resources. We use only node01 resources.
-
-#### Step 1: Check Node Resources
+**Step 1: Scale down deployment**
 
 ```bash
-kubectl describe node node01 | grep -A 5 "Allocatable:"
-```
-
-**Expected output:**
-```
-Allocatable:
-  cpu:                1
-  memory:             1846656Ki/1024Ki=1803.375Mi=1803Mi (round down)
-```
-
-**Note:** `1` CPU = `1000m` (millicores)
-
----
-
-#### Step 2: Calculate Resources
-
-```
-Given:
-- Total CPU: 1000m (1 core)
-- Total Memory: 1803Mi
-- Overhead: 20%
-- Number of Pods: 3
-
-Calculation:
-Step 1 - Overhead:
-CPU Overhead = 1000m × 0.20 = 200m
-Memory Overhead = 1803Mi × 0.20 = 360.6Mi → 360Mi (round-down)
-
-Step 2 - Available:
-Available CPU = 1000m - 200m = 800m
-Available Memory = 1803Mi - 360Mi = 1443Mi
-
-Step 3 - Per Pod:
-CPU per Pod = 800m ÷ 3 = 266.67m → 266m (round down)
-Memory per Pod = 1443Mi ÷ 3 = 481Mi (round down)
-
-Final Values:
-- CPU: 266m
-- Memory: 481Mi
-```
-
----
-
-#### Step 3: Scale Down
-
-```bash
-kubectl scale deployment python-webapp --replicas=0 -n python-ml-ns
+kubectl scale deployment python-webapp -n python-ml-ns --replicas=0
 ```
 
 Verify:
 ```bash
 kubectl get deployment python-webapp -n python-ml-ns
+kubectl get pods -n python-ml-ns
 ```
 
----
+**Step 2: Calculate resources**
 
-#### Step 4: Edit Deployment
+Given:
+- Total CPU: 1000m, Total Memory: 1803.26171875 Mi
+- System overhead: 20%, Number of pods: 3
+
+```
+Available CPU = 1000m × 0.8 = 800m
+Available Memory = 1803.26171875 Mi × 0.8 = 1442.609375 Mi
+
+Per Pod CPU = 800m ÷ 3 = 266.67m ≈ 266m (or 267m)
+Per Pod Memory = 1442.609375 Mi ÷ 3 = 480.87 Mi ≈ 480Mi (or 481Mi)
+```
+
+**Step 3: Edit the deployment**
 
 ```bash
 kubectl edit deployment python-webapp -n python-ml-ns
 ```
 
-**Add the following resources to BOTH containers:**
+Add resources to **both containers**:
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: python-webapp
-  namespace: python-ml-ns
-spec:
-  replicas: 0
-  selector:
-    matchLabels:
-      app: python-webapp
-  template:
-    metadata:
-      labels:
-        app: python-webapp
-        tier: ml-service
-    spec:
-      initContainers:
-      - name: init-setup
-        image: busybox:1.28
-        command: ['sh', '-c', 'echo "🔧 Initializing ML environment..." && sleep 2 && echo "✅ Initialization complete"']
-        resources:
-          requests:
-            cpu: "266m"
-            memory: "481Mi"
-          limits:
-            cpu: "266m"
-            memory: "481Mi"
-      containers:
-      - name: python-app
-        image: python:3.11-slim
-        command: ['python', '/app/app.py']
-        ports:
-        - containerPort: 8080
-          name: http
-          protocol: TCP
-        env:
-        - name: PYTHONUNBUFFERED
-          value: "1"
-        - name: APP_ENV
-          value: "production"
-        volumeMounts:
-        - name: app-code
-          mountPath: /app
-        resources:
-          requests:
-            cpu: "266m"
-            memory: "481Mi"
-          limits:
-            cpu: "266m"
-            memory: "481Mi"
-      volumes:
-      - name: app-code
-        configMap:
-          name: python-app-code
-```
+resources:
+  requests:
+    cpu: 266m        # or 267m
+    memory: 480Mi    # or 481Mi
+  limits:
+    cpu: 266m        # or 267m
+    memory: 480Mi    # or 481Mi
 
-Save and exit (`:wq` in vim)
+volumeMounts:
+  - name: config-volume
+    mountPath: /app/config
 
----
+volumes:
+  - name: config-volume
+    emptyDir: {}
 
-#### Step 5: Verify Configuration
+
+**Step 4: Scale back to 3 replicas**
 
 ```bash
-# Check deployment configuration
-kubectl get deployment python-webapp -n python-ml-ns -o yaml | grep -A 8 "resources:"
+kubectl scale deployment python-webapp -n python-ml-ns --replicas=3
 ```
 
-Expected output (should appear twice - once for init, once for main):
-```yaml
-        resources:
-          limits:
-            cpu: 266m
-            memory: 481Mi
-          requests:
-            cpu: 266m
-            memory: 481Mi
-```
-
----
-
-#### Step 6: Scale Back to 3 Replicas
+**Step 5: Verify pods are running**
 
 ```bash
-kubectl scale deployment python-webapp --replicas=3 -n python-ml-ns
+kubectl get pods -n python-ml-ns
+kubectl wait --for=condition=ready pod -l app=python-webapp -n python-ml-ns --timeout=120s
 ```
 
----
-
-#### Step 7: Final Verification
+**Step 6: Verify resource configuration**
 
 ```bash
-# 1. Check all pods are running
-kubectl get pods -l app=python-webapp -n python-ml-ns
+POD=$(kubectl get pod -n python-ml-ns -l app=python-webapp -o jsonpath='{.items[0].metadata.name}')
 
-# Expected: 3 pods in Running state
+# Check init container resources
+kubectl get pod $POD -n python-ml-ns -o jsonpath='{.spec.initContainers[0].resources}' | jq
 
-# 2. Verify resource configuration
-kubectl describe pod -l app=python-webapp -n python-ml-ns | grep -A 8 "Limits:"
+# Check main container resources
+kubectl get pod $POD -n python-ml-ns -o jsonpath='{.spec.containers[0].resources}' | jq
 
-# 3. Check node allocation
-kubectl describe node | grep -A 10 "Allocated resources:"
-
-# Expected: Around 798m CPU (266m × 3) and 1443Mi memory (481Mi × 3)
-
-# 4. Test the application
-kubectl run test-curl --image=curlimages/curl -i --rm --restart=Never -n python-ml-ns -- \
-  curl -s http://python-webapp.python-ml-ns.svc.cluster.local
+# Check QoS class (should be Guaranteed)
+kubectl get pod $POD -n python-ml-ns -o jsonpath='{.status.qosClass}'
 ```
 
----
-
-#### Alternative: Using kubectl patch
-
-```bash
-# Scale down
-kubectl scale deployment python-webapp --replicas=0 -n python-ml-ns
-
-# Patch with calculated resources
-kubectl patch deployment python-webapp -n python-ml-ns --type='json' -p='[
-  {
-    "op": "add",
-    "path": "/spec/template/spec/initContainers/0/resources",
-    "value": {
-      "requests": {"cpu": "266m", "memory": "481Mi"},
-      "limits": {"cpu": "266m", "memory": "481Mi"}
-    }
-  },
-  {
-    "op": "add",
-    "path": "/spec/template/spec/containers/0/resources",
-    "value": {
-      "requests": {"cpu": "266m", "memory": "481Mi"},
-      "limits": {"cpu": "266m", "memory": "481Mi"}
-    }
-  }
-]'
-
-# Scale back up
-kubectl scale deployment python-webapp --replicas=3 -n python-ml-ns
-```
+**Verification Checklist:**
+- ✅ Deployment scaled to 0, then back to 3
+- ✅ init-setup has resources configured
+- ✅ python-app has resources configured
+- ✅ Both containers have identical requests and limits
+- ✅ All 3 pods are Running
+- ✅ Pods have Guaranteed QoS class
 
 </details>
-

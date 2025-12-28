@@ -80,14 +80,6 @@ resources:
   limits:
     cpu: 266m        # or 267m
     memory: 480Mi    # or 481Mi
-
-volumeMounts:
-  - name: config-volume
-    mountPath: /app/config
-
-volumes:
-  - name: config-volume
-    emptyDir: {}
 ```
 
 **Step 4: Scale back to 3 replicas**

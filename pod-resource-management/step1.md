@@ -72,7 +72,7 @@ kubectl edit deployment python-webapp -n python-ml-ns
 ```
 
 Add resources to **both containers**:
-
+```yaml
 resources:
   requests:
     cpu: 266m        # or 267m
@@ -88,7 +88,7 @@ volumeMounts:
 volumes:
   - name: config-volume
     emptyDir: {}
-
+```
 
 **Step 4: Scale back to 3 replicas**
 

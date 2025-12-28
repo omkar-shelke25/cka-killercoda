@@ -53,6 +53,7 @@ sleep 2
 echo "🏗️ Creating namespaces..."
 kubectl create namespace pokedex-ui > /dev/null 2>&1 || true
 kubectl create namespace pokedex-core > /dev/null 2>&1 || true
+kubectl create namespace gateway-system > /dev/null 2>&1 || true
 
 # Create ConfigMap for evolution-engine service
 echo "📝 Creating ConfigMap for evolution-engine..."

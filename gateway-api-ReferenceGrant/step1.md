@@ -36,7 +36,7 @@ The HTTPRoute in `pokedex-ui` is trying to reference Service `evolution-engine` 
 
 ### 🎯 Your Task
 
-Create a **ReferenceGrant** in the **pokedex-core** namespace. This ReferenceGrant must allow a cross-namespace reference **from an HTTPRoute** in the **`pokedex-ui`** namespace **to a Service** in the **`pokedex-core`** namespace.
+Create a **ReferenceGrant** in the **`pokedex-core`** namespace. This ReferenceGrant must allow a cross-namespace reference **from an HTTPRoute** in the **`pokedex-ui`** namespace **to a Service** in the **`pokedex-core`** namespace.
 
 In doing so, ensure the following conditions are met:
 

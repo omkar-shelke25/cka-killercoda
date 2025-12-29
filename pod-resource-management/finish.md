@@ -64,21 +64,6 @@ resources:
 
 **Total System:** ~200m CPU, ~360Mi memory (20% overhead)
 
-## 🎯 Real-World Applications
-
-### Scenario 1: Multi-Tenant Clusters
-Calculate per-tenant resource quotas to ensure fair distribution.
-
-### Scenario 2: Cost Optimization
-Right-size pods to avoid over-provisioning and reduce cloud costs.
-
-### Scenario 3: High Availability
-Use Guaranteed QoS for critical applications to prevent eviction.
-
-### Scenario 4: Capacity Planning
-Calculate node capacity before scaling applications.
-
-
 🎯 **Excellent work!** You've mastered Kubernetes resource management! 🚀
 
 **Key Takeaway:** Resources must not exceed **267m CPU** and **481Mi memory** per container, but using less is perfectly acceptable for conservative capacity planning!

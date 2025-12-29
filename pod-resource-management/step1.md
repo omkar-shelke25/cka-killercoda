@@ -35,9 +35,53 @@ After successfully editing the deployment, scale it back to **3 replicas**.
 Verify that all 3 pods are in `Running` state and have the correct resource configuration:
 
 
+
 ### Try it yourself first!
 
 <details><summary>✅ Solution (expand to view)</summary>
+
+
+**Given Information:**
+- **Total node01 Allocated Resource:**
+  - CPU: 1 core (1000m)
+  - Memory: 1803.26171875 Mi
+
+**Requirements:**
+- The deployment will run **3 pods**
+- Resources must be divided evenly across all 3 pods
+- Add **20% overhead** to avoid node instability (reserve 20% for system processes)
+- Both init containers and main containers must have **identical** resource requests and limits
+
+**Calculation Steps:**
+
+1. **Calculate available resources (after 20% system overhead):**
+   ```
+   Available CPU = 1000m × 0.8 = 800m
+   Available Memory = 1803.26171875 Mi × 0.8 = 1442.609375 Mi
+   ```
+
+2. **Calculate per-pod resources (divide by 3 pods):**
+   ```
+   CPU per pod = 800m ÷ 3 = 266.67m
+   Memory per pod = 1442.609375 Mi ÷ 3 = 480.869791667 Mi
+   ```
+
+3. **Round the values:**
+   ```
+   CPU: 266.67m → You can use 266m, 267m, or any value below (e.g., 250m, 200m)
+   Memory: 480.87Mi → You can use 480Mi, 481Mi, or any value below (e.g., 450Mi, 400Mi)
+   ```
+
+4. **Maximum allowed resources per container:**
+   - **CPU:** Must not exceed 267m (anything at or below is accepted)
+   - **Memory:** Must not exceed 481Mi (anything at or below is accepted)
+
+5. **Resources for each container:**
+   - **init-setup container:** ≤ 267m CPU, ≤ 481Mi memory
+   - **python-app container:** ≤ 267m CPU, ≤ 481Mi memory
+
+**Note:** You can be conservative and allocate less than the calculated maximum. For example, 250m CPU and 450Mi memory would also be acceptable. The verification only checks that you don't exceed the calculated limits.
+
 
 **Step 1: Scale down deployment**
 
@@ -58,8 +102,8 @@ Given:
 - System overhead: 20%, Number of pods: 3
 
 ```
-Available CPU = 1000m × 0.8 = 800m
-Available Memory = 1803.26171875 Mi × 0.8 = 1442.609375 Mi
+Allocate node01 CPU = 1000m × 0.8 = 800m
+Allocate node01 Memory = 1803.26171875 Mi × 0.8 = 1442.609375 Mi
 
 Per Pod CPU = 800m ÷ 3 = 266.67m ≈ 266m (or 267m)
 Per Pod Memory = 1442.609375 Mi ÷ 3 = 480.87 Mi ≈ 480Mi (or 481Mi)
@@ -119,3 +163,4 @@ kubectl get pod $POD -n python-ml-ns -o jsonpath='{.status.qosClass}'
 - ✅ Pods have Guaranteed QoS class
 
 </details>
+

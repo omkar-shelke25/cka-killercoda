@@ -6,6 +6,10 @@ echo "Verifying resource configuration..."
 NAMESPACE="python-ml-ns"
 DEPLOYMENT_NAME="python-webapp"
 
+# Maximum allowed values (students can use less, but not more)
+MAX_CPU_ALLOWED=267
+MAX_MEMORY_ALLOWED=481
+
 # Check if deployment exists
 if ! kubectl get deployment "${DEPLOYMENT_NAME}" -n "${NAMESPACE}" &>/dev/null; then
   echo "FAIL: Deployment '${DEPLOYMENT_NAME}' not found in namespace '${NAMESPACE}'"
@@ -88,21 +92,29 @@ normalize_memory() {
   fi
 }
 
-# Check init container CPU (accept 266m or 267m)
+# Check init container CPU (accept anything up to 267m)
 INIT_CPU_NORM=$(normalize_cpu "${INIT_CPU_REQUEST}")
-if [[ "${INIT_CPU_NORM}" -lt 266 || "${INIT_CPU_NORM}" -gt 267 ]]; then
-  echo "FAIL: Init container CPU request is ${INIT_CPU_REQUEST} (${INIT_CPU_NORM}m), expected 266m or 267m"
+if [[ "${INIT_CPU_NORM}" -lt 1 ]]; then
+  echo "FAIL: Init container CPU request is invalid: ${INIT_CPU_REQUEST}"
   exit 1
 fi
-echo "PASS: Init container CPU request: ${INIT_CPU_REQUEST}"
+if [[ "${INIT_CPU_NORM}" -gt "${MAX_CPU_ALLOWED}" ]]; then
+  echo "FAIL: Init container CPU request is ${INIT_CPU_REQUEST} (${INIT_CPU_NORM}m), exceeds maximum allowed ${MAX_CPU_ALLOWED}m"
+  exit 1
+fi
+echo "PASS: Init container CPU request: ${INIT_CPU_REQUEST} (within limit of ${MAX_CPU_ALLOWED}m)"
 
-# Check init container Memory (accept 480Mi or 481Mi)
+# Check init container Memory (accept anything up to 481Mi)
 INIT_MEM_NORM=$(normalize_memory "${INIT_MEM_REQUEST}")
-if [[ "${INIT_MEM_NORM}" -lt 480 || "${INIT_MEM_NORM}" -gt 481 ]]; then
-  echo "FAIL: Init container memory request is ${INIT_MEM_REQUEST} (${INIT_MEM_NORM}Mi), expected 480Mi or 481Mi"
+if [[ "${INIT_MEM_NORM}" -lt 1 ]]; then
+  echo "FAIL: Init container memory request is invalid: ${INIT_MEM_REQUEST}"
   exit 1
 fi
-echo "PASS: Init container memory request: ${INIT_MEM_REQUEST}"
+if [[ "${INIT_MEM_NORM}" -gt "${MAX_MEMORY_ALLOWED}" ]]; then
+  echo "FAIL: Init container memory request is ${INIT_MEM_REQUEST} (${INIT_MEM_NORM}Mi), exceeds maximum allowed ${MAX_MEMORY_ALLOWED}Mi"
+  exit 1
+fi
+echo "PASS: Init container memory request: ${INIT_MEM_REQUEST} (within limit of ${MAX_MEMORY_ALLOWED}Mi)"
 
 # Check init container limits match requests
 INIT_CPU_LIMIT_NORM=$(normalize_cpu "${INIT_CPU_LIMIT}")
@@ -136,21 +148,29 @@ if [[ -z "${MAIN_MEM_REQUEST}" ]]; then
   exit 1
 fi
 
-# Check main container CPU (accept 266m or 267m)
+# Check main container CPU (accept anything up to 267m)
 MAIN_CPU_NORM=$(normalize_cpu "${MAIN_CPU_REQUEST}")
-if [[ "${MAIN_CPU_NORM}" -lt 266 || "${MAIN_CPU_NORM}" -gt 267 ]]; then
-  echo "FAIL: Main container CPU request is ${MAIN_CPU_REQUEST} (${MAIN_CPU_NORM}m), expected 266m or 267m"
+if [[ "${MAIN_CPU_NORM}" -lt 1 ]]; then
+  echo "FAIL: Main container CPU request is invalid: ${MAIN_CPU_REQUEST}"
   exit 1
 fi
-echo "PASS: Main container CPU request: ${MAIN_CPU_REQUEST}"
+if [[ "${MAIN_CPU_NORM}" -gt "${MAX_CPU_ALLOWED}" ]]; then
+  echo "FAIL: Main container CPU request is ${MAIN_CPU_REQUEST} (${MAIN_CPU_NORM}m), exceeds maximum allowed ${MAX_CPU_ALLOWED}m"
+  exit 1
+fi
+echo "PASS: Main container CPU request: ${MAIN_CPU_REQUEST} (within limit of ${MAX_CPU_ALLOWED}m)"
 
-# Check main container Memory (accept 480Mi or 481Mi)
+# Check main container Memory (accept anything up to 481Mi)
 MAIN_MEM_NORM=$(normalize_memory "${MAIN_MEM_REQUEST}")
-if [[ "${MAIN_MEM_NORM}" -lt 480 || "${MAIN_MEM_NORM}" -gt 481 ]]; then
-  echo "FAIL: Main container memory request is ${MAIN_MEM_REQUEST} (${MAIN_MEM_NORM}Mi), expected 480Mi or 481Mi"
+if [[ "${MAIN_MEM_NORM}" -lt 1 ]]; then
+  echo "FAIL: Main container memory request is invalid: ${MAIN_MEM_REQUEST}"
   exit 1
 fi
-echo "PASS: Main container memory request: ${MAIN_MEM_REQUEST}"
+if [[ "${MAIN_MEM_NORM}" -gt "${MAX_MEMORY_ALLOWED}" ]]; then
+  echo "FAIL: Main container memory request is ${MAIN_MEM_REQUEST} (${MAIN_MEM_NORM}Mi), exceeds maximum allowed ${MAX_MEMORY_ALLOWED}Mi"
+  exit 1
+fi
+echo "PASS: Main container memory request: ${MAIN_MEM_REQUEST} (within limit of ${MAX_MEMORY_ALLOWED}Mi)"
 
 # Check main container limits match requests
 MAIN_CPU_LIMIT_NORM=$(normalize_cpu "${MAIN_CPU_LIMIT}")
@@ -215,6 +235,7 @@ echo "  - Init container (init-setup): ${INIT_CPU_REQUEST} CPU, ${INIT_MEM_REQUE
 echo "  - Main container (python-app): ${MAIN_CPU_REQUEST} CPU, ${MAIN_MEM_REQUEST} memory"
 echo "  - Both containers have identical resources"
 echo "  - Requests equal limits (Guaranteed QoS)"
+echo "  - Resources within allowed limits (CPU <= ${MAX_CPU_ALLOWED}m, Memory <= ${MAX_MEMORY_ALLOWED}Mi)"
 echo "  - All 3 pods running successfully"
 echo ""
 

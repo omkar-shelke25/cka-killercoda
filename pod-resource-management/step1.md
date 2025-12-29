@@ -22,8 +22,6 @@ Scale down the `python-webapp` deployment in the `python-ml-ns` namespace to **0
 - Resources must be divided **evenly** across all 3 pods
 - Add **20% overhead** to avoid node instability (reserve 20% for system processes)
 - **Both init containers and main containers** must have **identical** resource requests and limits.
-
-> Note: Only round down to the nearest whole number for safety.
  
 
 #### Task 3: Edit the Deployment

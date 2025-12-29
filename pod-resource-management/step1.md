@@ -40,9 +40,9 @@ Verify that all 3 pods are in `Running` state and have the correct resource conf
 
 
 **Given Information:**
-- **Total node01 Allocated Resource:**
+- **Total `node01` Allocatable Resource:**
   - CPU: 1 core (1000m)
-  - Memory: 1803.26171875 Mi
+  - Memory: 1948940Ki/1024Ki=1803.26171875 Mi
 
 **Requirements:**
 - The deployment will run **3 pods**

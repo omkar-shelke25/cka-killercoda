@@ -1,5 +1,5 @@
 {
-  "title": "CKAD: ResourceQuota blocking Checkout API deployment",
+  "title": "CKA: Fix Pod Scheduling Failures Caused by ResourceQuota",
   "description": "Namespace enforces resource requests/limits. A production Checkout API Deployment has no resources defined and pods fail to be created. Debug and fix it.",
   "details": {
     "steps": [

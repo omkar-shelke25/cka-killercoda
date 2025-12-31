@@ -36,27 +36,8 @@ backend-* Pods → ✅ db1-* (port 1111) ALLOWED
 backend-* Pods → ✅ db2-* (port 2222) ALLOWED
 backend-* Pods → ❌ vault-* (port 3333) BLOCKED
 backend-* Pods → ❌ Any other Pod/Service BLOCKED
-backend-* Pods → ✅ DNS (port 53) ALLOWED (for cluster operations)
 ```
 
-### 🔐 How NetworkPolicies Work
-
-**Default Behavior:**
-- Without NetworkPolicies, all Pods can communicate freely
-- Once a NetworkPolicy selects a Pod, that Pod becomes isolated
-- Only traffic matching policy rules is allowed
-
-**Policy Types:**
-- **Ingress**: Controls incoming traffic to Pods
-- **Egress**: Controls outgoing traffic from Pods
-- Policies can specify one or both types
-
-**Selection Mechanisms:**
-- **podSelector**: Selects Pods within the same namespace
-- **namespaceSelector**: Selects all Pods in specific namespaces
-- **ipBlock**: Specifies CIDR ranges for external traffic
-
----
 
 ## 💡 Real-World Use Cases
 
@@ -85,70 +66,6 @@ backend-* Pods → ✅ DNS (port 53) ALLOWED (for cluster operations)
 - Isolate staging environments from production
 - Control traffic between different environment tiers
 
----
-
-## 📝 Best Practices
-
-**1. Start with Deny-All Policies**
-```yaml
-# Deny all ingress
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: deny-all-ingress
-spec:
-  podSelector: {}
-  policyTypes:
-  - Ingress
-```
-
-**2. Consider DNS Requirements**
-- If using Service names, allow DNS (UDP port 53) for egress policies
-- For Pod IP communication only, DNS rules are not required
-- Use namespaceSelector for kube-system DNS access when needed
-
-**3. Use Meaningful Labels**
-- Apply consistent labels for policy targeting
-- Use labels like `app`, `tier`, `role` for selection
-- Document label schema for team understanding
-
-**4. Test Thoroughly**
-- Verify policies in non-production first
-- Use tools like `curl`, `nc` for connectivity testing
-- Monitor logs for unexpected connection blocks
-
-**5. Combine with Other Security Measures**
-- NetworkPolicies alone are not sufficient
-- Use with Pod Security Standards, RBAC, and Secret management
-- Implement monitoring and logging for network events
-
----
-
-## 🔍 Troubleshooting Tips
-
-**Policy Not Working:**
-- Verify CNI plugin supports NetworkPolicies (Calico, Cilium, Weave)
-- Check podSelector labels match target Pods
-- Ensure policyTypes is set correctly
-
-**Pods Cannot Communicate:**
-- Check if multiple policies apply (all must allow traffic)
-- Verify port numbers and protocols match
-- Ensure DNS egress rules exist for service name resolution
-
-**Testing Connectivity:**
-```bash
-# From inside a Pod
-kubectl exec <pod-name> -- curl -m 5 <target-ip>:<port>
-
-# Check NetworkPolicy details
-kubectl describe networkpolicy <policy-name>
-
-# View all policies in namespace
-kubectl get networkpolicies -n <namespace>
-```
-
----
 
 ## 🎯 What You've Learned
 

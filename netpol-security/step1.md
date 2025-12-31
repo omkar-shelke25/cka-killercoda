@@ -16,8 +16,8 @@ Create a NetworkPolicy named `np-backend` in the `project-snake` namespace with 
 
 **Network Access Rules:**
 * Backend Pods (labeled `app=backend`) should **ONLY** be able to:
-  * Connect to `db1` Pods (labeled `app=db1`) on port `1111`
-  * Connect to `db2` Pods (labeled `app=db2`) on port `2222`
+  * Connect to `db1-*` Pods (labeled `app=db1`) on port `1111`
+  * Connect to `db2-*` Pods (labeled `app=db2`) on port `2222`
 * All other egress traffic from backend Pods should be blocked
 * Connections to other Pods like `vault` on port `3333` should **NOT** work
 
@@ -32,13 +32,13 @@ Create a NetworkPolicy named `np-backend` in the `project-snake` namespace with 
 All Pods run plain Nginx, allowing connectivity tests using Pod IPs:
 ```bash
 # This should work (db1 on port 1111)
-kubectl -n project-snake exec backend-0 -- curl <db1-pod-ip>:1111
+kubectl -n project-snake exec backend-0 -- curl <db1*-pod-ip>:1111
 
 # This should work (db2 on port 2222)
-kubectl -n project-snake exec backend-0 -- curl <db2-pod-ip>:2222
+kubectl -n project-snake exec backend-0 -- curl <db2*-pod-ip>:2222
 
 # This should NOT work (vault on port 3333)
-kubectl -n project-snake exec backend-0 -- curl <vault-pod-ip>:3333
+kubectl -n project-snake exec backend-0 -- curl <vault*-pod-ip>:3333
 ```
 
 ---

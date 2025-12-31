@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Create DaemonSet with Resource Requests",
+  "description": "Create a DaemonSet that runs on all cluster nodes including control planes",
+  "details": {
+    "steps": [
+      {
+        "title": "Create DaemonSet with Tolerations and Resource Requests",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

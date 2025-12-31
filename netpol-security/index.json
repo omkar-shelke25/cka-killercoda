@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Implement Network Security with NetworkPolicy",
+  "description": "Respond to a security incident by creating a NetworkPolicy to restrict Pod communication",
+  "details": {
+    "steps": [
+      {
+        "title": "Create NetworkPolicy to Restrict Backend Access",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

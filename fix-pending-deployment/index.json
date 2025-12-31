@@ -1,1 +1,23 @@
-
+{
+  "title": "CKAD: ResourceQuota blocking Checkout API deployment",
+  "description": "Namespace enforces resource requests/limits. A production Checkout API Deployment has no resources defined and pods fail to be created. Debug and fix it.",
+  "details": {
+    "steps": [
+      {
+        "title": "Fix Checkout API Deployment to Respect ResourceQuota",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "title": "CKAD: Create Egress NetworkPolicy with DNS allowance",
+  "title": "CKA: Create Egress NetworkPolicy with DNS allowance",
   "description": "Create an egress NetworkPolicy that only allows frontend pods to talk to api on TCP and still allows DNS (TCP/UDP 53).",
   "details": {
     "steps": [

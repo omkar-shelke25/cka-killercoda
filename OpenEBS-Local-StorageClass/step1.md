@@ -9,7 +9,7 @@
 
 Your organization is migrating from Rancher's local-path storage to OpenEBS local storage for improved node-level volume management. 
 
-The cluster currently has a default StorageClass named `local-storage`, but developers need a new OpenEBS-backed StorageClass for upcoming workloads.
+The cluster currently has a default StorageClass named `local-path`, but developers need a new OpenEBS-backed StorageClass for upcoming workloads.
 
 You have been asked to prepare the cluster accordingly. The manifest you create must be stored at `/internal/openebs-local-sc.yaml`.
 
@@ -22,7 +22,7 @@ Create a new StorageClass named `openebs-local` that uses OpenEBS local provisio
 - the reclaimPolicy should be `Delete`
 - `allowVolumeExpansion` should be set to `true`. Save the manifest at `/internal/openebs-local-sc.yaml`.
 
-After creating it, make `openebs-local` the new default StorageClass and ensure that the existing default StorageClass named `local-storage` is no longer marked as default. 
+After creating it, make `openebs-local` the new default StorageClass and ensure that the existing default StorageClass named `local-path` is no longer marked as default. 
 
 ---
 
@@ -37,7 +37,7 @@ First, examine the current StorageClasses in the cluster:
 kubectl get storageclass
 ```
 
-You should see `local-storage` marked as default.
+You should see `local-path` marked as default.
 
 **Step 2: Create the OpenEBS StorageClass manifest**
 
@@ -66,15 +66,15 @@ cat /internal/openebs-local-sc.yaml
 
 **Step 4: Remove default annotation from existing StorageClass**
 
-Before applying the new StorageClass, remove the default annotation from the existing `local-storage` StorageClass:
+Before applying the new StorageClass, remove the default annotation from the existing `local-path` StorageClass:
 
 ```bash
-kubectl patch storageclass local-storage -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 ```
 
 Verify the change:
 ```bash
-kubectl get storageclass local-storage -o jsonpath='{.metadata.annotations}'
+kubectl get storageclass local-path -o jsonpath='{.metadata.annotations}'
 ```
 
 **Step 5: Apply the new StorageClass**
@@ -104,7 +104,7 @@ kubectl get storageclass -o wide
 ```
 
 Expected output should show:
-- `local-storage` (not default)
+- `local-path` (not default)
 - `openebs-local` (default)
 
 </details>

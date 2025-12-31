@@ -19,7 +19,7 @@ Create a NetworkPolicy named `np-backend` in the `project-snake` namespace with 
   * Connect to `db1-*` Pods (labeled `app=db1`) on port `1111`
   * Connect to `db2-*` Pods (labeled `app=db2`) on port `2222`
 * All other egress traffic from backend Pods should be blocked
-* Connections to other Pods like `vault` on port `3333` should **NOT** work
+* Connections to other Pods like `vault-*` on port `3333` should **NOT** work
 
 **Requirements:**
 * NetworkPolicy name: `np-backend`

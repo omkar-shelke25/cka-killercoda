@@ -29,10 +29,6 @@ In the `one-piece` namespace, deploy an Nginx application serving custom Strawha
    - Service selector `app=strawhat` (matches .spec.selector.app).
 4. From the terminal navigation (top right), select the item. The service should be accessible on port 32100. Verify that the `index.html` page is displayed.
    
-   ![One Piece terminal screenshot](https://github.com/user-attachments/assets/56ec5f6a-e274-4494-8cc4-9b038073e77e)
-
-
-
 ---
 
 <details><summary>✅ Solution (expand to view)</summary>

@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Extract Information from Kubeconfig",
+  "description": "Practice extracting contexts, current context, and decoding certificates from kubeconfig files",
+  "details": {
+    "steps": [
+      {
+        "title": "Extract Kubeconfig Information",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

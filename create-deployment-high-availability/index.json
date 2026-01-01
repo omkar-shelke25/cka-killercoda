@@ -1,0 +1,23 @@
+{
+  "title": "CKA: Create Deployment with high availability",
+  "description": "Create a multi-container Deployment with Pod Anti-Affinity for high availability",
+  "details": {
+    "steps": [
+      {
+        "title": "Create Deployment with Pod Anti-Affinity and Multi-Containers",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

@@ -140,32 +140,9 @@ Per Pod Memory = 1342.609375 Mi ÷ 3 = 447.54 Mi ≈ 447Mi (or 448Mi)
 
 ### **Step 3: Set resources using imperative commands**
 
-**For the main container (python-app):**
-
 ```bash
 kubectl set resources deployment python-webapp \
   -n python-ml-ns \
-  --containers=python-app \
-  --requests=cpu=225m,memory=447Mi \
-  --limits=cpu=225m,memory=447Mi
-```
-
-**For the init container (init-setup):**
-
-```bash
-kubectl set resources deployment python-webapp \
-  -n python-ml-ns \
-  --containers=init-setup \
-  --requests=cpu=225m,memory=447Mi \
-  --limits=cpu=225m,memory=447Mi
-```
-
-**Alternative: Set both containers in one command (if supported):**
-
-```bash
-kubectl set resources deployment python-webapp \
-  -n python-ml-ns \
-  --containers=python-app,init-setup \
   --requests=cpu=225m,memory=447Mi \
   --limits=cpu=225m,memory=447Mi
 ```

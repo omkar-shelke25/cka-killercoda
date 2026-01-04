@@ -13,11 +13,7 @@ Your organization, **AcmeRetail**, is preparing for its annual **Holiday Flash S
 
 Several engineering teams have already created custom PriorityClasses to ensure that their mission-critical microservices continue to receive scheduling preference during heavy cluster load. 
 
-System PriorityClasses such as `system-cluster-critical` and `system-node-critical` must be ignored when evaluating user-defined priorities.
-
 A Deployment named `acme-log-forwarder`, running in the `priority` namespace, is responsible for collecting and forwarding transaction logs to the central SIEM platform during the event. 
-
-To prevent delays or data loss, this workload must run with a priority just below AcmeRetail's highest user-defined PriorityClass.
 
 ---
 

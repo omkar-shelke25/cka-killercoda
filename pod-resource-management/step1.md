@@ -38,7 +38,7 @@ Verify that all 3 pods are in `Running` state and have the correct resource conf
 
 <details><summary>✅ Solution (expand to view)</summary>
 
-# Kubernetes Resource Calculation & Deployment Configuration
+# Kubernetes Resource Configuration - Imperative Commands
 
 ## 📊 Given Information
 
@@ -99,11 +99,9 @@ Memory: 447.54Mi → You can use 447Mi, 448Mi, or any value below (e.g., 400Mi, 
 - **init-setup container:** ≤ 225m CPU, ≤ 448Mi memory
 - **python-app container:** ≤ 225m CPU, ≤ 448Mi memory
 
-**Note:** You can be conservative and allocate less than the calculated maximum. For example, 200m CPU and 400Mi memory would also be acceptable. The verification only checks that you don't exceed the calculated limits.
-
 ---
 
-## 🛠️ Implementation Steps
+## 🛠️ Implementation Steps (Imperative Commands)
 
 ### **Step 1: Scale down deployment**
 
@@ -140,54 +138,37 @@ Per Pod Memory = 1342.609375 Mi ÷ 3 = 447.54 Mi ≈ 447Mi (or 448Mi)
 
 ---
 
-### **Step 3: Edit the deployment**
+### **Step 3: Set resources using imperative commands**
+
+**For the main container (python-app):**
 
 ```bash
-kubectl edit deployment python-webapp -n python-ml-ns
+kubectl set resources deployment python-webapp \
+  -n python-ml-ns \
+  --containers=python-app \
+  --requests=cpu=225m,memory=447Mi \
+  --limits=cpu=225m,memory=447Mi
 ```
 
-**Add resources to BOTH containers:**
+**For the init container (init-setup):**
 
-```yaml
-resources:
-  requests:
-    cpu: 225m        # or less
-    memory: 447Mi    # or 448Mi, or less
-  limits:
-    cpu: 225m        # must match requests
-    memory: 447Mi    # must match requests
+```bash
+kubectl set resources deployment python-webapp \
+  -n python-ml-ns \
+  --containers=init-setup \
+  --requests=cpu=225m,memory=447Mi \
+  --limits=cpu=225m,memory=447Mi
 ```
 
-**Example configuration in the deployment YAML:**
+**Alternative: Set both containers in one command (if supported):**
 
-```yaml
-spec:
-  template:
-    spec:
-      initContainers:
-      - name: init-setup
-        # ... existing config ...
-        resources:
-          requests:
-            cpu: 225m
-            memory: 447Mi
-          limits:
-            cpu: 225m
-            memory: 447Mi
-      
-      containers:
-      - name: python-app
-        # ... existing config ...
-        resources:
-          requests:
-            cpu: 225m
-            memory: 447Mi
-          limits:
-            cpu: 225m
-            memory: 447Mi
+```bash
+kubectl set resources deployment python-webapp \
+  -n python-ml-ns \
+  --containers=python-app,init-setup \
+  --requests=cpu=225m,memory=447Mi \
+  --limits=cpu=225m,memory=447Mi
 ```
-
-Save and exit (`:wq` in vi/vim)
 
 ---
 
@@ -203,6 +184,9 @@ kubectl scale deployment python-webapp -n python-ml-ns --replicas=3
 
 ```bash
 kubectl get pods -n python-ml-ns
+```
+
+```bash
 kubectl wait --for=condition=ready pod -l app=python-webapp -n python-ml-ns --timeout=120s
 ```
 
@@ -243,6 +227,35 @@ QoS Class: `Guaranteed`
 
 ---
 
+## 📝 Alternative: Single-line Commands
+
+**Scale down:**
+```bash
+kubectl scale deployment python-webapp -n python-ml-ns --replicas=0
+```
+
+**Set resources for main container:**
+```bash
+kubectl set resources deployment python-webapp -n python-ml-ns --containers=python-app --requests=cpu=225m,memory=447Mi --limits=cpu=225m,memory=447Mi
+```
+
+**Set resources for init container:**
+```bash
+kubectl set resources deployment python-webapp -n python-ml-ns --containers=init-setup --requests=cpu=225m,memory=447Mi --limits=cpu=225m,memory=447Mi
+```
+
+**Scale up:**
+```bash
+kubectl scale deployment python-webapp -n python-ml-ns --replicas=3
+```
+
+**Verify:**
+```bash
+kubectl get pods -n python-ml-ns -w
+```
+
+---
+
 ## ✅ Verification Checklist
 
 - ✅ Deployment scaled to 0, then back to 3
@@ -272,13 +285,6 @@ QoS Class: `Guaranteed`
 **Total for 3 pods:** 675m CPU, 1341Mi Memory  
 **Remaining on node:** 125m CPU, ~101Mi Memory
 
----
 
-## 🎯 Why We Subtract Allocated Resources
-
-The **125m CPU** and **100Mi memory** are already consumed by **other workloads** (system pods, monitoring, etc.) running on `node01`. These resources are **not available** for your new deployment.
-
-**Without subtracting:** Pods may fail to schedule or cause node resource exhaustion  
-**With subtracting:** Ensures your pods fit within truly available resources ✅
 </details>
 

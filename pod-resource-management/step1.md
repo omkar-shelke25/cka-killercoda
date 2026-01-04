@@ -38,106 +38,179 @@ Verify that all 3 pods are in `Running` state and have the correct resource conf
 
 <details><summary>✅ Solution (expand to view)</summary>
 
+# Kubernetes Resource Calculation & Deployment Configuration
 
-**Given Information:**
-- **Total `node01` Allocatable Resource:**
-  - CPU: 1 core (1000m)
-  - Memory: 1948940Ki/1024Ki=1803.26171875 Mi
+## 📊 Given Information
 
-**Requirements:**
+**Total `node01` Allocatable Resource:**
+- **CPU:** 1 core (1000m)
+- **Memory:** 1948940Ki ÷ 1024 = **1803.26171875 Mi**
+
+**Currently Allocated Resources (by other workloads):**
+- **CPU:** 125m (12%)
+- **Memory:** 100Mi (5%)
+
+## 📋 Requirements
+
 - The deployment will run **3 pods**
 - Resources must be divided evenly across all 3 pods
 - Add **20% overhead** to avoid node instability (reserve 20% for system processes)
 - Both init containers and main containers must have **identical** resource requests and limits
 
-**Calculation Steps:**
+---
 
-1. **Calculate available resources (after 20% system overhead):**
-   ```
-   Available CPU = 1000m × 0.8 = 800m
-   Available Memory = 1803.26171875 Mi × 0.8 = 1442.609375 Mi
-   ```
+## 🧮 Calculation Steps
 
-2. **Calculate per-pod resources (divide by 3 pods):**
-   ```
-   CPU per pod = 800m ÷ 3 = 266.67m
-   Memory per pod = 1442.609375 Mi ÷ 3 = 480.869791667 Mi
-   ```
+### **1. Calculate available resources (after 20% system overhead):**
 
-3. **Round the values:**
-   ```
-   CPU: 266.67m → You can use 266m, 267m, or any value below (e.g., 250m, 200m)
-   Memory: 480.87Mi → You can use 480Mi, 481Mi, or any value below (e.g., 450Mi, 400Mi)
-   ```
+```
+Available CPU = 1000m × 0.8 = 800m
+Available Memory = 1803.26171875 Mi × 0.8 = 1442.609375 Mi
+```
 
-4. **Maximum allowed resources per container:**
-   - **CPU:** Must not exceed 267m (anything at or below is accepted)
-   - **Memory:** Must not exceed 481Mi (anything at or below is accepted)
+### **2. Subtract currently allocated resources:**
 
-5. **Resources for each container:**
-   - **init-setup container:** ≤ 267m CPU, ≤ 481Mi memory
-   - **python-app container:** ≤ 267m CPU, ≤ 481Mi memory
+```
+CPU remaining = 800m - 125m = 675m
+Memory remaining = 1442.609375 Mi - 100Mi = 1342.609375 Mi
+```
 
-**Note:** You can be conservative and allocate less than the calculated maximum. For example, 250m CPU and 450Mi memory would also be acceptable. The verification only checks that you don't exceed the calculated limits.
+### **3. Calculate per-pod resources (divide by 3 pods):**
 
+```
+CPU per pod = 675m ÷ 3 = 225m
+Memory per pod = 1342.609375 Mi ÷ 3 = 447.536458333 Mi
+```
 
-**Step 1: Scale down deployment**
+### **4. Round the values:**
+
+```
+CPU: 225m → You can use 225m or any value below (e.g., 200m, 150m)
+Memory: 447.54Mi → You can use 447Mi, 448Mi, or any value below (e.g., 400Mi, 350Mi)
+```
+
+### **5. Maximum allowed resources per container:**
+
+- **CPU:** Must not exceed 225m (anything at or below is accepted)
+- **Memory:** Must not exceed 448Mi (anything at or below is accepted)
+
+### **6. Resources for each container:**
+
+- **init-setup container:** ≤ 225m CPU, ≤ 448Mi memory
+- **python-app container:** ≤ 225m CPU, ≤ 448Mi memory
+
+**Note:** You can be conservative and allocate less than the calculated maximum. For example, 200m CPU and 400Mi memory would also be acceptable. The verification only checks that you don't exceed the calculated limits.
+
+---
+
+## 🛠️ Implementation Steps
+
+### **Step 1: Scale down deployment**
 
 ```bash
 kubectl scale deployment python-webapp -n python-ml-ns --replicas=0
 ```
 
-Verify:
+**Verify:**
 ```bash
 kubectl get deployment python-webapp -n python-ml-ns
 kubectl get pods -n python-ml-ns
 ```
 
-**Step 2: Calculate resources**
+---
 
-Given:
+### **Step 2: Calculate resources**
+
+**Given:**
 - Total CPU: 1000m, Total Memory: 1803.26171875 Mi
+- Currently allocated: CPU 125m, Memory 100Mi
 - System overhead: 20%, Number of pods: 3
 
+**Calculation:**
 ```
 Allocate node01 CPU = 1000m × 0.8 = 800m
 Allocate node01 Memory = 1803.26171875 Mi × 0.8 = 1442.609375 Mi
 
-Per Pod CPU = 800m ÷ 3 = 266.67m ≈ 266m (or 267m)
-Per Pod Memory = 1442.609375 Mi ÷ 3 = 480.87 Mi ≈ 480Mi (or 481Mi)
+Subtract allocated CPU = 800m - 125m = 675m
+Subtract allocated Memory = 1442.609375 Mi - 100Mi = 1342.609375 Mi
+
+Per Pod CPU = 675m ÷ 3 = 225m
+Per Pod Memory = 1342.609375 Mi ÷ 3 = 447.54 Mi ≈ 447Mi (or 448Mi)
 ```
 
-**Step 3: Edit the deployment**
+---
+
+### **Step 3: Edit the deployment**
 
 ```bash
 kubectl edit deployment python-webapp -n python-ml-ns
 ```
 
-Add resources to **both containers**:
+**Add resources to BOTH containers:**
+
 ```yaml
 resources:
   requests:
-    cpu: 266m        # or 267m
-    memory: 480Mi    # or 481Mi
+    cpu: 225m        # or less
+    memory: 447Mi    # or 448Mi, or less
   limits:
-    cpu: 266m        # or 267m
-    memory: 480Mi    # or 481Mi
+    cpu: 225m        # must match requests
+    memory: 447Mi    # must match requests
 ```
 
-**Step 4: Scale back to 3 replicas**
+**Example configuration in the deployment YAML:**
+
+```yaml
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: init-setup
+        # ... existing config ...
+        resources:
+          requests:
+            cpu: 225m
+            memory: 447Mi
+          limits:
+            cpu: 225m
+            memory: 447Mi
+      
+      containers:
+      - name: python-app
+        # ... existing config ...
+        resources:
+          requests:
+            cpu: 225m
+            memory: 447Mi
+          limits:
+            cpu: 225m
+            memory: 447Mi
+```
+
+Save and exit (`:wq` in vi/vim)
+
+---
+
+### **Step 4: Scale back to 3 replicas**
 
 ```bash
 kubectl scale deployment python-webapp -n python-ml-ns --replicas=3
 ```
 
-**Step 5: Verify pods are running**
+---
+
+### **Step 5: Verify pods are running**
 
 ```bash
 kubectl get pods -n python-ml-ns
 kubectl wait --for=condition=ready pod -l app=python-webapp -n python-ml-ns --timeout=120s
 ```
 
-**Step 6: Verify resource configuration**
+**Expected output:** All 3 pods with status `Running` and `READY 1/1`
+
+---
+
+### **Step 6: Verify resource configuration**
 
 ```bash
 POD=$(kubectl get pod -n python-ml-ns -l app=python-webapp -o jsonpath='{.items[0].metadata.name}')
@@ -152,13 +225,60 @@ kubectl get pod $POD -n python-ml-ns -o jsonpath='{.spec.containers[0].resources
 kubectl get pod $POD -n python-ml-ns -o jsonpath='{.status.qosClass}'
 ```
 
-**Verification Checklist:**
+**Expected output:**
+```json
+{
+  "limits": {
+    "cpu": "225m",
+    "memory": "447Mi"
+  },
+  "requests": {
+    "cpu": "225m",
+    "memory": "447Mi"
+  }
+}
+```
+
+QoS Class: `Guaranteed`
+
+---
+
+## ✅ Verification Checklist
+
 - ✅ Deployment scaled to 0, then back to 3
 - ✅ init-setup has resources configured
 - ✅ python-app has resources configured
 - ✅ Both containers have identical requests and limits
 - ✅ All 3 pods are Running
 - ✅ Pods have Guaranteed QoS class
+- ✅ Resources per container: ≤ 225m CPU, ≤ 448Mi memory
 
+---
+
+## 📊 Final Resource Allocation Summary
+
+| Resource Type | Calculation | Value |
+|---------------|-------------|-------|
+| **Total Allocatable CPU** | - | 1000m |
+| **After 20% overhead** | 1000m × 0.8 | 800m |
+| **Minus allocated** | 800m - 125m | 675m |
+| **Per pod** | 675m ÷ 3 | **225m** |
+| | | |
+| **Total Allocatable Memory** | - | 1803.26 Mi |
+| **After 20% overhead** | 1803.26 Mi × 0.8 | 1442.61 Mi |
+| **Minus allocated** | 1442.61 Mi - 100Mi | 1342.61 Mi |
+| **Per pod** | 1342.61 Mi ÷ 3 | **447 Mi** |
+
+**Total for 3 pods:** 675m CPU, 1341Mi Memory  
+**Remaining on node:** 125m CPU, ~101Mi Memory
+
+---
+
+## 🎯 Why We Subtract Allocated Resources
+
+The **125m CPU** and **100Mi memory** are already consumed by **other workloads** (system pods, monitoring, etc.) running on `node01`. These resources are **not available** for your new deployment.
+
+**Without subtracting:** Pods may fail to schedule or cause node resource exhaustion  
+**With subtracting:** Ensures your pods fit within truly available resources ✅
 </details>
 

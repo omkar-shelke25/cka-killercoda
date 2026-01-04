@@ -7,8 +7,8 @@ NAMESPACE="python-ml-ns"
 DEPLOYMENT_NAME="python-webapp"
 
 # Maximum allowed values (students can use less, but not more)
-MAX_CPU_ALLOWED=267
-MAX_MEMORY_ALLOWED=481
+MAX_CPU_ALLOWED=225
+MAX_MEMORY_ALLOWED=448
 
 # Check if deployment exists
 if ! kubectl get deployment "${DEPLOYMENT_NAME}" -n "${NAMESPACE}" &>/dev/null; then

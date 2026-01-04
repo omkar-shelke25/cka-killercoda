@@ -38,9 +38,9 @@ Verify that all 3 pods are in `Running` state and have the correct resource conf
 
 <details><summary>✅ Solution (expand to view)</summary>
 
-# Kubernetes Resource Configuration - Imperative Commands
+## Kubernetes Resource Configuration - Imperative Commands
 
-## 📊 Given Information
+### 📊 Given Information
 
 **Total `node01` Allocatable Resource:**
 - **CPU:** 1 core (1000m)
@@ -50,7 +50,7 @@ Verify that all 3 pods are in `Running` state and have the correct resource conf
 - **CPU:** 125m (12%)
 - **Memory:** 100Mi (5%)
 
-## 📋 Requirements
+### 📋 Requirements
 
 - The deployment will run **3 pods**
 - Resources must be divided evenly across all 3 pods

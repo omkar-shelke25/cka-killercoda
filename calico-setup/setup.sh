@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+echo "alias k='kubectl'" >> ~/.bashrc && source ~/.bashrc
+
 NODE_IP="172.30.1.2"
 POD_CIDR="10.244.0.0/16"
 K8S_VERSION="1.34.0"

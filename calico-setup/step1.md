@@ -24,7 +24,7 @@ A background automation script provisions the control-plane node only (no worker
 
 ### ❓ **Tasks**
 
-Due to security, compliance, and tenant isolation requirements, your task is to install Project Calico as the Container Network Interface (CNI) plugin because it supports Kubernetes NetworkPolicy enforcement.
+Your task is to install Project Calico as the Container Network Interface (CNI) plugin because it supports Kubernetes NetworkPolicy enforcement.
 
 You are provided with the official Tigera Operator manifest:
 

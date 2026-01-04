@@ -6,6 +6,8 @@ In this scenario, you'll install and configure **Project Calico** as the Contain
 
 Calico is a popular CNI solution that provides networking and network policy enforcement for Kubernetes workloads.
 
+
+> Wait two minutes for the Kubernetes cluster setup to complete.
 ---
 
 Click **▶️ Start Scenario** to begin your mission, Kubernetes Engineer! 💪🐳

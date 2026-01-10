@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-RESOURCES_FILE="/root/resources.txt"
-SUBJECT_FILE="/root/subject.txt"
+RESOURCES_FILE="/root/resources.yaml"
+SUBJECT_FILE="/root/subject.yaml"
 
 echo "🔍 Verifying CRD exploration and documentation tasks..."
 echo ""

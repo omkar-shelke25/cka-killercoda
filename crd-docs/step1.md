@@ -13,13 +13,13 @@ As a Kubernetes administrator, you need to understand what CRDs are available in
 
 ### ❓ **Task**
 
-**Task 1:** Create a list of all cert-manager CRDs and save it to `/root/resources.txt`
+**Task 1:** Create a list of all cert-manager CRDs and save it to `/root/resources.yaml`
 - List all CRDs in the cluster that contain the keyword `cert-manager`
 - Save the complete YAML output of these CRDs to the file
 
 **Task 2:** Extract documentation for the Certificate CRD's subject specification field
 - Using `kubectl explain`, extract the documentation for the `spec.subject` field of the Certificate Custom Resource
-- Save this documentation to `/root/subject.txt`
+- Save this documentation to `/root/subject.yaml`
 
 ---
 
@@ -74,13 +74,13 @@ kubectl explain certificate.spec --recursive
 **Step 4: Complete Task 2 - Extract documentation for spec.subject**
 
 ```bash
-kubectl explain certificate.spec.subject > /root/subject.txt
+kubectl explain certificate.spec.subject > /root/subject.yaml
 ```
 
 **Step 5: Verify the subject documentation file**
 
 ```bash
-cat /root/subject.txt
+cat /root/subject.yaml
 ```
 
 

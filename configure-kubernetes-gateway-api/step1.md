@@ -50,8 +50,6 @@ Create an **HTTPRoute** named `bullet-train-route` in namespace `jp-bullet-train
   3. Path `/travellers` → Service `travellers` (port 80) in namespace `jp-bullet-train-app-prod`
 - **Path Match Type**: `PathPrefix` for all routes
 
-**Important**: Since the HTTPRoute is in namespace `jp-bullet-train-gtw` but references services in `jp-bullet-train-app-prod`, you need cross-namespace routing. A ReferenceGrant has already been created to allow this.
-
 ---
 
 #### Task 3: Configure Local DNS

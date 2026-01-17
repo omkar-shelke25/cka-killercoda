@@ -19,6 +19,8 @@ The Game Master has declared that Ingress is obsolete. You must migrate to the n
 **Failure means GAME OVER** 💀
 
 ---
+> Please wait 1 minute for `MetalLoadBalancer` to set up the gateway.
+---
 
 ### 🎯 Your Tasks
 

@@ -11,6 +11,9 @@ The Japan Railway (JR) has deployed three microservices in the `jp-bullet-train-
 
 Your task is to expose these services externally using the Kubernetes Gateway API with TLS termination and path-based routing.
 
+
+---
+> Please wait 1 minute for `MetalLoadBalancer` to set up the gateway.
 ---
 
 ### 🎯 Your Tasks:

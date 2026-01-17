@@ -4,6 +4,12 @@ You have successfully configured **CoreDNS with custom upstream DNS servers** an
 This demonstrates your understanding of **Kubernetes DNS configuration** and **troubleshooting networking issues**. 🚀
 
 ---
+## 💬 Have a doubt?
+
+🔗 **Discord Link:**
+[https://killercoda.com/discord](https://killercoda.com/discord)
+
+---
 
 ## 🧩 **Conceptual Summary**
 

@@ -3,6 +3,11 @@
 You have successfully **extracted information from a kubeconfig file**!  
 This demonstrates your understanding of **kubeconfig structure, contexts, and certificate management** in Kubernetes. 🚀
 
+## 💬 Have a doubt?
+
+🔗 **Discord Link:**
+[https://killercoda.com/discord](https://killercoda.com/discord)
+
 ---
 
 ## 🧩 **Conceptual Summary**

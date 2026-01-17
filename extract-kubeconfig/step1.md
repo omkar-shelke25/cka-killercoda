@@ -88,14 +88,22 @@ cat /opt/course/1/current-context
 
 Find and decode the client-certificate-data for user account-0027:
 
-Method 1 - Using kubectl and jq:
+Method 1 -  Using kubectl,jq and array index
+
+```bash
+kubectl --raw --kubeconfig=/opt/course/1/kubeconfig config view \
+  -o jsonpath='{.users[1].user.client-certificate-data}' \
+  | base64 --decode > /opt/course/1/cert
+```
+
+Method 2 - Using kubectl and jq:
 ```bash
 kubectl config view --kubeconfig=/opt/course/1/kubeconfig --raw -o json | \
   jq -r '.users[] | select(.name == "account-0027") | .user."client-certificate-data"' | \
   base64 -d > /opt/course/1/cert
 ```
 
-Method 2 - Using grep and awk:
+Method 3 - Using grep and awk:
 ```bash
 # Extract the base64 encoded certificate
 grep -A 10 "name: account-0027" /opt/course/1/kubeconfig | \
@@ -104,7 +112,7 @@ grep -A 10 "name: account-0027" /opt/course/1/kubeconfig | \
   base64 -d > /opt/course/1/cert
 ```
 
-Method 3 - Direct YAML parsing with yq (if available):
+Method 4 - Direct YAML parsing with yq (if available):
 ```bash
 yq eval '.users[] | select(.name == "account-0027") | .user.client-certificate-data' /opt/course/1/kubeconfig | \
   base64 -d > /opt/course/1/cert

@@ -1,5 +1,13 @@
 # 🎉 Mission Complete - Hero Portal Secured!
 
+---
+## 💬 Have a doubt?
+
+🔗 **Discord Link:**
+[https://killercoda.com/discord](https://killercoda.com/discord)
+
+---
+
 ### Your Ingress Configuration
 
 ```yaml

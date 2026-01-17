@@ -4,6 +4,8 @@
 - [Gateway API - ReferenceGrant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/)
 - [Gateway API Security Model](https://gateway-api.sigs.k8s.io/concepts/security-model/)
 
+
+
 ### 📖 Scenario
 
 The **Kanto Research Cloud Platform** runs workloads across multiple namespaces to isolate teams studying different Pokémon types.
@@ -15,6 +17,7 @@ The **Pokédex Frontend Team** reported that their HTTPRoute cannot reach a back
 ❌ Cross-namespace reference denied: missing ReferenceGrant
 ```
 
+> Please wait 1 minute for `MetalLoadBalancer` to set up the gateway.
 ---
 
 ### 🧪 Current State

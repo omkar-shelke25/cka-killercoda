@@ -67,7 +67,7 @@ Method 1 -  Using kubectl,jq and array index
 
 ```bash
 kubectl --raw --kubeconfig=/opt/course/1/kubeconfig config view \
-  -o jsonpath='{.users[1].user.client-certificate-data}' \
+  -o jsonpath='{.users[0].user.client-certificate-data}' \
   | base64 --decode > /opt/course/1/cert
 ```
 

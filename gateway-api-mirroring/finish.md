@@ -6,6 +6,13 @@ This demonstrates your mastery of **advanced Kubernetes Gateway API**, **traffic
 
 ---
 
+## 💬 Have a doubt?
+
+🔗 **Discord Link:**
+[https://killercoda.com/discord](https://killercoda.com/discord)
+
+---
+
 ## 🧩 Conceptual Summary
 
 ### Traffic Mirroring (Traffic Shadowing)

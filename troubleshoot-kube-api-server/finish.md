@@ -2,6 +2,13 @@
 
 You have successfully **troubleshot and fixed the kube-apiserver static Pod** with incorrect CPU resource requests! 🚀
 
+
+---
+## 💬 Have a doubt?
+
+🔗 **Discord Link:**
+[https://killercoda.com/discord](https://killercoda.com/discord)
+
 ---
 
 ## 🧩 **Conceptual Summary**

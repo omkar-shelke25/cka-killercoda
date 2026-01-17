@@ -1,5 +1,13 @@
 ### ✅ **Completed: Egress NetworkPolicy with DNS Exception**
 
+
+## 💬 Have a doubt?
+
+🔗 **Discord Link:**
+[https://killercoda.com/discord](https://killercoda.com/discord)
+
+---
+
 ### 🧱 **NetworkPolicy: `np1` (Namespace: `venus`)**
 
 * 🎯 **Pod Selector:** `app=frontend`

@@ -18,6 +18,8 @@ An existing Gateway `anime-app-gateway` is already configured in the `anime-gtw`
 
 Create an **HTTPRoute** named `anime-api-httproute` in the `prod` namespace that implements traffic mirroring.
 
+> Please wait 1 minute for `MetalLoadBalancer` to set up the gateway.
+
 #### Requirements:
 
 1. **Name**: `anime-api-httproute`

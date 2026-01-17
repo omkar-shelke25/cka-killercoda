@@ -5,6 +5,12 @@ You have successfully configured a **Horizontal Pod Autoscaler** with multiple m
 This demonstrates your understanding of **HPA configuration** in Kubernetes for production workloads.
 
 ---
+## 💬 Have a doubt?
+
+🔗 **Discord Link:**
+[https://killercoda.com/discord](https://killercoda.com/discord)
+
+---
 
 ## 🧩 **Conceptual Summary**
 

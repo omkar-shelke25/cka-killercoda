@@ -1,57 +1,53 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "Setting up kubeconfig extraction scenario..."
+echo "Setting up kubeconfig extraction scenario with real certificates..."
 
 # Create directory structure
 mkdir -p /opt/course/1
 
-# Generate a sample certificate for account-0027
-cat > /tmp/cert.pem <<'EOF'
------BEGIN CERTIFICATE-----
-MIIDITCCAgmgAwIBAgIIFHqZ9GULX5gwDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE
-AxMKa3ViZXJuZXRlczAeFw0yNDExMjgxNTA0NDBaFw0yNTExMjgxNTA5NDFaMDQx
-FzAVBgNVBAoTDnN5c3RlbTptYXN0ZXJzMRkwFwYDVQQDExBhY2NvdW50LTAwMjcw
-ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCS38TABCDEFGHIJKLMNOa
-PQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZab
-cdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
-rstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEF
-GHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV
-WXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkl
-mnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzAB
-CDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQR
-STUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi
-jklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghAgMBAAGjQjBAMA4G
-A1UdDwEB/wQEAwICpDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSAtYvN2xYz
-KwZzLQQRJK7MA0GCSqGSIb3DQEBCwUAA4IBAQAAVEhpcyBpcyBhIHRlc3QgY2Vy
-dGlmaWNhdGUgZm9yIENLQSBleGFtIHByYWN0aWNlIG9ubHkgbm90IGEgcmVhbCB2
-YWxpZCBjZXJ0aWZpY2F0ZSBmb3IgcHJvZHVjdGlvbiB1c2UgaW4gS3ViZXJuZXRl
-cyBjbHVzdGVycyB0aGlzIGlzIGp1c3QgZm9yIGRlbW9uc3RyYXRpb24gcHVycG9z
-ZXMgdG8gc2hvdyBob3cgdG8gZXh0cmFjdCBhbmQgZGVjb2RlIGNlcnRpZmljYXRl
-cyBmcm9tIGt1YmVjb25maWcgZmlsZXMgaW4gdGhlIENLQSBleGFtIHNjZW5hcmlv
-cw==
------END CERTIFICATE-----
-EOF
+# Generate CA certificate
+openssl genrsa -out /tmp/ca.key 2048 2>/dev/null
+openssl req -x509 -new -nodes -key /tmp/ca.key -sha256 -days 365 -out /tmp/ca.crt \
+  -subj "/CN=kubernetes" 2>/dev/null
 
-# Encode certificate to base64 (single line)
-CERT_BASE64=$(cat /tmp/cert.pem | base64 -w 0)
+# Generate account-0027 certificate
+openssl genrsa -out /tmp/account-0027.key 2048 2>/dev/null
+openssl req -new -key /tmp/account-0027.key -out /tmp/account-0027.csr \
+  -subj "/O=system:masters/CN=account-0027" 2>/dev/null
+openssl x509 -req -in /tmp/account-0027.csr -CA /tmp/ca.crt -CAkey /tmp/ca.key \
+  -CAcreateserial -out /tmp/account-0027.crt -days 365 -sha256 2>/dev/null
 
-# Generate a complete kubeconfig with multiple contexts and users including account-0027
+# Generate kubernetes-admin certificate
+openssl genrsa -out /tmp/kubernetes-admin.key 2048 2>/dev/null
+openssl req -new -key /tmp/kubernetes-admin.key -out /tmp/kubernetes-admin.csr \
+  -subj "/O=system:masters/CN=kubernetes-admin" 2>/dev/null
+openssl x509 -req -in /tmp/kubernetes-admin.csr -CA /tmp/ca.crt -CAkey /tmp/ca.key \
+  -CAcreateserial -out /tmp/kubernetes-admin.crt -days 365 -sha256 2>/dev/null
+
+# Encode certificates to base64 (single line)
+CA_BASE64=$(cat /tmp/ca.crt | base64 -w 0)
+ACCOUNT_CERT_BASE64=$(cat /tmp/account-0027.crt | base64 -w 0)
+ACCOUNT_KEY_BASE64=$(cat /tmp/account-0027.key | base64 -w 0)
+ADMIN_CERT_BASE64=$(cat /tmp/kubernetes-admin.crt | base64 -w 0)
+ADMIN_KEY_BASE64=$(cat /tmp/kubernetes-admin.key | base64 -w 0)
+
+# Generate a complete kubeconfig with multiple contexts and users
 cat > /opt/course/1/kubeconfig <<EOF
 apiVersion: v1
 kind: Config
 current-context: kubernetes-admin@kubernetes
 clusters:
 - cluster:
-    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJYzVHZHFMRTZSVWd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRFeE1qZ3hOVEEwTkRCYUZ3MHpOREV4TWpZeE5UQTVOREJhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURHUzM4VEFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=
+    certificate-authority-data: ${CA_BASE64}
     server: https://cluster1.example.com:6443
   name: cluster1
 - cluster:
-    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJYzVHZHFMRTZSVWd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRFeE1qZ3hOVEEwTkRCYUZ3MHpOREV4TWpZeE5UQTVOREJhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURHUzM4VEFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=
+    certificate-authority-data: ${CA_BASE64}
     server: https://10.96.0.1:6443
   name: kubernetes
 - cluster:
-    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJYzVHZHFMRTZSVWd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRFeE1qZ3hOVEEwTkRCYUZ3MHpOREV4TWpZeE5UQTVOREJhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURHUzM4VEFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=
+    certificate-authority-data: ${CA_BASE64}
     server: https://staging.example.com:6443
   name: staging
 contexts:
@@ -74,36 +70,53 @@ contexts:
 users:
 - name: admin
   user:
-    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURJVENDQWdtZ0F3SUJBZ0lJRkhxWjlHVUxYNWd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRFeE1qZ3hOVEEwTkRCYUZ3MHlOVEV4TWpneE5UQTVOREZhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXdrdC9Fd0FBQUFBQUFBQUE=
-    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcFFJQkFBS0NBUUVBd2t0L0V3QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=
+    client-certificate-data: ${ADMIN_CERT_BASE64}
+    client-key-data: ${ADMIN_KEY_BASE64}
 - name: kubernetes-admin
   user:
-    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURJVENDQWdtZ0F3SUJBZ0lJRkhxWjlHVUxYNWd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRFeE1qZ3hOVEEwTkRCYUZ3MHlOVEV4TWpneE5UQTVOREZhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXdrdC9Fd0FBQUFBQUFBQUE=
-    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcFFJQkFBS0NBUUVBd2t0L0V3QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=
+    client-certificate-data: ${ADMIN_CERT_BASE64}
+    client-key-data: ${ADMIN_KEY_BASE64}
 - name: developer
   user:
-    token: eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRldmVsb3Blci10b2tlbi14eHh4eCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkZXZlbG9wZXIifQ
+    token: eyJhbGciOiJSUzI1NiIsImtpZCI6InRlc3Qta2V5LWlkIn0.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRldmVsb3Blci10b2tlbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkZXZlbG9wZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiIxMjM0NTY3OC05YWJjLWRlZi'+str(hash('developer-token'))[-20:]+'IsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmRldmVsb3BlciJ9.DUMMY_SIGNATURE_NOT_VALID_FOR_PRODUCTION_USE_ONLY_FOR_KUBECONFIG_EXAMPLE
 - name: account-0027
   user:
-    client-certificate-data: ${CERT_BASE64}
-    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcFFJQkFBS0NBUUVBd2t0L0V3QkJDREVGR0hJSktMTU5PYVBRUlNUVVZXWFlhYmNkZWZnaGlqa2xtbm9wCnFyc3R1dnd4eXpBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWmFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6QUIKQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ekFCQ0RFRkdISUpLTE1OCk9QUVJTVFVWV1hZWmFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWQpZYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXpBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWmFiY2RlZmdoaWprbAptbm9wcXJzdHV2d3h5ekFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3gKeXpBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWmFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6QUJDREVGR0hJSgpLTE1OT1BRUlNUVVZXWFlhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ekFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXClhZWmFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWWFiY2RlZmdoaWoKa2xtbm9wcXJzdHV2d3h5ekFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlhYmNkZWZnaEFnTUJBQUVDZ2dFQkFBQUEKQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQpBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBCkFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUEKQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQpBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBCkFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUEKQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQT0KLS0tLS1FTkQgUlNBIFBSSVZBVEUgS0VZLS0tLS0K
+    client-certificate-data: ${ACCOUNT_CERT_BASE64}
+    client-key-data: ${ACCOUNT_KEY_BASE64}
 EOF
 
 # Set proper permissions
 chmod 600 /opt/course/1/kubeconfig
 
 echo ""
-echo "Setup complete!"
+echo "✅ Setup complete!"
 echo ""
 echo "📁 Created: /opt/course/1/kubeconfig"
 echo ""
 echo "📋 Kubeconfig contains:"
 echo "   - 4 contexts: admin@cluster1, kubernetes-admin@kubernetes, developer@staging, account-0027@cluster1"
+echo "   - 3 clusters: cluster1, kubernetes, staging"
 echo "   - Current context: kubernetes-admin@kubernetes"
-echo "   - User account-0027 with client-certificate-data (base64 encoded)"
+echo "   - User account-0027 with real client certificate (base64 encoded)"
 echo ""
-echo "Your task:"
+echo "🔐 Certificates generated:"
+echo "   - CA certificate (for all clusters)"
+echo "   - account-0027 certificate (O=system:masters, CN=account-0027)"
+echo "   - kubernetes-admin certificate (O=system:masters, CN=kubernetes-admin)"
+echo ""
+echo "📝 Your task:"
 echo "   1. Extract all context names → /opt/course/1/contexts"
-echo "   2. Extract current context → /opt/course/1/current-context"  
+echo "   2. Extract current context → /opt/course/1/current-context"
 echo "   3. Decode account-0027 certificate → /opt/course/1/cert"
+echo ""
+echo "💡 Hint: Use 'kubectl config view' or parse the YAML directly"
+echo "   For certificate decoding: base64 -d"
+echo ""
+
+# Cleanup temporary files
+rm -f /tmp/ca.key /tmp/ca.crt /tmp/ca.srl
+rm -f /tmp/account-0027.key /tmp/account-0027.crt /tmp/account-0027.csr
+rm -f /tmp/kubernetes-admin.key /tmp/kubernetes-admin.crt /tmp/kubernetes-admin.csr
+
+echo "🧹 Temporary certificate files cleaned up"
 echo ""

@@ -18,6 +18,7 @@ The **Pokédex Frontend Team** reported that their HTTPRoute cannot reach a back
 ```
 
 > Please wait 1 minute for `MetalLoadBalancer` to set up the gateway.
+
 ---
 
 ### 🧪 Current State

@@ -12,7 +12,7 @@ Upon investigation, you discover that the static Pod manifest located under `/et
 
 As a result, the kubelet refuses to run the Pod.
 
-Your task is to correct the manifest so that the kube-apiserver uses 20% of the node’s total CPU for both requests and limits.
+Your task is to correct the manifest so that the kube-apiserver uses 20% of the node’s total CPU for both `requests` and `limits`.
 
 ---
 

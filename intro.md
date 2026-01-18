@@ -1,11 +1,5 @@
-# 🧠 CKA: Storage Migration - OpenEBS Local StorageClass
+# 🍜 CKAD: Validate and Fix Ingress Paths for Food Delivery App
 
-Welcome to this Kubernetes storage management challenge! 🚀  
+The Ingress configuration is incomplete and needs to be fixed to properly route traffic to all services.
 
-In this scenario, you'll work on migrating storage infrastructure from Rancher's local-path provisioner to OpenEBS local storage. 
-
-You'll create a new StorageClass with specific configuration requirements and manage default StorageClass settings across the cluster.
-
----
-
-Click **▶️ Start Scenario** to begin your mission, Kubernetes Engineer! 💪🐳
+Click **Start Scenario** to begin debugging and fixing the Food Delivery App!

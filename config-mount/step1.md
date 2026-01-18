@@ -1,4 +1,4 @@
-## CKAD: Mount ConfigMap as Files into an NGINX Pod (default namespace)
+## CKA: Mount ConfigMap as Files into an NGINX Pod (default namespace)
 
 ### 📚 **Official Kubernetes Documentation**:
 

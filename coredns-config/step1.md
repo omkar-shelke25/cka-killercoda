@@ -44,17 +44,17 @@ nslookup kubernetes.default.svc.killercoda.com
 
 <details><summary>✅ Solution (expand to view)</summary>
 
-# 🧩 Task 1: Backup CoreDNS Configuration
+#### 🧩 Task 1: Backup CoreDNS Configuration
 
 CoreDNS configuration is stored in a ConfigMap named **`coredns`** in the **`kube-system`** namespace.
 
-### 📌 Step 1.1: Create a backup directory (if not already present)
+##### 📌 Step 1.1: Create a backup directory (if not already present)
 
 ```bash
 mkdir -p /opt/course/16
 ```
 
-### 📌 Step 1.2: Backup the CoreDNS ConfigMap
+##### 📌 Step 1.2: Backup the CoreDNS ConfigMap
 
 ```bash
 kubectl get configmap coredns -n kube-system -o yaml \
@@ -65,9 +65,9 @@ kubectl get configmap coredns -n kube-system -o yaml \
 
 ---
 
-# 🧩 Task 2: Update CoreDNS Configuration (Add `killercoda.com`)
+#### 🧩 Task 2: Update CoreDNS Configuration (Add `killercoda.com`)
 
-### 📌 Step 2.1: Edit the CoreDNS ConfigMap
+##### 📌 Step 2.1: Edit the CoreDNS ConfigMap
 
 ```bash
 kubectl edit configmap coredns -n kube-system
@@ -75,7 +75,7 @@ kubectl edit configmap coredns -n kube-system
 
 ---
 
-### 📌 Step 2.2: Modify the `Corefile`
+##### 📌 Step 2.2: Modify the `Corefile`
 
 Locate this **existing block** (it may already exist):
 
@@ -87,7 +87,7 @@ kubernetes cluster.local in-addr.arpa ip6.arpa {
 }
 ```
 
-### 🔧 Replace it with this (ADD `killercoda.com`, do NOT remove `cluster.local`):
+##### 🔧 Replace it with this (ADD `killercoda.com`, do NOT remove `cluster.local`):
 
 ```text
 kubernetes cluster.local killercoda.com in-addr.arpa ip6.arpa {
@@ -108,7 +108,7 @@ Save and exit the editor.
 
 ---
 
-### 📌 Step 2.3: Restart CoreDNS Pods
+##### 📌 Step 2.3: Restart CoreDNS Pods
 
 This forces CoreDNS to reload the updated configuration.
 
@@ -126,9 +126,9 @@ Wait until all pods are `Running`.
 
 ---
 
-# 🧩 Task 3: Test DNS Resolution
+### 🧩 Task 3: Test DNS Resolution
 
-### 📌 Step 3.1: Start a BusyBox test Pod
+##### 📌 Step 3.1: Start a BusyBox test Pod
 
 ```bash
 kubectl run dns-test \
@@ -139,7 +139,7 @@ kubectl run dns-test \
 
 ---
 
-### 📌 Step 3.2: Execute DNS lookups from the Pod
+##### 📌 Step 3.2: Execute DNS lookups from the Pod
 
 ```bash
 kubectl exec -it dns-test -- sh
@@ -154,7 +154,7 @@ nslookup kubernetes.default.svc.killercoda.com
 
 ---
 
-## ✅ Expected Output
+### ✅ Expected Output
 
 * **Both commands return an IP address**
 * **The IP addresses are identical**

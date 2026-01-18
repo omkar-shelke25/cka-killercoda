@@ -1,4 +1,4 @@
-## CKAD: Mount Config Files & Gate Readiness
+## CKA: Mount Config Files & Gate Readiness
 
 
 ### 📚 **Official Kubernetes Documentation**:

@@ -1,5 +1,5 @@
 {
-  "title": "CKAD: Convert a single Pod to a Deployment with securityContext",
+  "title": "CKA: Convert a single Pod to a Deployment with securityContext",
   "description": "Turn an existing Pod into a Deployment with 3 replicas and proper container security settings, then remove the original Pod.",
   "details": {
     "steps": [

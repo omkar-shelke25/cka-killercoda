@@ -1,4 +1,4 @@
-# CKAD: Externalize Runtime Configuration (ConfigMap + Secret → Env)
+# CKA: Externalize Runtime Configuration (ConfigMap + Secret → Env)
 
 ### 📚 **Official Kubernetes Documentation**:
 

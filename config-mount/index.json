@@ -1,5 +1,5 @@
 {
-  "title": "CKAD: ConfigMap as Files (Mount into NGINX html)",
+  "title": "CKA: ConfigMap as Files (Mount into NGINX html)",
   "description": "Create a ConfigMap containing HTML files and mount it into an NGINX pod at /usr/share/nginx/html.",
   "details": {
     "steps": [

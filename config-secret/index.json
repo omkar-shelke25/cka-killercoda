@@ -1,5 +1,5 @@
 {
-  "title": "CKAD: Externalize Runtime Config (ConfigMap + Secret → Env)",
+  "title": "CKA: Externalize Runtime Config (ConfigMap + Secret → Env)",
   "description": "Provide non-sensitive config via ConfigMap and sensitive data via Secret, and consume both as environment variables in a Pod.",
   "details": {
     "steps": [

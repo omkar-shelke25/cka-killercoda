@@ -1,5 +1,5 @@
 {
-  "title": "CKAD: Mount Config Files & Gate Readiness",
+  "title": "CKA: Mount Config Files & Gate Readiness",
   "description": "Run an nginx workload that only becomes Ready when two config files exist with exact values, provided via ConfigMap.",
   "details": {
     "steps": [

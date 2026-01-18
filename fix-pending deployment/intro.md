@@ -1,4 +1,4 @@
-# CKAD: ConfigMap for Nginx Deployment
+# CKA: ConfigMap for Nginx Deployment
 
 In this scenario, you'll work with ConfigMaps to provide configuration files for an nginx server Deployment.
 

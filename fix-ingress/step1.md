@@ -2,7 +2,7 @@
 
 [Traefik Kubernetes Ingress](https://doc.traefik.io/traefik/providers/kubernetes-ingress/)
 
-# **CKAD: Validate and Fix Ingress Paths**
+# **CKA: Validate and Fix Ingress Paths**
 
 A Deployment setup for the **Food Delivery App** is already running in the namespace **`food-app`**.
 

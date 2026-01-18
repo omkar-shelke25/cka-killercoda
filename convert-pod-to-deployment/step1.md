@@ -1,4 +1,4 @@
-# CKAD: Convert Pod → Deployment (namespace: pluto)
+# CKA: Convert Pod → Deployment (namespace: pluto)
 
 In Namespace **`pluto`** there is single Pod named holy-api. It has been working okay for a while now but Team Pluto needs it to be more reliable.
 

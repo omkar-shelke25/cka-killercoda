@@ -44,175 +44,133 @@ nslookup kubernetes.default.svc.killercoda.com
 
 <details><summary>✅ Solution (expand to view)</summary>
 
-**Step 1: Create backup directory (if not exists)**
+# 🧩 Task 1: Backup CoreDNS Configuration
+
+CoreDNS configuration is stored in a ConfigMap named **`coredns`** in the **`kube-system`** namespace.
+
+### 📌 Step 1.1: Create a backup directory (if not already present)
 
 ```bash
 mkdir -p /opt/course/16
 ```
 
-**Step 2: Backup CoreDNS ConfigMap**
+### 📌 Step 1.2: Backup the CoreDNS ConfigMap
 
 ```bash
-kubectl get configmap coredns -n kube-system -o yaml > /opt/course/16/coredns_backup.yaml
+kubectl get configmap coredns -n kube-system -o yaml \
+  > /opt/course/16/coredns_backup.yaml
 ```
 
-Verify backup was created:
-```bash
-ls -lh /opt/course/16/coredns_backup.yaml
-cat /opt/course/16/coredns_backup.yaml
-```
+✅ This YAML backup allows **fast recovery** using `kubectl apply -f`.
 
-**Step 3: View current CoreDNS configuration**
+---
 
-```bash
-kubectl get configmap coredns -n kube-system -o yaml
-```
+# 🧩 Task 2: Update CoreDNS Configuration (Add `killercoda.com`)
 
-Look for the `Corefile` data section.
-
-**Step 4: Edit CoreDNS ConfigMap**
+### 📌 Step 2.1: Edit the CoreDNS ConfigMap
 
 ```bash
 kubectl edit configmap coredns -n kube-system
 ```
 
-Find this line in the Corefile:
-```
+---
+
+### 📌 Step 2.2: Modify the `Corefile`
+
+Locate this **existing block** (it may already exist):
+
+```text
 kubernetes cluster.local in-addr.arpa ip6.arpa {
-```
-
-Change it to:
-```
-kubernetes cluster.local killercoda.com in-addr.arpa ip6.arpa {
-```
-
-Save and exit the editor.
-
-**Alternative: Using kubectl patch**
-
-```bash
-kubectl get configmap coredns -n kube-system -o yaml > /tmp/coredns-config.yaml
-
-# Edit the file
-sed -i 's/kubernetes cluster.local in-addr.arpa/kubernetes cluster.local killercoda.com in-addr.arpa/g' /tmp/coredns-config.yaml
-
-# Apply the changes
-kubectl apply -f /tmp/coredns-config.yaml
-```
-
-**Step 5: Restart CoreDNS pods (to pick up changes)**
-
-CoreDNS has a reload plugin, but for immediate effect, restart the pods:
-
-```bash
-kubectl rollout restart deployment coredns -n kube-system
-```
-
-Wait for CoreDNS to be ready:
-```bash
-kubectl rollout status deployment coredns -n kube-system
-```
-
-**Step 6: Verify CoreDNS configuration**
-
-```bash
-kubectl get configmap coredns -n kube-system -o yaml | grep -A 3 "kubernetes"
-```
-
-You should see both `cluster.local` and `killercoda.com`.
-
-**Step 7: Test DNS resolution with cluster.local (MUST still work)**
-
-```bash
-kubectl run test-dns-1 --image=busybox:1.35 -it --rm -- nslookup kubernetes.default.svc.cluster.local
-```
-
-Expected output:
-```
-Server:    10.96.0.10
-Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
-
-Name:      kubernetes.default.svc.cluster.local
-Address 1: 10.96.0.1 kubernetes.default.svc.cluster.local
-```
-
-**Important:** cluster.local MUST still work! We added killercoda.com alongside it, not replacing it.
-
-**Step 8: Test DNS resolution with killercoda.com (NEW domain)**
-
-```bash
-kubectl run test-dns-2 --image=busybox:1.35 -it --rm -- nslookup kubernetes.default.svc.killercoda.com
-```
-
-Expected output:
-```
-Server:    10.96.0.10
-Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
-
-Name:      kubernetes.default.svc.killercoda.com
-Address 1: 10.96.0.1 kubernetes.default.svc.killercoda.com
-```
-
-**Verify:** The IP address (10.96.0.1) should be **identical** in both tests, confirming both domains work simultaneously.
-
-**Step 9: Test with test-service (verify both domains)**
-
-```bash
-# Test cluster.local domain (original)
-kubectl run test-dns-3 --image=busybox:1.35 -it --rm -- nslookup test-service.test-dns.svc.cluster.local
-
-# Test killercoda.com domain (new)
-kubectl run test-dns-4 --image=busybox:1.35 -it --rm -- nslookup test-service.test-dns.svc.killercoda.com
-```
-
-Both should return the **same IP address**, proving dual DNS support works correctly.
-
-**Step 10: Verify backup can restore configuration**
-
-If needed to restore:
-```bash
-kubectl apply -f /opt/course/16/coredns_backup.yaml
-kubectl rollout restart deployment coredns -n kube-system
-```
-
-**Understanding the Configuration:**
-
-The updated Corefile section:
-```
-.:53 {
-    errors
-    health
-    kubernetes cluster.local killercoda.com in-addr.arpa ip6.arpa {
-       pods insecure
-       fallthrough in-addr.arpa ip6.arpa
-    }
-    prometheus :9153
-    forward . /etc/resolv.conf
-    cache 30
-    loop
-    reload
-    loadbalance
+  pods insecure
+  fallthrough in-addr.arpa ip6.arpa
+  ttl 30
 }
 ```
 
-**Key change:**
+### 🔧 Replace it with this (ADD `killercoda.com`, do NOT remove `cluster.local`):
+
+```text
+kubernetes cluster.local killercoda.com in-addr.arpa ip6.arpa {
+  pods insecure
+  fallthrough in-addr.arpa ip6.arpa
+  ttl 30
+}
 ```
-kubernetes cluster.local killercoda.com in-addr.arpa ip6.arpa
+
+📌 **Why this works**
+
+* CoreDNS now serves **two DNS zones**
+* Both domains point to the **same Kubernetes service registry**
+* `cluster.local` continues to work
+* `killercoda.com` is added **in parallel**
+
+Save and exit the editor.
+
+---
+
+### 📌 Step 2.3: Restart CoreDNS Pods
+
+This forces CoreDNS to reload the updated configuration.
+
+```bash
+kubectl rollout restart deployment coredns -n kube-system
 ```
 
-This tells CoreDNS to handle DNS queries for both:
-- `*.cluster.local`
-- `*.killercoda.com`
+(Optional check)
 
-And resolve them to the same Kubernetes services.
+```bash
+kubectl get pods -n kube-system -l k8s-app=kube-dns
+```
 
-**Verification Checklist:**
-- ✅ Backup created at /opt/course/16/coredns_backup.yaml
-- ✅ CoreDNS ConfigMap updated with killercoda.com
-- ✅ CoreDNS pods restarted
-- ✅ kubernetes.default.svc.cluster.local resolves
-- ✅ kubernetes.default.svc.killercoda.com resolves
-- ✅ Both domains return same IP address
+Wait until all pods are `Running`.
+
+---
+
+# 🧩 Task 3: Test DNS Resolution
+
+### 📌 Step 3.1: Start a BusyBox test Pod
+
+```bash
+kubectl run dns-test \
+  --image=busybox:1.35 \
+  --restart=Never \
+  --command -- sleep 3600
+```
+
+---
+
+### 📌 Step 3.2: Execute DNS lookups from the Pod
+
+```bash
+kubectl exec -it dns-test -- sh
+```
+
+Inside the pod, run:
+
+```bash
+nslookup kubernetes.default.svc.cluster.local
+nslookup kubernetes.default.svc.killercoda.com
+```
+
+---
+
+## ✅ Expected Output
+
+* **Both commands return an IP address**
+* **The IP addresses are identical**
+
+Example:
+
+```text
+Address: 10.96.0.1
+```
+
+🎉 This confirms:
+
+* Both domains work **simultaneously**
+* Both resolve to the **same Kubernetes Service**
+* The requirement is fully satisfied
+
 
 </details>
 

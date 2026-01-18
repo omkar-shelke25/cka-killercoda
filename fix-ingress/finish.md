@@ -28,4 +28,4 @@ External Request
     └─ /track-order ───→ tracking-service:8004 → Tracking Service Pod
 ```
 
-Congratulations! You've successfully completed the **CKAD: Validate and Fix Ingress Paths for Food Delivery App** scenario!
+Congratulations! You've successfully completed the **CKA: Validate and Fix Ingress Paths for Food Delivery App** scenario!

@@ -1,0 +1,23 @@
+{
+  "title": "CKA: CoreDNS Configuration and Custom Domain Setup",
+  "description": "Backup and modify CoreDNS configuration to add custom domain support alongside cluster.local for Kubernetes DNS resolution.",
+  "details": {
+    "steps": [
+      {
+        "title": "CoreDNS Configuration and Custom Domain",
+        "text": "step1.md",
+        "verify": "verify.sh"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "setup.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

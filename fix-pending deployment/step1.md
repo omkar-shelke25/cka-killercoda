@@ -1,4 +1,4 @@
-# 🗺️ CKAD: Create ConfigMap for Nginx Configuration
+# 🗺️ CKA: Create ConfigMap for Nginx Configuration
 
 📋 Team Moonpie has a nginx server Deployment called **`web-moon`** in namespace **`moon`**. Someone started configuring it but it was never completed. 
 

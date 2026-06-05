@@ -169,11 +169,15 @@ fi
 echo "✅ Volume mounted at '${EXPECTED_MOUNT_PATH}' in pod"
 
 # Test if /cache directory is accessible
-if ! kubectl exec -n "${NS}" "${POD_NAME}" -- ls "${EXPECTED_MOUNT_PATH}" &>/dev/null; then
-  echo "❌ Cannot access '${EXPECTED_MOUNT_PATH}' directory in pod"
+# Check if Deployment manifest mounts at expected path
+if ! yq -e '
+  .spec.template.spec.containers[].volumeMounts[].mountPath
+  | select(. == env(EXPECTED_MOUNT_PATH))
+' "${DEPLOYMENT_FILE}" >/dev/null; then
+  echo "❌ Deployment manifest does not mount at '${EXPECTED_MOUNT_PATH}'"
   exit 1
 fi
-echo "✅ '${EXPECTED_MOUNT_PATH}' directory is accessible in pod"
+
 
 # Test write capability
 TEST_FILE="${EXPECTED_MOUNT_PATH}/verify-test-$(date +%s).txt"

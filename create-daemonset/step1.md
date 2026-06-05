@@ -93,7 +93,8 @@ spec:
             memory: 10Mi                            # add
       tolerations:                                  # add
       - effect: NoSchedule                          # add
-        key: node-role.kubernetes.io/control-plane  # add
+        key: node-role.kubernetes.io/control-plane
+        operator: Exists                            # add
 #status: {}
 ```
 

@@ -25,7 +25,6 @@ Update all system packages to ensure security patches and compatibility:
 
 ```bash
 sudo apt-get update
-sudo apt-get upgrade -y
 ```
 
 💡 **Tip**: This may take a few minutes depending on available updates.

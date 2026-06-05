@@ -106,8 +106,8 @@ if ! grep -q "volumeMounts:" "${DEPLOYMENT_FILE}"; then
 fi
 echo "✅ Deployment manifest contains volumeMount configuration"
 
-# Check if Deployment manifest mounts at /cache
-if ! grep -q "mountPath: ${EXPECTED_MOUNT_PATH}" "${DEPLOYMENT_FILE}"; then
+# Check if Deployment manifest mounts at /cache (handles both quoted and unquoted values)
+if ! grep -qE "mountPath: \"?${EXPECTED_MOUNT_PATH}\"?" "${DEPLOYMENT_FILE}"; then
   echo "❌ Deployment manifest does not mount at '${EXPECTED_MOUNT_PATH}'"
   exit 1
 fi
@@ -168,16 +168,23 @@ if [[ "${MOUNT_PATH}" != "${EXPECTED_MOUNT_PATH}" ]]; then
 fi
 echo "✅ Volume mounted at '${EXPECTED_MOUNT_PATH}' in pod"
 
-# Test if /cache directory is accessible
-# Check if Deployment manifest mounts at expected path
+# Check if Deployment manifest mounts at expected path.
+# Uses yq first; falls back to a quote-stripped grep to handle both:
+#   mountPath: /cache   (unquoted)
+#   mountPath: "/cache" (quoted)
 if ! yq -e '
   .spec.template.spec.containers[].volumeMounts[].mountPath
   | select(. == env(EXPECTED_MOUNT_PATH))
-' "${DEPLOYMENT_FILE}" >/dev/null; then
-  echo "❌ Deployment manifest does not mount at '${EXPECTED_MOUNT_PATH}'"
-  exit 1
+' "${DEPLOYMENT_FILE}" >/dev/null 2>&1; then
+  FOUND_PATH=$(yq '
+    .spec.template.spec.containers[].volumeMounts[].mountPath
+  ' "${DEPLOYMENT_FILE}" 2>/dev/null | tr -d '"' | grep -Fx "${EXPECTED_MOUNT_PATH}" || true)
+  if [[ -z "${FOUND_PATH}" ]]; then
+    echo "❌ Deployment manifest does not mount at '${EXPECTED_MOUNT_PATH}'"
+    exit 1
+  fi
 fi
-
+echo "✅ Deployment manifest mounts at '${EXPECTED_MOUNT_PATH}' (yq verified)"
 
 # Test write capability
 TEST_FILE="${EXPECTED_MOUNT_PATH}/verify-test-$(date +%s).txt"

@@ -8,7 +8,7 @@ EXPECTED_LABEL="very-important"
 EXPECTED_CONTAINER1="container1"
 EXPECTED_CONTAINER2="container2"
 EXPECTED_IMAGE1="nginx:1-alpine"
-EXPECTED_IMAGE2="google/pause"
+EXPECTED_IMAGE2="redis"
 
 echo "🔍 Verifying Deployment with Pod Anti-Affinity..."
 
@@ -200,7 +200,7 @@ kubectl get pods -n "${NS}" -l id="${EXPECTED_LABEL}" -o wide
 echo ""
 echo "🎉 Verification passed! Deployment is correctly configured!"
 echo "   ✅ Deployment with 2 replicas and correct labels"
-echo "   ✅ Two containers: container1 (nginx:1-alpine) and container2 (google/pause)"
+echo "   ✅ Two containers: container1 (nginx:1-alpine) and container2 (redis)"
 echo "   ✅ podAntiAffinity with topologyKey: kubernetes.io/hostname"
 echo "   ✅ Only one Pod per node (as enforced by anti-affinity)"
 exit 0

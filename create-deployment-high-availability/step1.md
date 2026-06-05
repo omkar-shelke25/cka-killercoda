@@ -16,7 +16,7 @@ Implement the following in Namespace `project-tiger`:
 * Create a Deployment named `deploy-important` with `2` replicas
 * The Deployment and its Pods should have label `id=very-important`
 * First container named `container1` with image `nginx:1-alpine`
-* Second container named `container2` with image `google/pause`
+* Second container named `container2` with image `redis`
 * There should only ever be one Pod of that Deployment running on one worker node, use `topologyKey: kubernetes.io/hostname` for this
 
 
@@ -76,7 +76,7 @@ spec:
       - name: container1
         image: nginx:1-alpine
       - name: container2
-        image: google/pause
+        image: redis
 ```
 
 **Key Components Explained:**
@@ -87,7 +87,7 @@ spec:
 4. **requiredDuringSchedulingIgnoredDuringExecution**: Hard requirement (Pod won't schedule if rule can't be met)
 5. **labelSelector**: Targets Pods with label `id=very-important`
 6. **topologyKey: kubernetes.io/hostname**: Ensures uniqueness per node hostname
-7. **Two containers**: container1 (nginx) and container2 (google/pause)
+7. **Two containers**: container1 (nginx) and container2 (redis)
 
 **Step 4: Apply the Deployment**
 

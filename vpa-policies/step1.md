@@ -29,7 +29,18 @@ Create a VerticalPodAutoscaler resource named `app-vpa` in the `vpa-demo` namesp
      - CPU: `2` (2 cores)
      - Memory: `2Gi`
 
-4. The VPA should control both `RequestsAndLimits` for the container
+4. The VPA should control both `RequestsAndLimits` for the container.
+
+
+
+
+
+> **Note:** This command checks whether the **Vertical Pod Autoscaler (VPA)** CRD is installed in the Kubernetes cluster. If the CRD exists, it prints **"VPA installed"**; otherwise, it prints **"VPA NOT installed"**. This command verifies only the presence of the VPA CRD, not whether the VPA          > components are running.
+>
+> ```bash
+> kubectl get crd verticalpodautoscalers.autoscaling.k8s.io &>/dev/null && echo "VPA installed" || echo "VPA NOT installed"
+> ```
+
 
 ---
 

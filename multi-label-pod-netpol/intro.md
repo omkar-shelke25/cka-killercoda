@@ -1,4 +1,4 @@
-# 🔒 CKA: Configure NetworkPolicy for Multi-Label Pod Selection
+# CKA: Configure NetworkPolicy for Multi-Label Pod Selection
 
 Welcome to this Kubernetes NetworkPolicy challenge! 🚀  
 

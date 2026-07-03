@@ -136,10 +136,4 @@ Verify the CRI socket is accessible:
 sudo ls -la /run/cri-dockerd.sock
 ```
 
-If crictl is available, you can also test connectivity:
-
-```bash
-sudo crictl --runtime-endpoint unix:///run/cri-dockerd.sock version
-```
-
 </details>

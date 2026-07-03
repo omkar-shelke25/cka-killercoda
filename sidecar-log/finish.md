@@ -16,3 +16,9 @@ You successfully created a **sidecar container** for logging!
 8. ✓ **Verified** logs are accessible via `kubectl logs`
 
 Great work! This pattern is commonly tested in CKA exams and widely used in production Kubernetes clusters.
+
+## 🐛 Found an Issue?
+
+This scenario is open source! If something is broken or unclear, please open an issue or PR:
+
+👉 **[github.com/omkar-shelke25/cka-killercoda](https://github.com/omkar-shelke25/cka-killercoda/tree/main/cri-dockerd-containe-runtime)**

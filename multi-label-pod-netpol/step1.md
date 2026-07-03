@@ -1,26 +1,25 @@
-# 🔒 **CKA: Configure NetworkPolicy with Multi-Label Selection**
+# **CKA: Configure NetworkPolicy with Multi-Label Selection**
 
-📚 **Official Kubernetes Documentation**: 
+📚 **Official Kubernetes Documentation**:
 - [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 - [Declare Network Policy](https://kubernetes.io/docs/tasks/administer-cluster/declare-network-policy/)
 - [NetworkPolicy API Reference](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#networkpolicy-v1-networking-k8s-io)
 
-### 🏢 **Context**
+### **Context**
 
 You are the security engineer for a microservices platform running in Kubernetes. The security team has identified that the API service in the `isolated` namespace requires strict access controls.
 
-### ❓ **Problem Statement**
+### **Problem Statement**
 
 Create a new NetworkPolicy named `allow-multi-pod-ingress` in the existing namespace `isolated`.
 
-The NetworkPolicy should allow incoming traffic to Pods with label `app=api` in namespace `isolated` only if **ALL** of the following conditions are met:
+The NetworkPolicy must select Pods with label `app=api`, and allow incoming traffic to those Pods only if **ALL** of the following conditions are met:
 
-* Traffic originates from Pods with label `app=frontend` & `role=proxy`
-* Traffic is directed to TCP port 7000
-* Pods that do not listen on port 7000 must not be accessible
-* Pods other than those with label `app=api` must not be allowed access
-* Pods that do not match the above source Pod labels must not be allowed access
+* Traffic comes from a Pod that carries **both** labels together: `app=frontend` **and** `role=proxy`. A Pod with only one of the two labels does not count.
+* Traffic is directed to **TCP port 7000**. Traffic to any other port on an `app=api` Pod (for example port 8080) must be denied.
+* Traffic from any Pod that doesn't carry both required labels — such as `app=frontend` alone, or `app=database` — must be denied.
 
+> ℹ️ **Note on scope:** A NetworkPolicy's `podSelector` field decides which Pods the policy *applies to* — it isn't a namespace-wide lockdown. This policy only governs traffic to Pods labeled `app=api`. Pods without that label sit outside this policy's scope, so this task only concerns access **to** `app=api` Pods, not general access between every other Pod pair in the namespace. See the [Network Policies docs](https://kubernetes.io/docs/concepts/services-networking/network-policies/) for how per-Pod isolation works.
 
 ### Try it yourself first!
 
@@ -30,9 +29,9 @@ The NetworkPolicy should allow incoming traffic to Pods with label `app=api` in 
 
 We need to create a NetworkPolicy that:
 - Selects target pods with label `app=api`
-- Allows ingress traffic ONLY from pods with BOTH labels: `app=frontend` AND `role=proxy`
+- Allows ingress traffic ONLY from pods with BOTH labels: `app=frontend` AND `role=proxy` (a single `podSelector` with both labels — that's AND logic, not two separate selectors)
 - Allows traffic ONLY to port 7000 TCP
-- Denies all other ingress traffic (implicit)
+- Denies all other ingress traffic to `app=api` pods (implicit default-deny once a policy selects a pod)
 
 **Step 2: Create the NetworkPolicy**
 
@@ -141,11 +140,10 @@ spec:
     - podSelector:
         matchLabels:
           app: frontend           # Source must have app=frontend
-          role: proxy             # AND role=proxy (both required!)
+          role: proxy             # AND role=proxy (both required, single selector = AND logic)
     ports:
     - protocol: TCP
       port: 7000                  # Only allow port 7000
 ```
 
 </details>
-

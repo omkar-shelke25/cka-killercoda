@@ -31,16 +31,11 @@ Create a VerticalPodAutoscaler resource named `app-vpa` in the `vpa-demo` namesp
 
 4. The VPA should control both `RequestsAndLimits` for the container.
 
-
-
-
-
-> **Note:** Wait for **1 minute** to allow the VPA installation to complete, then run the following command to verify that VPA is installed:
+> **Note:** The VPA installation script is running in the background. Wait for **1 minute** to allow the installation to complete, then run the following command to verify that the VPA CRD has been installed:
 >
 > ```bash
 > kubectl get crd verticalpodautoscalers.autoscaling.k8s.io &>/dev/null && echo "VPA installed" || echo "VPA NOT installed"
 > ```
-
 
 ---
 

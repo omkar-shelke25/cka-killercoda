@@ -73,32 +73,7 @@ kubectl get networkpolicy -n isolated
 kubectl describe networkpolicy allow-multi-pod-ingress -n isolated
 ```
 
-**Step 4: Set up test pods**
-
-The tests below assume these pods already exist in `isolated`. If you're building the exercise from scratch, create them first — in particular `api-pod-alt`, which earlier versions of this exercise referenced in Test 4 without ever defining it:
-
-```bash
-kubectl run api-pod -n isolated --image=hashicorp/http-echo --labels=app=api \
-  --port=7000 -- -listen=:7000 -text="api-pod:7000 ok"
-
-kubectl run api-pod-alt -n isolated --image=hashicorp/http-echo --labels=app=api \
-  --port=8080 -- -listen=:8080 -text="api-pod-alt:8080 ok"
-
-kubectl run frontend-proxy-pod -n isolated --image=curlimages/curl \
-  --labels=app=frontend,role=proxy -- sleep 3600
-
-kubectl run frontend-only-pod -n isolated --image=curlimages/curl \
-  --labels=app=frontend -- sleep 3600
-
-kubectl run database-pod -n isolated --image=curlimages/curl \
-  --labels=app=database -- sleep 3600
-
-kubectl wait --for=condition=Ready pod --all -n isolated --timeout=60s
-```
-
-> Also expose `api-pod` and `api-pod-alt` as Services (or curl the Pod IPs directly) so the DNS names used in the tests below actually resolve. If you'd rather curl by IP, swap in `$(kubectl get pod api-pod -n isolated -o jsonpath='{.status.podIP}')` etc.
-
-**Step 5: Test the NetworkPolicy**
+**Step 4: Test the NetworkPolicy**
 
 Each test now checks curl's own exit code instead of grepping for HTML — the exit code tells you definitively whether the connection was made or blocked, regardless of what's actually listening on the port.
 
@@ -132,7 +107,7 @@ kubectl exec -n isolated frontend-proxy-pod -- curl -s --max-time 3 -o /dev/null
 
 > If every test reports "ALLOWED" — including the ones that should be blocked — stop and re-check the CNI prerequisite above before assuming the YAML is wrong.
 
-**Step 6: Understanding the configuration**
+**Step 5: Understanding the configuration**
 
 ```yaml
 spec:

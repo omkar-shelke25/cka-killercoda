@@ -7,4 +7,4 @@ This demonstrates your understanding of **Kubernetes NetworkPolicy**, **label se
 
 This scenario is open source! If something is broken or unclear, please open an issue or PR:
 
-👉 **[github.com/omkar-shelke25/cka-killercoda](https://github.com/omkar-shelke25/cka-killercoda/multi-label-pod-netpol)**
+👉 **[github.com/omkar-shelke25/cka-killercoda](https://github.com/omkar-shelke25/cka-killercoda/tree/main/multi-label-pod-netpol)**

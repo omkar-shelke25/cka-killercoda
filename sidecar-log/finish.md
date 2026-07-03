@@ -21,4 +21,4 @@ Great work! This pattern is commonly tested in CKA exams and widely used in prod
 
 This scenario is open source! If something is broken or unclear, please open an issue or PR:
 
-👉 **[github.com/omkar-shelke25/cka-killercoda](https://github.com/omkar-shelke25/cka-killercoda/tree/main/cri-dockerd-containe-runtime)**
+👉 **[github.com/omkar-shelke25/cka-killercoda](https://github.com/omkar-shelke25/cka-killercoda/tree/main/sidecar-log)**

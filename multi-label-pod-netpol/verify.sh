@@ -12,7 +12,6 @@ NC='\033[0m' # No Color
 NAMESPACE="isolated"
 NETPOL_NAME="allow-multi-pod-ingress"
 
-# Function to print colored output
 print_status() {
   if [ "$1" = "ok" ]; then
     echo -e "${GREEN}✅ $2${NC}"
@@ -22,6 +21,13 @@ print_status() {
     echo -e "${YELLOW}⚠️  $2${NC}"
   fi
 }
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || { print_status "fail" "Required command '$1' not found in PATH"; exit 1; }
+}
+
+require_cmd kubectl
+require_cmd jq
 
 # Check if namespace exists
 if ! kubectl get namespace "${NAMESPACE}" &>/dev/null; then
@@ -37,64 +43,69 @@ if ! kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" &>/dev/null; t
 fi
 print_status "ok" "NetworkPolicy '${NETPOL_NAME}' exists"
 
+# Fetch the policy once as JSON and use jq for every structural check below.
+# (kubectl's jsonpath output for objects/maps prints Go's "map[key:val]" format,
+#  not JSON, so grep'ing it for '"key":"val"' or piping it into jq silently
+#  breaks — that was the previous bug. -o json + jq avoids that entirely.)
+JSON="$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o json)"
+
 # Verify NetworkPolicy targets correct pods (app=api)
-POD_SELECTOR=$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.podSelector.matchLabels}')
-if ! echo "${POD_SELECTOR}" | grep -q '"app":"api"'; then
-  print_status "fail" "NetworkPolicy does not select pods with label app=api"
-  echo "Found podSelector: ${POD_SELECTOR}"
+SEL_APP=$(echo "${JSON}" | jq -r '.spec.podSelector.matchLabels.app // empty')
+if [ "${SEL_APP}" != "api" ]; then
+  print_status "fail" "NetworkPolicy does not select pods with label app=api (found: '${SEL_APP:-<none>}')"
   exit 1
 fi
 print_status "ok" "NetworkPolicy selects pods with label app=api"
 
 # Verify policyTypes includes Ingress
-POLICY_TYPES=$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.policyTypes[*]}')
-if ! echo "${POLICY_TYPES}" | grep -q "Ingress"; then
-  print_status "fail" "NetworkPolicy does not specify Ingress in policyTypes"
-  echo "Found policyTypes: ${POLICY_TYPES}"
+TYPES=$(echo "${JSON}" | jq -r '[.spec.policyTypes[]?] | join(" ")')
+if ! echo "${TYPES}" | grep -qw "Ingress"; then
+  print_status "fail" "NetworkPolicy does not specify Ingress in policyTypes (found: ${TYPES:-<none>})"
   exit 1
 fi
 print_status "ok" "NetworkPolicy has Ingress in policyTypes"
 
-# Verify ingress rule exists
-INGRESS_RULES=$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.ingress}')
-if [[ -z "${INGRESS_RULES}" || "${INGRESS_RULES}" == "null" ]]; then
+# Verify at least one ingress rule exists
+INGRESS_COUNT=$(echo "${JSON}" | jq '.spec.ingress // [] | length')
+if [ "${INGRESS_COUNT}" -eq 0 ]; then
   print_status "fail" "NetworkPolicy has no ingress rules defined"
   exit 1
 fi
 print_status "ok" "NetworkPolicy has ingress rules defined"
 
-# Verify source pod selector has app=frontend label
-FROM_SELECTOR=$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.ingress[0].from[0].podSelector.matchLabels}')
-if ! echo "${FROM_SELECTOR}" | grep -q '"app":"frontend"'; then
-  print_status "fail" "NetworkPolicy ingress rule does not require app=frontend label"
-  echo "Found from selector: ${FROM_SELECTOR}"
+# Verify a single 'from' podSelector requires BOTH app=frontend AND role=proxy (AND logic,
+# not two separate podSelector entries which would be OR logic).
+AND_MATCH=$(echo "${JSON}" | jq '[.spec.ingress[]?.from[]?.podSelector.matchLabels // {}
+  | select(.app == "frontend" and .role == "proxy")] | length')
+if [ "${AND_MATCH}" -eq 0 ]; then
+  print_status "fail" "No 'from' podSelector requires BOTH app=frontend AND role=proxy on the same selector"
+  echo "Found 'from' selectors:"
+  echo "${JSON}" | jq -c '[.spec.ingress[]?.from[]?.podSelector.matchLabels // {}]'
   exit 1
 fi
-print_status "ok" "NetworkPolicy requires app=frontend label in source pods"
+print_status "ok" "NetworkPolicy requires app=frontend AND role=proxy in a single source selector"
 
-# Verify source pod selector has role=proxy label
-if ! echo "${FROM_SELECTOR}" | grep -q '"role":"proxy"'; then
-  print_status "fail" "NetworkPolicy ingress rule does not require role=proxy label"
-  echo "Found from selector: ${FROM_SELECTOR}"
-  exit 1
+# Warn (don't fail) if there are extra 'from' entries — could indicate an accidental OR rule
+FROM_COUNT=$(echo "${JSON}" | jq '[.spec.ingress[]?.from[]?] | length')
+if [ "${FROM_COUNT}" -gt 1 ]; then
+  print_status "warn" "Found ${FROM_COUNT} 'from' entries — make sure you didn't accidentally OR two separate selectors together"
 fi
-print_status "ok" "NetworkPolicy requires role=proxy label in source pods"
 
-# Verify port 7000 is specified
-PORT=$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.ingress[0].ports[0].port}')
-if [[ "${PORT}" != "7000" ]]; then
-  print_status "fail" "NetworkPolicy does not allow port 7000 (found: ${PORT})"
+# Verify port 7000/TCP is allowed
+PORT_MATCH=$(echo "${JSON}" | jq '[.spec.ingress[]?.ports[]?
+  | select(((.protocol // "TCP") == "TCP") and ((.port == 7000) or (.port == "7000")))] | length')
+if [ "${PORT_MATCH}" -eq 0 ]; then
+  print_status "fail" "NetworkPolicy does not allow TCP port 7000"
   exit 1
 fi
 print_status "ok" "NetworkPolicy allows TCP port 7000"
 
-# Verify protocol is TCP
-PROTOCOL=$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.ingress[0].ports[0].protocol}')
-if [[ "${PROTOCOL}" != "TCP" ]]; then
-  print_status "fail" "NetworkPolicy protocol is not TCP (found: ${PROTOCOL})"
-  exit 1
+# Warn if other ports are also allowed (task asks for port 7000 only)
+OTHER_PORTS=$(echo "${JSON}" | jq '[.spec.ingress[]?.ports[]?
+  | select(((.port != 7000) and (.port != "7000")))] | length')
+if [ "${OTHER_PORTS}" -gt 0 ]; then
+  print_status "warn" "NetworkPolicy also allows ports other than 7000 — task asked for port 7000 only"
 fi
-print_status "ok" "NetworkPolicy protocol is TCP"
 
 # Wait for pods to be ready
 echo ""
@@ -107,27 +118,46 @@ kubectl wait --for=condition=ready pod/database-pod -n "${NAMESPACE}" --timeout=
 # Give NetworkPolicy time to be enforced
 sleep 2
 
-# Verify the NetworkPolicy structure is correct
+# Live connectivity tests
 echo ""
-echo "🔎 Verifying NetworkPolicy structure..."
+echo "🌐 Testing live connectivity..."
 
-# Check that there's only one ingress rule with one from selector
-INGRESS_RULE_COUNT=$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.ingress}' | jq 'length')
-if [[ "${INGRESS_RULE_COUNT}" -ne 1 ]]; then
-  print_status "warn" "Expected 1 ingress rule, found ${INGRESS_RULE_COUNT}"
+echo "Test 1: frontend-proxy-pod -> api-pod:7000 (expected: ALLOWED)"
+if kubectl exec -n "${NAMESPACE}" frontend-proxy-pod -- curl -s --max-time 3 api-pod:7000 &>/dev/null; then
+  print_status "ok" "frontend-proxy-pod can reach api-pod:7000"
+else
+  print_status "fail" "frontend-proxy-pod could NOT reach api-pod:7000 (should be allowed)"
+  exit 1
 fi
 
-# Check that from selector has exactly 2 labels (app and role)
-LABEL_COUNT=$(kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o json | jq '.spec.ingress[0].from[0].podSelector.matchLabels | length')
-if [[ "${LABEL_COUNT}" -ne 2 ]]; then
-  print_status "warn" "Expected 2 labels in from selector, found ${LABEL_COUNT}"
-  print_status "warn" "Make sure both app=frontend AND role=proxy are specified in a SINGLE podSelector"
+echo "Test 2: frontend-only-pod -> api-pod:7000 (expected: BLOCKED)"
+if kubectl exec -n "${NAMESPACE}" frontend-only-pod -- curl -s --max-time 3 api-pod:7000 &>/dev/null; then
+  print_status "fail" "frontend-only-pod reached api-pod:7000 but should be blocked (missing role=proxy)"
+  exit 1
+else
+  print_status "ok" "frontend-only-pod correctly blocked from api-pod:7000"
+fi
+
+echo "Test 3: database-pod -> api-pod:7000 (expected: BLOCKED)"
+if kubectl exec -n "${NAMESPACE}" database-pod -- curl -s --max-time 3 api-pod:7000 &>/dev/null; then
+  print_status "fail" "database-pod reached api-pod:7000 but should be blocked"
+  exit 1
+else
+  print_status "ok" "database-pod correctly blocked from api-pod:7000"
+fi
+
+echo "Test 4: frontend-proxy-pod -> api-pod-alt:8080 (expected: BLOCKED)"
+if kubectl exec -n "${NAMESPACE}" frontend-proxy-pod -- curl -s --max-time 3 api-pod-alt:8080 &>/dev/null; then
+  print_status "fail" "frontend-proxy-pod reached api-pod-alt:8080 but that port should be blocked"
+  exit 1
+else
+  print_status "ok" "api-pod-alt:8080 correctly blocked (only port 7000 is allowed)"
 fi
 
 # Display the NetworkPolicy for reference
 echo ""
 echo "📋 NetworkPolicy configuration:"
-kubectl get networkpolicy "${NETPOL_NAME}" -n "${NAMESPACE}" -o yaml | grep -A 20 "spec:"
+echo "${JSON}" | jq '.spec'
 
 echo ""
 print_status "ok" "🎉 NetworkPolicy verification passed!"

@@ -26,15 +26,10 @@ Additionally, configure the system with the following required kernel and networ
 All parameter configurations must be made persistent by placing them in the file:
 - `/etc/sysctl.d/99-kubernetes-cri.conf`
 
-**Hint**: The `net.bridge.bridge-nf-call-iptables` parameter requires the `br_netfilter` kernel module to be loaded first.
-
 ---
 
 ## Solution
 
-<details>
-<summary>Click to view Solution</summary>
-  
 **Step 1: Verify the package exists**
 
 ```bash
@@ -82,21 +77,7 @@ sudo systemctl status cri-docker.socket
 sudo systemctl is-active cri-docker.socket
 ```
 
-**Step 6: Load the br_netfilter module**
-
-This module is required for the bridge iptables parameter to exist:
-
-```bash
-sudo modprobe br_netfilter
-```
-
-To make it persistent across reboots:
-
-```bash
-echo "br_netfilter" | sudo tee /etc/modules-load.d/br_netfilter.conf
-```
-
-**Step 7: Configure kernel parameters for persistence**
+**Step 6: Configure kernel parameters for persistence**
 
 Create a sysctl configuration file for Kubernetes networking:
 
@@ -109,7 +90,7 @@ net.netfilter.nf_conntrack_max = 131072
 EOF
 ```
 
-**Step 8: Apply the kernel parameters**
+**Step 7: Apply the kernel parameters**
 
 Apply the parameters immediately without reboot:
 
@@ -123,7 +104,7 @@ Or apply the specific file:
 sudo sysctl -p /etc/sysctl.d/99-kubernetes-cri.conf
 ```
 
-**Step 9: Verify the kernel parameters**
+**Step 8: Verify the kernel parameters**
 
 Check each parameter is set correctly:
 
@@ -136,7 +117,7 @@ sysctl net.netfilter.nf_conntrack_max
 
 All should show the configured values.
 
-**Step 10: Verify persistence**
+**Step 9: Verify persistence**
 
 Confirm the configuration file exists and will persist after reboot:
 
@@ -144,7 +125,7 @@ Confirm the configuration file exists and will persist after reboot:
 cat /etc/sysctl.d/99-kubernetes-cri.conf
 ```
 
-**Step 11: Test the cri-dockerd socket**
+**Step 10: Test the cri-dockerd socket**
 
 Verify the CRI socket is accessible:
 
@@ -157,4 +138,3 @@ If crictl is available, you can also test connectivity:
 ```bash
 sudo crictl --runtime-endpoint unix:///run/cri-dockerd.sock version
 ```
-</details>

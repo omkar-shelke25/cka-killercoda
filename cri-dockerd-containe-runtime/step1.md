@@ -30,6 +30,9 @@ All parameter configurations must be made persistent by placing them in the file
 
 ## Solution
 
+<details>
+<summary>Click to view Solution</summary>
+  
 **Step 1: Verify the package exists**
 
 ```bash
@@ -138,3 +141,5 @@ If crictl is available, you can also test connectivity:
 ```bash
 sudo crictl --runtime-endpoint unix:///run/cri-dockerd.sock version
 ```
+
+</details>

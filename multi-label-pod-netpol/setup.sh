@@ -3,13 +3,17 @@ set -euo pipefail
 
 echo "🚀 Setting up NetworkPolicy lab environment..."
 
-# Create the isolated namespace
-kubectl create namespace isolated
+NS="isolated"
 
-# Create ConfigMaps with different HTML content for each pod type
+# Create the isolated namespace (idempotent)
+kubectl get ns "$NS" >/dev/null 2>&1 || kubectl create namespace "$NS"
+
+# Create ConfigMaps with different HTML content for each pod type.
+# Using --dry-run=client -o yaml | kubectl apply -f - instead of 'kubectl create'
+# so this script is safe to re-run (create fails with AlreadyExists otherwise).
 
 # API pod content - listens on port 7000
-kubectl create configmap api-html -n isolated --from-literal=index.html='
+kubectl create configmap api-html -n "$NS" --from-literal=index.html='
 <!DOCTYPE html>
 <html>
 <head><title>API Service</title></head>
@@ -23,10 +27,10 @@ kubectl create configmap api-html -n isolated --from-literal=index.html='
         <li>✓ role=proxy</li>
     </ul>
 </body>
-</html>'
+</html>' --dry-run=client -o yaml | kubectl apply -f -
 
 # API pod content on port 8080 (should NOT be accessible)
-kubectl create configmap api-alt-html -n isolated --from-literal=index.html='
+kubectl create configmap api-alt-html -n "$NS" --from-literal=index.html='
 <!DOCTYPE html>
 <html>
 <head><title>API Alternative Port</title></head>
@@ -35,10 +39,10 @@ kubectl create configmap api-alt-html -n isolated --from-literal=index.html='
     <p>Port: 8080</p>
     <p>This port should NOT be accessible per NetworkPolicy!</p>
 </body>
-</html>'
+</html>' --dry-run=client -o yaml | kubectl apply -f -
 
 # Frontend pod content
-kubectl create configmap frontend-html -n isolated --from-literal=index.html='
+kubectl create configmap frontend-html -n "$NS" --from-literal=index.html='
 <!DOCTYPE html>
 <html>
 <head><title>Frontend Service</title></head>
@@ -47,10 +51,10 @@ kubectl create configmap frontend-html -n isolated --from-literal=index.html='
     <p>Labels: app=frontend, role=proxy</p>
     <p>This pod should be able to access API service</p>
 </body>
-</html>'
+</html>' --dry-run=client -o yaml | kubectl apply -f -
 
 # Frontend-only pod (missing role=proxy label)
-kubectl create configmap frontend-only-html -n isolated --from-literal=index.html='
+kubectl create configmap frontend-only-html -n "$NS" --from-literal=index.html='
 <!DOCTYPE html>
 <html>
 <head><title>Frontend Only</title></head>
@@ -59,10 +63,10 @@ kubectl create configmap frontend-only-html -n isolated --from-literal=index.htm
     <p>Label: app=frontend (missing role=proxy)</p>
     <p>This pod should NOT be able to access API service</p>
 </body>
-</html>'
+</html>' --dry-run=client -o yaml | kubectl apply -f -
 
 # Database pod content
-kubectl create configmap database-html -n isolated --from-literal=index.html='
+kubectl create configmap database-html -n "$NS" --from-literal=index.html='
 <!DOCTYPE html>
 <html>
 <head><title>Database Service</title></head>
@@ -71,10 +75,10 @@ kubectl create configmap database-html -n isolated --from-literal=index.html='
     <p>Label: app=database</p>
     <p>This pod should NOT be able to access API service</p>
 </body>
-</html>'
+</html>' --dry-run=client -o yaml | kubectl apply -f -
 
 # Create nginx configuration for custom ports
-kubectl create configmap nginx-7000-conf -n isolated --from-literal=default.conf='
+kubectl create configmap nginx-7000-conf -n "$NS" --from-literal=default.conf='
 server {
     listen 7000;
     server_name localhost;
@@ -82,9 +86,9 @@ server {
         root /usr/share/nginx/html;
         index index.html;
     }
-}'
+}' --dry-run=client -o yaml | kubectl apply -f -
 
-kubectl create configmap nginx-8080-conf -n isolated --from-literal=default.conf='
+kubectl create configmap nginx-8080-conf -n "$NS" --from-literal=default.conf='
 server {
     listen 8080;
     server_name localhost;
@@ -92,7 +96,7 @@ server {
         root /usr/share/nginx/html;
         index index.html;
     }
-}'
+}' --dry-run=client -o yaml | kubectl apply -f -
 
 # Deploy API pod on port 7000 (target pod)
 cat <<EOF | kubectl apply -f -
@@ -100,7 +104,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: api-pod
-  namespace: isolated
+  namespace: $NS
   labels:
     app: api
 spec:
@@ -130,7 +134,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: api-pod-alt
-  namespace: isolated
+  namespace: $NS
   labels:
     app: api
 spec:
@@ -160,7 +164,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: frontend-proxy-pod
-  namespace: isolated
+  namespace: $NS
   labels:
     app: frontend
     role: proxy
@@ -183,7 +187,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: frontend-only-pod
-  namespace: isolated
+  namespace: $NS
   labels:
     app: frontend
 spec:
@@ -205,7 +209,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: database-pod
-  namespace: isolated
+  namespace: $NS
   labels:
     app: database
 spec:
@@ -223,7 +227,7 @@ EOF
 
 # Wait for all pods to be ready
 echo "⏳ Waiting for pods to be ready..."
-kubectl wait --for=condition=ready pod --all -n isolated --timeout=120s
+kubectl wait --for=condition=ready pod --all -n "$NS" --timeout=120s
 
 # Create ClusterIP Services to expose the pods
 echo ""
@@ -235,7 +239,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: api-pod
-  namespace: isolated
+  namespace: $NS
 spec:
   selector:
     app: api
@@ -253,7 +257,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: api-pod-alt
-  namespace: isolated
+  namespace: $NS
 spec:
   selector:
     app: api
@@ -271,7 +275,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-proxy-pod
-  namespace: isolated
+  namespace: $NS
 spec:
   selector:
     app: frontend
@@ -290,7 +294,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-only-pod
-  namespace: isolated
+  namespace: $NS
 spec:
   selector:
     app: frontend
@@ -308,7 +312,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: database-pod
-  namespace: isolated
+  namespace: $NS
 spec:
   selector:
     app: database
@@ -324,11 +328,11 @@ EOF
 echo ""
 echo "✅ Setup complete!"
 echo ""
-echo "📋 Created pods in 'isolated' namespace:"
-kubectl get pods -n isolated -o wide --show-labels
+echo "📋 Created pods in '$NS' namespace:"
+kubectl get pods -n "$NS" -o wide --show-labels
 echo ""
-echo "🌐 Created services in 'isolated' namespace:"
-kubectl get svc -n isolated
+echo "🌐 Created services in '$NS' namespace:"
+kubectl get svc -n "$NS"
 echo ""
 echo "🎯 Your task: Create NetworkPolicy 'allow-multi-pod-ingress' that allows traffic to app=api pods"
 echo "   Only from pods with BOTH labels: app=frontend AND role=proxy"

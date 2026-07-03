@@ -1,25 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "🔍 Verifying NetworkPolicy configuration..."
-
-# Color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+echo "Verifying NetworkPolicy configuration..."
 
 NAMESPACE="isolated"
 NETPOL_NAME="allow-multi-pod-ingress"
 
 print_status() {
-  if [ "$1" = "ok" ]; then
-    echo -e "${GREEN}✅ $2${NC}"
-  elif [ "$1" = "fail" ]; then
-    echo -e "${RED}❌ $2${NC}"
-  else
-    echo -e "${YELLOW}⚠️  $2${NC}"
-  fi
+  case "$1" in
+    ok)   echo "[OK]   $2" ;;
+    fail) echo "[FAIL] $2" ;;
+    *)    echo "[WARN] $2" ;;
+  esac
 }
 
 require_cmd() {
@@ -107,69 +99,76 @@ if [ "${OTHER_PORTS}" -gt 0 ]; then
   print_status "warn" "NetworkPolicy also allows ports other than 7000 — task asked for port 7000 only"
 fi
 
-# Wait for pods to be ready
+# Confirm test pods are ready (short timeout — they should already be running;
+# this just guards against a race, not a real wait).
 echo ""
-echo "⏳ Ensuring test pods are ready..."
-kubectl wait --for=condition=ready pod/api-pod -n "${NAMESPACE}" --timeout=30s &>/dev/null || true
-kubectl wait --for=condition=ready pod/frontend-proxy-pod -n "${NAMESPACE}" --timeout=30s &>/dev/null || true
-kubectl wait --for=condition=ready pod/frontend-only-pod -n "${NAMESPACE}" --timeout=30s &>/dev/null || true
-kubectl wait --for=condition=ready pod/database-pod -n "${NAMESPACE}" --timeout=30s &>/dev/null || true
+echo "Checking test pods are ready..."
+for pod in api-pod frontend-proxy-pod frontend-only-pod database-pod api-pod-alt; do
+  kubectl wait --for=condition=ready "pod/${pod}" -n "${NAMESPACE}" --timeout=10s &>/dev/null || true
+done
 
-# Give NetworkPolicy time to be enforced
-sleep 2
-
-# Live connectivity tests
+# Live connectivity tests — run concurrently, short per-request timeout,
+# no fixed sleep for policy propagation (most CNIs apply well under a second;
+# if you hit flaky results on a slow CNI, add a short sleep back in here).
 echo ""
-echo "🌐 Testing live connectivity..."
+echo "Testing live connectivity (parallel)..."
 
-echo "Test 1: frontend-proxy-pod -> api-pod:7000 (expected: ALLOWED)"
-if kubectl exec -n "${NAMESPACE}" frontend-proxy-pod -- curl -s --max-time 3 api-pod:7000 &>/dev/null; then
-  print_status "ok" "frontend-proxy-pod can reach api-pod:7000"
-else
-  print_status "fail" "frontend-proxy-pod could NOT reach api-pod:7000 (should be allowed)"
-  exit 1
-fi
+TMPDIR="$(mktemp -d)"
+trap 'rm -rf "${TMPDIR}"' EXIT
 
-echo "Test 2: frontend-only-pod -> api-pod:7000 (expected: BLOCKED)"
-if kubectl exec -n "${NAMESPACE}" frontend-only-pod -- curl -s --max-time 3 api-pod:7000 &>/dev/null; then
-  print_status "fail" "frontend-only-pod reached api-pod:7000 but should be blocked (missing role=proxy)"
-  exit 1
-else
-  print_status "ok" "frontend-only-pod correctly blocked from api-pod:7000"
-fi
+run_test() {
+  local name="$1" src="$2" dst="$3" port="$4"
+  if kubectl exec -n "${NAMESPACE}" "${src}" -- curl -s --max-time 2 "${dst}:${port}" &>/dev/null; then
+    echo "allowed" > "${TMPDIR}/${name}"
+  else
+    echo "blocked" > "${TMPDIR}/${name}"
+  fi
+}
 
-echo "Test 3: database-pod -> api-pod:7000 (expected: BLOCKED)"
-if kubectl exec -n "${NAMESPACE}" database-pod -- curl -s --max-time 3 api-pod:7000 &>/dev/null; then
-  print_status "fail" "database-pod reached api-pod:7000 but should be blocked"
-  exit 1
-else
-  print_status "ok" "database-pod correctly blocked from api-pod:7000"
-fi
+run_test t1 frontend-proxy-pod api-pod 7000 &
+run_test t2 frontend-only-pod  api-pod 7000 &
+run_test t3 database-pod       api-pod 7000 &
+run_test t4 frontend-proxy-pod api-pod-alt 8080 &
+wait
 
-echo "Test 4: frontend-proxy-pod -> api-pod-alt:8080 (expected: BLOCKED)"
-if kubectl exec -n "${NAMESPACE}" frontend-proxy-pod -- curl -s --max-time 3 api-pod-alt:8080 &>/dev/null; then
-  print_status "fail" "frontend-proxy-pod reached api-pod-alt:8080 but that port should be blocked"
+FAILED=0
+
+[ "$(cat "${TMPDIR}/t1")" = "allowed" ] \
+  && print_status "ok" "frontend-proxy-pod can reach api-pod:7000" \
+  || { print_status "fail" "frontend-proxy-pod could NOT reach api-pod:7000 (should be allowed)"; FAILED=1; }
+
+[ "$(cat "${TMPDIR}/t2")" = "blocked" ] \
+  && print_status "ok" "frontend-only-pod correctly blocked from api-pod:7000" \
+  || { print_status "fail" "frontend-only-pod reached api-pod:7000 but should be blocked (missing role=proxy)"; FAILED=1; }
+
+[ "$(cat "${TMPDIR}/t3")" = "blocked" ] \
+  && print_status "ok" "database-pod correctly blocked from api-pod:7000" \
+  || { print_status "fail" "database-pod reached api-pod:7000 but should be blocked"; FAILED=1; }
+
+[ "$(cat "${TMPDIR}/t4")" = "blocked" ] \
+  && print_status "ok" "api-pod-alt:8080 correctly blocked (only port 7000 is allowed)" \
+  || { print_status "fail" "frontend-proxy-pod reached api-pod-alt:8080 but that port should be blocked"; FAILED=1; }
+
+if [ "${FAILED}" -ne 0 ]; then
   exit 1
-else
-  print_status "ok" "api-pod-alt:8080 correctly blocked (only port 7000 is allowed)"
 fi
 
 # Display the NetworkPolicy for reference
 echo ""
-echo "📋 NetworkPolicy configuration:"
+echo "NetworkPolicy configuration:"
 echo "${JSON}" | jq '.spec'
 
 echo ""
-print_status "ok" "🎉 NetworkPolicy verification passed!"
+print_status "ok" "NetworkPolicy verification passed"
 echo ""
-echo "📊 Summary:"
-echo "   ✅ NetworkPolicy '${NETPOL_NAME}' correctly configured"
-echo "   ✅ Selects pods with label app=api"
-echo "   ✅ Requires source pods to have BOTH app=frontend AND role=proxy labels"
-echo "   ✅ Allows only TCP port 7000"
-echo "   ✅ Blocks pods with partial label match"
-echo "   ✅ Blocks pods with wrong labels"
-echo "   ✅ Blocks traffic to other ports"
+echo "Summary:"
+echo "   NetworkPolicy '${NETPOL_NAME}' correctly configured"
+echo "   Selects pods with label app=api"
+echo "   Requires source pods to have BOTH app=frontend AND role=proxy labels"
+echo "   Allows only TCP port 7000"
+echo "   Blocks pods with partial label match"
+echo "   Blocks pods with wrong labels"
+echo "   Blocks traffic to other ports"
 echo ""
 
 exit 0

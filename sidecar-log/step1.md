@@ -29,7 +29,7 @@ Do the following:
 5. **Verify** the logs are accessible via `kubectl logs`
 6. **Check the logs** to find information about the missing data incidents
 
-**Note**: This sidecar must be implemented as a **restartable init container** (an init container with `restartPolicy: Always`). This is a Kubernetes 1.29+ feature where init containers can stay running alongside the main application containers. Do not add it as a regular container under `spec.containers`.
+> **Note**: This sidecar must be implemented as a **restartable init container** (an init container with `restartPolicy: Always`). This is a Kubernetes 1.29+ feature where init containers can stay running alongside the main application containers. Do not add it as a regular container under spec.containers`.
 
 ---
 

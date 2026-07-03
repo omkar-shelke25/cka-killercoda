@@ -1,4 +1,4 @@
-# 🧠 CKA: Custom Resource Definitions (CRDs) Exploration
+# CKA: Custom Resource Definitions (CRDs) Exploration
 
 Welcome to this Kubernetes CRD exploration challenge! 🚀  
 
